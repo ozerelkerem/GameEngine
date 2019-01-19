@@ -4,9 +4,10 @@
 
 #pragma comment(lib, "libs/glew32.lib")
 #pragma comment(lib, "opengl32.lib")
-#include "includes/GL/glew.h"
 
-#include "Shader.h"
+#include "includes/GL/glew.h"
+#include "engine/Grid.h"
+#include "engine/Shader.h"
 
 using namespace System::Windows::Forms;
 
@@ -19,6 +20,7 @@ namespace OpenGLForm
 		CreateParams^ cp;
 		System::Windows::Forms::Panel^ parentForm;
 		Shader^ shader;
+		Grid^ grid;
 		
 	public:
 		COpenGL(System::Windows::Forms::Panel ^ parentForm)
@@ -26,6 +28,7 @@ namespace OpenGLForm
 			this->parentForm = parentForm;
 			init();
 			shader = gcnew Shader("shaders/mainShader.vs", "shaders/mainShader.fs");
+			grid = gcnew Grid(10,0.1);
 		}
 
 		void init()
@@ -64,11 +67,10 @@ namespace OpenGLForm
 		System::Void Render(System::Void)
 		{
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear screen and depth buffer
-			glLoadIdentity();									// Reset the current modelview matrix
-
-
-
-			glEnd();											// Done drawing the quad
+			
+			grid->Draw();
+		
+			
 		}
 
 		System::Void SwapOpenGLBuffers(System::Void)

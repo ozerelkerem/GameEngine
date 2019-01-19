@@ -7,7 +7,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "includes/GL/glew.h"
+#include "../includes/GL/glew.h"
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {

@@ -132,15 +132,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="engine\Grid.cpp" />
     <ClCompile Include="MainForm.cpp" />
-    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="engine\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\Grid.h" />
     <ClInclude Include="OpenGL.h" />
     <ClInclude Include="MainForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
-    <ClInclude Include="Shader.h" />
+    <ClInclude Include="engine\Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MainForm.resx">
