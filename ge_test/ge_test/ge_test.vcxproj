@@ -103,7 +103,7 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -135,6 +135,7 @@
     <ClCompile Include="engine\Grid.cpp" />
     <ClCompile Include="MainForm.cpp" />
     <ClCompile Include="engine\Shader.cpp" />
+    <ClCompile Include="SceneCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Grid.h" />
@@ -143,6 +144,7 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="engine\Shader.h" />
+    <ClInclude Include="SceneCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MainForm.resx">

@@ -37,7 +37,6 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	
 	glewInit();
 
-
 	unsigned int vertex, fragment;
 	vertex = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex, 1, &vertexCode, NULL);

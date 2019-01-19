@@ -60,8 +60,6 @@ namespace OpenGLForm
 				ReSizeGLScene(iWidth, iHeight);
 				InitGL();
 			}
-
-			
 		}
 
 		System::Void Render(System::Void)
@@ -69,8 +67,6 @@ namespace OpenGLForm
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear screen and depth buffer
 			
 			grid->Draw();
-		
-			
 		}
 
 		System::Void SwapOpenGLBuffers(System::Void)

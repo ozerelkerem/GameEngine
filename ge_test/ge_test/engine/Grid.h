@@ -10,6 +10,5 @@ public:
 private:
 	int lineCount;
 	float spaceLength;
-
 };
 
