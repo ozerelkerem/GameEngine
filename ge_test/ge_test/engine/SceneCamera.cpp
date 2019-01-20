@@ -7,6 +7,7 @@ SceneCamera::SceneCamera(glm::vec3 position, glm::vec3 targetPosition)
 {
 	this->position = position;
 	this->targetPosition = targetPosition;
+	this->Update();
 }
 
 void SceneCamera::Update()

@@ -34,14 +34,15 @@ namespace OpenGLForm
 			init();
 
 			shader = new Shader("shaders/mainShadervs.glsl", "shaders/mainShaderfs.glsl");
+			shader->Use();
+			
 
-			shader->setMat4("projectionMatrix", glm::perspective(30.0f, (float)(parentForm->Width/parentForm->Height), 0.1f, 1000.0f));
-
-			grid = new Grid(10, 0.1, shader->getProgramID());
+			grid = new Grid(100, 0.1, shader->getProgramID());
 			sceneCamera = new SceneCamera(glm::vec3(1, 1, 1), glm::vec3(0, 0, 0));
 
+			shader->setMat4("projectionMatrix", glm::perspective(30.0f, (float)(parentForm->Width / parentForm->Height), 0.1f, 1000.0f));
 			shader->setMat4("viewMatrix", sceneCamera->getViewMatrix());
-			shader->Use();
+			
 		}
 
 		void init()
@@ -71,7 +72,6 @@ namespace OpenGLForm
 				MySetPixelFormat(m_hDC);
 				glViewport(0, 0, iWidth, iHeight);
 				InitGL();
-
 			}
 		}
 

@@ -15,15 +15,15 @@ Grid::Grid(int lineCount, float spaceLength, unsigned int programID)
 void Grid::Draw()
 {
 	int pid = glGetAttribLocation(this->programID, "position");
-	
-	for (float i = -1; i <= 1; i += spaceLength)
+	glBegin(GL_LINES);
+	for (float i = -(this->lineCount * spaceLength / 2); i <= (this->lineCount * spaceLength / 2); i += spaceLength)
 	{
 		glVertexAttrib3f(pid, i, 1, 0);
 		glVertexAttrib3f(pid, i, -1, 0);
 		glVertexAttrib3f(pid, 1, i, 0);
 		glVertexAttrib3f(pid, -1, i, 0);
-		break;
+		
 	}
 
-	glDrawArrays(GL_LINES, 0, 4);
+	glEnd();
 }
