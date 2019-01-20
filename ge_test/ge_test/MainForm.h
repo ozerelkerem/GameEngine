@@ -238,7 +238,6 @@ namespace getest {
 			// 
 			// timer1
 			// 
-			this->timer1->Enabled = true;
 			this->timer1->Interval = 1;
 			this->timer1->Tick += gcnew System::EventHandler(this, &MainForm::timer1_Tick);
 			// 
@@ -253,16 +252,18 @@ namespace getest {
 			this->Controls->Add(this->splitter1);
 			this->Controls->Add(this->panel_top);
 			this->Name = L"MainForm";
-			this->Text = L"MainForm";
+			this->Text = L"MainForm2";
 			this->Load += gcnew System::EventHandler(this, &MainForm::MainForm_Load);
 			this->panel_right->ResumeLayout(false);
 			this->panel_left->ResumeLayout(false);
 			this->panel_scene->ResumeLayout(false);
 			this->ResumeLayout(false);
+
 		}
 #pragma endregion
 	private: System::Void MainForm_Load(System::Object^  sender, System::EventArgs^  e) {
 		OGLForm = gcnew OpenGLForm::COpenGL(this->panel_sceneRender);
+		this->timer1->Start();
 	}
 	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 		OGLForm->Render();

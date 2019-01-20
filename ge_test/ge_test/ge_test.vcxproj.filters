@@ -24,7 +24,7 @@
     <ClCompile Include="engine\Grid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SceneCamera.cpp">
+    <ClCompile Include="engine\SceneCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,7 +41,7 @@
     <ClInclude Include="engine\Grid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SceneCamera.h">
+    <ClInclude Include="engine\SceneCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

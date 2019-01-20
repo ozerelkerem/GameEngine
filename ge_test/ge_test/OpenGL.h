@@ -8,6 +8,9 @@
 #include "includes/GL/glew.h"
 #include "engine/Grid.h"
 #include "engine/Shader.h"
+#include "engine/SceneCamera.h"
+
+#include "includes/glm/glm.hpp"
 
 using namespace System::Windows::Forms;
 
@@ -19,16 +22,26 @@ namespace OpenGLForm
 	private:
 		CreateParams^ cp;
 		System::Windows::Forms::Panel^ parentForm;
-		Shader^ shader;
-		Grid^ grid;
+		Shader* shader;
+		Grid* grid;
+		SceneCamera* sceneCamera;
 		
 	public:
 		COpenGL(System::Windows::Forms::Panel ^ parentForm)
 		{
 			this->parentForm = parentForm;
+
 			init();
-			shader = gcnew Shader("shaders/mainShader.vs", "shaders/mainShader.fs");
-			grid = gcnew Grid(10,0.1);
+
+			shader = new Shader("shaders/mainShadervs.glsl", "shaders/mainShaderfs.glsl");
+
+			shader->setMat4("projectionMatrix", glm::perspective(30.0f, (float)(parentForm->Width/parentForm->Height), 0.1f, 1000.0f));
+
+			grid = new Grid(10, 0.1, shader->getProgramID());
+			sceneCamera = new SceneCamera(glm::vec3(1, 1, 1), glm::vec3(0, 0, 0));
+
+			shader->setMat4("viewMatrix", sceneCamera->getViewMatrix());
+			shader->Use();
 		}
 
 		void init()
@@ -56,9 +69,9 @@ namespace OpenGLForm
 			if (m_hDC)
 			{
 				MySetPixelFormat(m_hDC);
-
-				ReSizeGLScene(iWidth, iHeight);
+				glViewport(0, 0, iWidth, iHeight);
 				InitGL();
+
 			}
 		}
 
@@ -145,7 +158,7 @@ namespace OpenGLForm
 			glShadeModel(GL_SMOOTH);							// Enable smooth shading
 			glClearColor(0.6f, 0.6f, 0.6f, 0.5f);				// Black background
 			glClearDepth(1.0f);									// Depth buffer setup
-			glEnable(GL_DEPTH_TEST);							// Enables depth testing
+			glEnable(GL_DEPTH_TEST  | GL_DEBUG_OUTPUT);							// Enables depth testing
 			glDepthFunc(GL_LEQUAL);								// The type of depth testing to do
 			glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really nice perspective calculations
 			return TRUE;										// Initialisation went ok
@@ -154,17 +167,11 @@ namespace OpenGLForm
 		public: GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize and initialise the gl window
 		{
 			if (height == 0)										// Prevent A Divide By Zero By
-			{
 				height = 1;										// Making Height Equal One
-			}
+
+			shader->setMat4("projectionMatrix", glm::perspective(30.0f, (float)(width / height), 0.1f, 1000.0f));
 
 			glViewport(0, 0, width, height);						// Reset The Current Viewport
-
-			glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
-			glLoadIdentity();									// Reset The Projection Matrix
-
-			glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
-			glLoadIdentity();							// Reset The Modelview Matrix
 		}
 	};
 }

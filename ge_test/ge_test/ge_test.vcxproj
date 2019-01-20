@@ -135,7 +135,7 @@
     <ClCompile Include="engine\Grid.cpp" />
     <ClCompile Include="MainForm.cpp" />
     <ClCompile Include="engine\Shader.cpp" />
-    <ClCompile Include="SceneCamera.cpp" />
+    <ClCompile Include="engine\SceneCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Grid.h" />
@@ -144,7 +144,7 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="engine\Shader.h" />
-    <ClInclude Include="SceneCamera.h" />
+    <ClInclude Include="engine\SceneCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MainForm.resx">

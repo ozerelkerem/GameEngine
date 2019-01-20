@@ -1,14 +1,14 @@
 #pragma once
 
-ref class Grid
+class Grid
 {
-public:
-	Grid(int lineCount, float spaceLength);
-
-	void Draw();
-
 private:
 	int lineCount;
 	float spaceLength;
+	unsigned int programID;
+public:
+	Grid(int lineCount, float spaceLength, unsigned int);
+	void Draw();
+
 };
 

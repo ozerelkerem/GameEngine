@@ -4,23 +4,26 @@
 #include "../includes/GL/glew.h"
 
 
-Grid::Grid(int lineCount, float spaceLength)
+Grid::Grid(int lineCount, float spaceLength, unsigned int programID)
 {
 	this->spaceLength = spaceLength;
 	this->lineCount = lineCount;
+
+	this->programID = programID;
 }
 
 void Grid::Draw()
 {
-	glBegin(GL_LINES);
-
+	int pid = glGetAttribLocation(this->programID, "position");
+	
 	for (float i = -1; i <= 1; i += spaceLength)
 	{
-		glVertex3f(i, 1, 0);
-		glVertex3f(i, -1, 0);
-		glVertex3f(1, i, 0);
-		glVertex3f(-1, i, 0);
+		glVertexAttrib3f(pid, i, 1, 0);
+		glVertexAttrib3f(pid, i, -1, 0);
+		glVertexAttrib3f(pid, 1, i, 0);
+		glVertexAttrib3f(pid, -1, i, 0);
+		break;
 	}
 
-	glEnd();
+	glDrawArrays(GL_LINES, 0, 4);
 }

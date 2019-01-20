@@ -13,6 +13,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
 	std::ifstream vertexFileStream, fragmentFileStream;
 	std::stringstream vertexBuffer, fragmentBuffer;
+	std::string s_vertexCode, s_fragmentCode;
 	try
 	{
 		vertexFileStream.open(vertexPath);
@@ -23,6 +24,10 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 		vertexBuffer << vertexFileStream.rdbuf();
 		fragmentBuffer << fragmentFileStream.rdbuf();
 
+
+		s_vertexCode = vertexBuffer.str();
+		s_fragmentCode = fragmentBuffer.str();
+
 		vertexFileStream.close();
 		fragmentFileStream.close();
 	}
@@ -32,8 +37,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	}
 	
 	
-	const char * fragmentCode = fragmentBuffer.str().c_str();
-	const char * vertexCode = vertexBuffer.str().c_str();
+	const char * fragmentCode = s_fragmentCode.c_str();
+	const char * vertexCode = s_vertexCode.c_str();
 	
 	glewInit();
 
@@ -45,6 +50,11 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	fragment = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragment, 1, &fragmentCode, NULL);
 	glCompileShader(fragment);
+
+	/*int i;
+	char infoLog[1024];
+	glGetShaderiv(fragment, GL_COMPILE_STATUS, &i);
+	glGetShaderInfoLog(fragment, 1024, NULL, infoLog);*/
 
 	programID = glCreateProgram();
 	glAttachShader(programID, vertex);
@@ -59,3 +69,10 @@ void Shader::Use()
 {
 	glUseProgram(programID);
 }
+
+void Shader::setMat4(const std::string &name, const glm::mat4 &m4)
+{
+	glUniformMatrix4fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, &m4[0][0]);
+}
+
+unsigned int Shader::getProgramID() { return programID; }

@@ -1,10 +1,22 @@
 #pragma once
-ref class Shader
+
+#include "..//includes/glm/glm.hpp"
+
+#include <string>
+
+class Shader
 {
+private:
+	unsigned int programID;
 public:
 	Shader(const char* , const char*);
 	void Use();
-private:
-	unsigned int programID;
+	
+	void setMat4(const std::string &, const glm::mat4 &);
+
+	unsigned int getProgramID();
 };
+
+
+
 
