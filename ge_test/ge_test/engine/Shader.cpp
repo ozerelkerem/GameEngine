@@ -53,8 +53,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 
 	/*int i;
 	char infoLog[1024];
-	glGetShaderiv(fragment, GL_COMPILE_STATUS, &i);
-	glGetShaderInfoLog(fragment, 1024, NULL, infoLog);*/
+	glGetShaderiv(vertex, GL_COMPILE_STATUS, &i);
+	glGetShaderInfoLog(vertex, 1024, NULL, infoLog);*/
 
 	programID = glCreateProgram();
 	glAttachShader(programID, vertex);

@@ -11,6 +11,7 @@
 #include "engine/SceneCamera.h"
 
 #include "includes/glm/glm.hpp"
+#include "includes/GLFW/glfw3.h"
 
 using namespace System::Windows::Forms;
 
@@ -18,68 +19,50 @@ namespace OpenGLForm
 {
 	public ref class COpenGL : public System::Windows::Forms::NativeWindow
 	{
-
 	private:
 		CreateParams^ cp;
 		System::Windows::Forms::Panel^ parentForm;
 		Shader* shader;
 		Grid* grid;
-		SceneCamera* sceneCamera;
 		
 	public:
+		SceneCamera* sceneCamera;
+
 		COpenGL(System::Windows::Forms::Panel ^ parentForm)
 		{
 			this->parentForm = parentForm;
-
+			
 			init();
 
 			shader = new Shader("shaders/mainShadervs.glsl", "shaders/mainShaderfs.glsl");
 			shader->Use();
-			
 
-			grid = new Grid(100, 0.1, shader->getProgramID());
-			sceneCamera = new SceneCamera(glm::vec3(1, 1, 1), glm::vec3(0, 0, 0));
+			grid = new Grid(16, 1, shader->getProgramID());
+			sceneCamera = new SceneCamera(glm::vec3(10, 0, -10), glm::vec3(0, 0, 0));
 
-			shader->setMat4("projectionMatrix", glm::perspective(30.0f, (float)(parentForm->Width / parentForm->Height), 0.1f, 1000.0f));
+			shader->setMat4("projectionMatrix", glm::perspective(30.0f, (float)(parentForm->Width/parentForm->Height), 0.1f, 1000.0f));
 			shader->setMat4("viewMatrix", sceneCamera->getViewMatrix());
-			
 		}
 
 		void init()
 		{
-			cp = gcnew CreateParams;
-			GLsizei iWidth = parentForm->Width, iHeight = parentForm->Height;
-			// Set the position on the form
-			cp->X = 0;
-			cp->Y = 0;
-			cp->Height = iHeight;
-			cp->Width = iWidth;
-
-			// Specify the form as the parent.
-			cp->Parent = parentForm->Handle;
-
-			// Create as a child of the specified parent and make OpenGL compliant (no clipping)
-			cp->Style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
-
-			// Create the actual window
-			this->DestroyHandle();
-			this->CreateHandle(cp);
-
-			m_hDC = GetDC((HWND)this->Handle.ToPointer());
+			m_hDC = GetDC((HWND)this->parentForm->Handle.ToPointer());
 
 			if (m_hDC)
 			{
 				MySetPixelFormat(m_hDC);
-				glViewport(0, 0, iWidth, iHeight);
 				InitGL();
+				glViewport(0, 0, parentForm->Width, parentForm->Height);
 			}
 		}
 
 		System::Void Render(System::Void)
 		{
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear screen and depth buffer
-			
+
 			grid->Draw();
+
+			shader->setMat4("viewMatrix", sceneCamera->getViewMatrix());
 		}
 
 		System::Void SwapOpenGLBuffers(System::Void)
@@ -149,7 +132,6 @@ namespace OpenGLForm
 				return 0;
 			}
 
-
 			return 1;
 		}
 
@@ -169,9 +151,9 @@ namespace OpenGLForm
 			if (height == 0)										// Prevent A Divide By Zero By
 				height = 1;										// Making Height Equal One
 
-			shader->setMat4("projectionMatrix", glm::perspective(30.0f, (float)(width / height), 0.1f, 1000.0f));
-
-			glViewport(0, 0, width, height);						// Reset The Current Viewport
+			glViewport(0, 0, width, height);
+		
+			shader->setMat4("projectionMatrix", glm::perspective(30.0f, (float)((float)width / height), 0.1f, 1000.0f));
 		}
 	};
 }
