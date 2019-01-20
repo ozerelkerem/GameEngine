@@ -13,10 +13,15 @@ private:
 	glm::vec3 targetPosition;
 	glm::vec3 up;
 
-	glm::tmat4x4<GLfloat> viewMatrix;
+	float cameraSpeed;
+
+	glm::mat4x4 viewMatrix;
 public:
 	SceneCamera(glm::vec3, glm::vec3);
-	void Update();
-	glm::tmat4x4<GLfloat> getViewMatrix();
+	void UpdateViewMatrix();
+	glm::mat4x4 getViewMatrix();
+
+	void MoveForward();
+	void MoveBackward();
 };
 

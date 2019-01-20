@@ -181,13 +181,14 @@ namespace getest {
 			// panel_sceneRender
 			// 
 			this->panel_sceneRender->AccessibleName = L"";
-			this->panel_sceneRender->BackColor = System::Drawing::SystemColors::ActiveBorder;
+			this->panel_sceneRender->BackColor = System::Drawing::SystemColors::ActiveCaption;
 			this->panel_sceneRender->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->panel_sceneRender->Location = System::Drawing::Point(0, 50);
 			this->panel_sceneRender->Name = L"panel_sceneRender";
 			this->panel_sceneRender->Size = System::Drawing::Size(870, 282);
 			this->panel_sceneRender->TabIndex = 0;
 			this->panel_sceneRender->SizeChanged += gcnew System::EventHandler(this, &MainForm::panel_sceneRender_SizeChanged);
+			this->panel_sceneRender->MouseWheel += gcnew System::Windows::Forms::MouseEventHandler(this, &MainForm::panel_sceneRender_MouseWheel);
 			// 
 			// panel_sceneSettings
 			// 
@@ -259,18 +260,29 @@ namespace getest {
 			this->panel_scene->ResumeLayout(false);
 			this->ResumeLayout(false);
 
+			
+
 		}
 #pragma endregion
 	private: System::Void MainForm_Load(System::Object^  sender, System::EventArgs^  e) {
 		OGLForm = gcnew OpenGLForm::COpenGL(this->panel_sceneRender);
 		this->timer1->Start();
 	}
+
+	private: System::Void panel_sceneRender_MouseWheel(Object^ sender, MouseEventArgs^ e)
+	{
+		if (e->Delta > 0)
+			OGLForm->sceneCamera->MoveForward();
+		else
+			OGLForm->sceneCamera->MoveBackward();
+	}
 	private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 		OGLForm->Render();
 		OGLForm->SwapOpenGLBuffers();
 	}
 	private: System::Void panel_sceneRender_SizeChanged(System::Object^  sender, System::EventArgs^  e) {
-		OGLForm->init();
+		
+		OGLForm->ReSizeGLScene(this->panel_sceneRender->Width, this->panel_sceneRender->Height);
 	}
 };
 }
