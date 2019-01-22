@@ -94,6 +94,7 @@ int main(int, char**)
 	SceneRenderer *sceneRenderer = new SceneRenderer();
 
 	double prevMousePosition[2];
+	bool travelMode = false;
 
 	// Main loop
 	while (!glfwWindowShouldClose(window))
@@ -157,16 +158,24 @@ int main(int, char**)
 			}
 			ImGui::End();
 			
+			
+
 			ImGui::Begin("Scene", NULL);
 			{
 				if (ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(1))
 				{
 					glfwGetCursorPos(window, &prevMousePosition[0] , &prevMousePosition[1]);
+					travelMode = true;
+					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 				}
-				
+				if (ImGui::IsMouseReleased(1))
+				{
+					travelMode = false;
+					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+				}
 
 
-				if (ImGui::IsMouseHoveringWindow() && (io.MouseDownDuration[1] > 0))
+				if (travelMode && (io.MouseDownDuration[1] > 0))
 				{
 					double midx, midy;
 					midx = (int)(ImGui::GetWindowPos().x + size.x / 2);
