@@ -162,6 +162,10 @@ int main(int, char**)
 
 			ImGui::Begin("Scene", NULL);
 			{
+				size = ImGui::GetWindowSize();
+				size.y -= 35;
+				ImGui::Image((void*)sceneRenderer->GetTextureColorBuffer(), size, { 0,0 }, { size.x / sceneMaxWidth, size.y / sceneMaxHeight });
+
 				if (ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(1))
 				{
 					glfwGetCursorPos(window, &prevMousePosition[0] , &prevMousePosition[1]);
@@ -183,7 +187,11 @@ int main(int, char**)
 
 					double x, y;
 				
+					ImGui::GetWindowDrawList()->AddCircle({ (float)midx,(float)midy }, 10.f, IM_COL32(255, 0, 0, 255),12,2.f);
+
+
 					glfwGetCursorPos(window, &x, &y);
+
 
 					sceneRenderer->sceneCamera->RotatePitch(-(y-prevMousePosition[1])*0.01);
 					sceneRenderer->sceneCamera->RotateYaw(-(x-prevMousePosition[0])*0.01);
@@ -222,16 +230,22 @@ int main(int, char**)
 							sceneRenderer->sceneCamera->MoveBackward();
 				}
 
-
+		
 					
 
-				size = ImGui::GetWindowSize();
-				size.y -= 35;
-				ImGui::Image((void*)sceneRenderer->GetTextureColorBuffer(), size, { 0,0 }, { size.x / sceneMaxWidth, size.y / sceneMaxHeight });
+		
 			}
 			ImGui::End();
 
 			ImGui::Begin("Game", NULL);
+			{
+		
+		
+
+				
+				
+		
+			}
 			ImGui::End();
 
 			ImGui::Begin("Scene Properties", NULL);
