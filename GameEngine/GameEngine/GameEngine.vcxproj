@@ -118,6 +118,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\Grid.cpp" />
+    <ClCompile Include="engine\SceneCamera.cpp" />
+    <ClCompile Include="engine\Shader.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -125,8 +128,12 @@
     <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="engine\SceneRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\Grid.h" />
+    <ClInclude Include="engine\SceneCamera.h" />
+    <ClInclude Include="engine\Shader.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_glfw.h" />
     <ClInclude Include="imgui\imgui_impl_opengl3.h" />
@@ -137,6 +144,7 @@
     <ClInclude Include="ogl\GLFW\glfw3.h" />
     <ClInclude Include="ogl\GLFW\glfw3native.h" />
     <ClInclude Include="ogl\GL\glew.h" />
+    <ClInclude Include="engine\SceneRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Debug\glew32.dll" />

@@ -71,3 +71,20 @@ namespace ImGui
     void MyFunction(const char* name, const MyMatrix44& v);
 }
 */
+
+
+#ifndef ImGuiKey_D_
+#define ImGuiKey_D_ 68
+#endif 
+#ifndef ImGuiKey_W_
+#define ImGuiKey_W_ 87
+#endif 
+ 
+#ifndef ImGuiKey_S_
+#define ImGuiKey_S_ 83
+#endif 
+#ifndef ImGuiKey_A_
+#define ImGuiKey_A_ 65
+#endif 
+
+
