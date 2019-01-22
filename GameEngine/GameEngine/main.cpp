@@ -169,8 +169,8 @@ int main(int, char**)
 				if (ImGui::IsMouseHoveringWindow() && (io.MouseDownDuration[1] > 0))
 				{
 					double midx, midy;
-					midx = ImGui::GetWindowPos().x + size.x / 2;
-					midy = ImGui::GetWindowPos().y + size.y / 2;
+					midx = (int)(ImGui::GetWindowPos().x + size.x / 2);
+					midy = (int)(ImGui::GetWindowPos().y + size.y / 2);
 
 					double x, y;
 				
