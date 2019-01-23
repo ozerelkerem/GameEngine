@@ -39,20 +39,20 @@ int main(int, char**)
 	if (!glfwInit())
 		return 1;
 
-	#if __APPLE__
-		// GL 3.2 + GLSL 150
-		const char* glsl_version = "#version 150";
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
-	#else
-		const char* glsl_version = "#version 130";
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
-	#endif
+#if __APPLE__
+	// GL 3.2 + GLSL 150
+	const char* glsl_version = "#version 150";
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
+#else
+	const char* glsl_version = "#version 130";
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
+#endif
 
 	GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
 	if (window == NULL)
@@ -104,7 +104,7 @@ int main(int, char**)
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		
+
 		sceneRenderer->Update(glm::vec2(size.x, size.y));
 		sceneRenderer->Render();
 
@@ -138,7 +138,7 @@ int main(int, char**)
 				ImGui::PopStyleVar(2);
 
 			ImGuiIO& io = ImGui::GetIO();
-	
+
 			ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), opt_flags);
 
@@ -153,18 +153,22 @@ int main(int, char**)
 					ImGui::Separator();
 					ImGui::EndMenu();
 				}
-		
+
 				ImGui::EndMenuBar();
 			}
 			ImGui::End();
-			
-			
+
+
 
 			ImGui::Begin("Scene", NULL);
 			{
+				size = ImGui::GetWindowSize();
+				size.y -= 35;
+				ImGui::Image((void*)sceneRenderer->GetTextureColorBuffer(), size, { 0,0 }, { size.x / sceneMaxWidth, size.y / sceneMaxHeight });
+
 				if (ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(1))
 				{
-					glfwGetCursorPos(window, &prevMousePosition[0] , &prevMousePosition[1]);
+					glfwGetCursorPos(window, &prevMousePosition[0], &prevMousePosition[1]);
 					travelMode = true;
 					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 				}
@@ -182,13 +186,17 @@ int main(int, char**)
 					midy = (int)(ImGui::GetWindowPos().y + size.y / 2);
 
 					double x, y;
-				
+
+					ImGui::GetWindowDrawList()->AddCircle({ (float)midx,(float)midy }, 10.f, IM_COL32(255, 0, 0, 255), 12, 2.f);
+
+
 					glfwGetCursorPos(window, &x, &y);
 
-					sceneRenderer->sceneCamera->RotatePitch(-(y-prevMousePosition[1])*0.01);
-					sceneRenderer->sceneCamera->RotateYaw(-(x-prevMousePosition[0])*0.01);
 
-					prevMousePosition[0] = midx; 
+					sceneRenderer->sceneCamera->RotatePitch(-(y - prevMousePosition[1])*0.01);
+					sceneRenderer->sceneCamera->RotateYaw(-(x - prevMousePosition[0])*0.01);
+
+					prevMousePosition[0] = midx;
 					prevMousePosition[1] = midy;
 
 					glfwSetCursorPos(window, midx, midy);
@@ -200,12 +208,12 @@ int main(int, char**)
 					else if ((io.KeysDownDuration[ImGuiKey_S_] > 0))
 						sceneRenderer->sceneCamera->MoveBackward();
 
-					if((io.KeysDownDuration[ImGuiKey_A_] > 0))
+					if ((io.KeysDownDuration[ImGuiKey_A_] > 0))
 						sceneRenderer->sceneCamera->MoveLeft();
-					else if((io.KeysDownDuration[ImGuiKey_D_] > 0))
+					else if ((io.KeysDownDuration[ImGuiKey_D_] > 0))
 						sceneRenderer->sceneCamera->MoveRight();
 				}
-				
+
 				if (ImGui::IsMouseHoveringWindow() && (io.MouseWheel != 0))
 				{
 					if (io.MouseDownDuration[1] > 0)
@@ -214,24 +222,30 @@ int main(int, char**)
 						if (sceneRenderer->sceneCamera->cameraSpeed <= 0.01)
 							sceneRenderer->sceneCamera->cameraSpeed = 0.01;
 					}
-					
+
 					else
-						if(io.MouseWheel > 0)
+						if (io.MouseWheel > 0)
 							sceneRenderer->sceneCamera->MoveForward();
 						else
 							sceneRenderer->sceneCamera->MoveBackward();
 				}
 
 
-					
 
-				size = ImGui::GetWindowSize();
-				size.y -= 35;
-				ImGui::Image((void*)sceneRenderer->GetTextureColorBuffer(), size, { 0,0 }, { size.x / sceneMaxWidth, size.y / sceneMaxHeight });
+
+
 			}
 			ImGui::End();
 
 			ImGui::Begin("Game", NULL);
+			{
+
+
+
+
+
+
+			}
 			ImGui::End();
 
 			ImGui::Begin("Scene Properties", NULL);
