@@ -9,6 +9,7 @@
 #include "ogl/GLFW/glfw3.h"
 #include "ogl/glm/glm.hpp"
 
+#include "engine/Scene.h"
 #include "engine/Shader.h"
 #include "engine/SceneCamera.h"
 #include "engine/Grid.h"
@@ -19,6 +20,9 @@
 #endif
 
 ImVec2 size = { 1280,720 };
+SceneRenderer *sceneRenderer;
+
+void drawHiearchy(Object*);
 
 void resize_callback(GLFWwindow * window, int width, int height)
 {
@@ -91,10 +95,11 @@ int main(int, char**)
 
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-	SceneRenderer *sceneRenderer = new SceneRenderer();
+	sceneRenderer = new SceneRenderer();
 
 	double prevMousePosition[2];
 	bool travelMode = false;
+	
 
 	// Main loop
 	while (!glfwWindowShouldClose(window))
@@ -275,6 +280,9 @@ int main(int, char**)
 			ImGui::End();
 
 			ImGui::Begin("Hierarchy", NULL);
+			{
+				drawHiearchy(sceneRenderer->scene->rootObject);		
+			}
 			ImGui::End();
 			ImGui::Begin("Create Object", NULL);
 			ImGui::End();
@@ -309,4 +317,50 @@ int main(int, char**)
 	glfwTerminate();
 
 	return 0;
+}
+
+void drawHiearchy(Object * root)
+{
+	bool test; int n;
+	ImGuiTreeNodeFlags src_flags = 0;
+	if (root->numOfChilds == 0)
+		src_flags = ImGuiTreeNodeFlags_Leaf;
+	else
+		src_flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap;
+
+	test = ImGui::TreeNodeEx(root->name.c_str(), src_flags);
+	{
+		ImGuiDragDropFlags src_flags = 0;
+		src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;     // Keep the source displayed as hovered
+		src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers; // Because our dragging is local, we disable the feature of opening foreign treenodes/tabs while dragging
+		//src_flags |= ImGuiDragDropFlags_SourceNoPreviewTooltip; // Hide the tooltip
+		if (root->name != "root" && ImGui::BeginDragDropSource(src_flags))
+		{
+			if (!(src_flags & ImGuiDragDropFlags_SourceNoPreviewTooltip))
+			{
+				ImGui::Text("%s", root->name.c_str());
+				sceneRenderer->selectedObject = root;
+			}
+				
+			ImGui::SetDragDropPayload("DND_DEMO_NAME", &n, sizeof(int));
+			ImGui::EndDragDropSource();
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_NAME"))
+			{
+				if (sceneRenderer->selectedObject)
+					sceneRenderer->selectedObject->AddParent(root);
+				sceneRenderer->selectedObject = NULL;
+			}
+			ImGui::EndDragDropTarget();
+		}
+		if (test)
+		{
+			for (int i = 0; i < root->numOfChilds; i++)
+				drawHiearchy(root->childs[i]);
+			ImGui::TreePop();
+		}
+	}
 }

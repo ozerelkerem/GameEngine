@@ -129,6 +129,8 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\SceneRenderer.cpp" />
+    <ClCompile Include="engine\Object.cpp" />
+    <ClCompile Include="engine\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Grid.h" />
@@ -141,10 +143,12 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="engine\Object.h" />
     <ClInclude Include="ogl\GLFW\glfw3.h" />
     <ClInclude Include="ogl\GLFW\glfw3native.h" />
     <ClInclude Include="ogl\GL\glew.h" />
     <ClInclude Include="engine\SceneRenderer.h" />
+    <ClInclude Include="engine\Scene.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Debug\glew32.dll" />

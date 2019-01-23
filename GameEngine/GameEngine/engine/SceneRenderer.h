@@ -5,6 +5,7 @@
 #include "Grid.h"
 #include "SceneCamera.h"
 #include "Shader.h"
+#include "Scene.h"
 
 #include "../ogl/glm/glm.hpp"
 
@@ -24,6 +25,9 @@ private:
 public:
 	glm::vec3 backgroundColor;
 	SceneCamera *sceneCamera;
+	Scene * scene;
+
+	Object *selectedObject;
 
 	SceneRenderer();
 	~SceneRenderer();

@@ -4,11 +4,26 @@
 
 SceneRenderer::SceneRenderer()
 {
+	scene = new Scene();
 	sceneCamera = new SceneCamera(glm::vec3(20, -50, 20), 90, 0);
 	shader = new Shader("engine/shaders/mainShadervs.glsl", "engine/shaders/mainShaderfs.glsl");
 	grid = new Grid(16, 1, shader->getProgramID());
 
 	backgroundColor = glm::vec3(0.1f, 0.1f, 0.1f);
+
+	Object *o1 = new Object("cube", scene);
+	Object *o2 = new Object("cube2", scene);
+	Object *o3= new Object("cube3", scene);
+	Object *o4 = new Object("cube4", scene);
+	Object *o5 = new Object("cube5", scene);
+	o5->AddParent(o1);
+	o3->AddParent(o5);
+	o2->AddParent(o3);
+	o3->RemoveParent();
+	o3->RemoveObject();
+	o5->AddParent(o2);
+
+	selectedObject = NULL;
 
 	GenerateBuffers();
 }
