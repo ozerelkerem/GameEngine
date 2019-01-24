@@ -394,9 +394,10 @@ void drawHiearchy(Object * root)
 		ImGui::PushID(root->name.c_str());
 		if (ImGui::BeginPopupContextItem())
 		{
-			if (ImGui::MenuItem("Delete"))
+			if (ImGui::MenuItem("Delete") && root->name != "root")
 			{
 				root->RemoveObject();
+				sceneRenderer->selectedObject = NULL;
 			}
 			ImGui::EndPopup();
 		}
