@@ -134,6 +134,7 @@
     <ClCompile Include="engine\SceneRenderer.cpp" />
     <ClCompile Include="engine\Object.cpp" />
     <ClCompile Include="engine\Scene.cpp" />
+    <ClCompile Include="engine\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Grid.h" />
@@ -152,6 +153,7 @@
     <ClInclude Include="ogl\GL\glew.h" />
     <ClInclude Include="engine\SceneRenderer.h" />
     <ClInclude Include="engine\Scene.h" />
+    <ClInclude Include="engine\Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Debug\glew32.dll" />

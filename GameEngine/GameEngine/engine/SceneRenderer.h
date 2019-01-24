@@ -27,7 +27,8 @@ public:
 	SceneCamera *sceneCamera;
 	Scene * scene;
 
-	Object *selectedObject;
+	Object *selectedObject; // for object properties
+	Object *hoveredObject; // for drag and drop at hierarchy
 
 	SceneRenderer();
 	~SceneRenderer();

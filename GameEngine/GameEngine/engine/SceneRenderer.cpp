@@ -24,6 +24,7 @@ SceneRenderer::SceneRenderer()
 	o5->AddParent(o2);
 
 	selectedObject = NULL;
+	hoveredObject = NULL;
 
 	GenerateBuffers();
 }

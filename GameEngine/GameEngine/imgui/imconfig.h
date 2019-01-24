@@ -87,4 +87,8 @@ namespace ImGui
 #define ImGuiKey_A_ 65
 #endif 
 
+#ifndef ImGuiMouse_Right_
+#define ImGuiMouse_Right_ 1
+#endif 
+
 
