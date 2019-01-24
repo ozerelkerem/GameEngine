@@ -42,8 +42,10 @@ public:
 	void MoveBackward();
 
 	void MoveRight();
-
 	void MoveLeft();
+
+	void MoveUp(float);
+	void MoveDown(float);
 
 	void RotateYaw(float angle);
 	void RotatePitch(float angle);

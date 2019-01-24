@@ -63,6 +63,19 @@ void SceneCamera::MoveLeft()
 	UpdateViewMatrix();
 }
 
+void SceneCamera::MoveUp(float sens = 1)
+{
+	position += worldUpVector * cameraSpeed * sens;
+
+	UpdateViewMatrix();
+}
+void SceneCamera::MoveDown(float sens = 1)
+{
+	position -= worldUpVector * cameraSpeed * sens;
+
+	UpdateViewMatrix();
+}
+
 void SceneCamera::RotateYaw(float angle)
 {
 	yaw -= angle * mouseSensivity;

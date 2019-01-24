@@ -24,6 +24,7 @@ SceneRenderer *sceneRenderer;
 
 void drawHiearchy(Object*);
 
+
 void resize_callback(GLFWwindow * window, int width, int height)
 {
 	//size.x = width;
@@ -98,7 +99,7 @@ int main(int, char**)
 	sceneRenderer = new SceneRenderer();
 
 	double prevMousePosition[2];
-	bool travelMode = false;
+	bool travelMode = false, travelMode2 = false;
 	
 
 	// Main loop
@@ -171,41 +172,84 @@ int main(int, char**)
 				size.y -= 35;
 				ImGui::Image((void*)sceneRenderer->GetTextureColorBuffer(), size, { 0,0 }, { size.x / sceneMaxWidth, size.y / sceneMaxHeight });
 
-				if (ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(1))
+
+				//travel mode1 rotating camera if travelmode1 works, travelmode2 does not
 				{
-					glfwGetCursorPos(window, &prevMousePosition[0], &prevMousePosition[1]);
-					travelMode = true;
-					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+					if (ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(1))
+					{
+						glfwGetCursorPos(window, &prevMousePosition[0], &prevMousePosition[1]);
+						travelMode = true;
+						glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+					}
+					if (ImGui::IsMouseReleased(1))
+					{
+						travelMode = false;
+						glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+					}
+					if (travelMode && (io.MouseDownDuration[1] > 0))
+					{
+						double midx, midy;
+						midx = (int)(ImGui::GetWindowPos().x + size.x / 2);
+						midy = (int)(ImGui::GetWindowPos().y + size.y / 2);
+
+						double x, y;
+
+						ImGui::GetWindowDrawList()->AddCircle({ (float)midx,(float)midy }, 10.f, IM_COL32(255, 0, 0, 255), 12, 2.f);
+
+
+						glfwGetCursorPos(window, &x, &y);
+
+
+						sceneRenderer->sceneCamera->RotatePitch(-(y - prevMousePosition[1])*0.01);
+						sceneRenderer->sceneCamera->RotateYaw(-(x - prevMousePosition[0])*0.01);
+
+						prevMousePosition[0] = midx;
+						prevMousePosition[1] = midy;
+
+						glfwSetCursorPos(window, midx, midy);
+					}
 				}
-				if (ImGui::IsMouseReleased(1))
+				
+
+				//travel mode2 camera up down
 				{
-					travelMode = false;
-					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+					if (ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(ImGuiMouse_Middle_) && !travelMode)
+					{
+						glfwGetCursorPos(window, &prevMousePosition[0], &prevMousePosition[1]);
+						travelMode2 = true;
+						glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+					}
+					if (ImGui::IsMouseReleased(1) && !travelMode)
+					{
+						travelMode2 = false;
+						glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+					}
+
+					if (travelMode2 && (io.MouseDownDuration[ImGuiMouse_Middle_] > 0) && !travelMode)
+					{
+						double midx, midy;
+						midx = (int)(ImGui::GetWindowPos().x + size.x / 2);
+						midy = (int)(ImGui::GetWindowPos().y + size.y / 2);
+
+						double x, y;
+
+						ImGui::GetWindowDrawList()->AddCircle({ (float)midx,(float)midy }, 10.f, IM_COL32(255, 0, 0, 255), 12, 2.f);
+
+
+						glfwGetCursorPos(window, &x, &y);
+
+
+						sceneRenderer->sceneCamera->MoveUp(-(y - prevMousePosition[1])*0.01);
+
+						prevMousePosition[0] = midx;
+						prevMousePosition[1] = midy;
+
+						glfwSetCursorPos(window, midx, midy);
+					}
 				}
+				
 
-
-				if (travelMode && (io.MouseDownDuration[1] > 0))
-				{
-					double midx, midy;
-					midx = (int)(ImGui::GetWindowPos().x + size.x / 2);
-					midy = (int)(ImGui::GetWindowPos().y + size.y / 2);
-
-					double x, y;
-
-					ImGui::GetWindowDrawList()->AddCircle({ (float)midx,(float)midy }, 10.f, IM_COL32(255, 0, 0, 255), 12, 2.f);
-
-
-					glfwGetCursorPos(window, &x, &y);
-
-
-					sceneRenderer->sceneCamera->RotatePitch(-(y - prevMousePosition[1])*0.01);
-					sceneRenderer->sceneCamera->RotateYaw(-(x - prevMousePosition[0])*0.01);
-
-					prevMousePosition[0] = midx;
-					prevMousePosition[1] = midy;
-
-					glfwSetCursorPos(window, midx, midy);
-				}
+				
 				if (ImGui::IsMouseHoveringWindow() && (io.MouseDownDuration[1] > 0))
 				{
 					if ((io.KeysDownDuration[ImGuiKey_W_] > 0))
@@ -293,7 +337,7 @@ int main(int, char**)
 
 			ImGui::Begin("Hierarchy", NULL);
 			{
-				drawHiearchy(sceneRenderer->scene->rootObject);		
+				drawHiearchy(sceneRenderer->scene->rootObject);	
 			}
 			ImGui::End();
 			ImGui::Begin("Create Object", NULL);
@@ -344,6 +388,22 @@ void drawHiearchy(Object * root)
 	
 
 	bool node_open = ImGui::TreeNodeEx((void *) root,src_flags,root->name.c_str());
+	
+	//right click popup
+	{
+		ImGui::PushID(root->name.c_str());
+		if (ImGui::BeginPopupContextItem())
+		{
+			if (ImGui::MenuItem("Delete"))
+			{
+				root->RemoveObject();
+			}
+			ImGui::EndPopup();
+		}
+		ImGui::PopID();
+	}
+	
+
 	{
 		ImGuiDragDropFlags src_flags = 0;
 		src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;     // Keep the source displayed as hovered
@@ -379,7 +439,7 @@ void drawHiearchy(Object * root)
 		{
 			sceneRenderer->selectedObject = root;
 		}
-
+		
 		if (node_open)
 		{
 			for (int i = 0; i < root->numOfChilds; i++)
@@ -388,3 +448,5 @@ void drawHiearchy(Object * root)
 		}
 	}
 }
+
+
