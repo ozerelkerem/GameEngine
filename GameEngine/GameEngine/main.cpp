@@ -327,6 +327,12 @@ int main(int, char**)
 					if (ImGui::CollapsingHeader("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
 					{
 						ImGui::DragFloat3("Position", &sceneRenderer->selectedObject->transform->position[0], 1.f, -30000.f, 30000.f);
+						if (ImGui::DragFloat3("Rotation Eular", &sceneRenderer->selectedObject->transform->eRotation[0], 1.f, 0, 359.99999f))
+							sceneRenderer->selectedObject->transform->calcQuatFromEuler();
+						if(ImGui::DragFloat4("Rotation Quat", &sceneRenderer->selectedObject->transform->qRotation[0], 1.f, -30000.f, 30000.f))
+							sceneRenderer->selectedObject->transform->calcEulerFromQuat();
+						ImGui::DragFloat3("Scale", &sceneRenderer->selectedObject->transform->scale[0], 1.f, -30000.f, 30000.f);
+							
 					}
 				}
 			}
