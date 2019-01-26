@@ -18,14 +18,18 @@ void Mesh::unbindVAO()
 	glBindVertexArray(vao);
 }
 
-void Mesh::storeData(int attribID,int num, GLenum target, GLenum type, void * buffer, bool isIndices)
+void Mesh::storeData(int attribID,int num, GLenum target, GLenum type, void * buffer, int size,bool isIndices)
 {
 	GLuint vboid;
 	glGenBuffers(1, &vboid);
 	glBindBuffer(target, vboid);
-	glBufferData(target, num, buffer, GL_STATIC_DRAW);
-	if(!isIndices)
-		glVertexAttribPointer(attribID, 3, type, false, 0, 0);
+	glBufferData(target, sizeof(buffer) * num, buffer, GL_STATIC_DRAW);
+/*
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);*/
+	if (!isIndices)
+		glVertexAttribPointer(attribID, size, type, false, 0, 0);
+
 	glBindBuffer(target, 0);
 }
 
@@ -33,8 +37,8 @@ void Mesh::Render()
 {
 	glBindVertexArray(vao);
 	glEnableVertexAttribArray(0);
-	//glDrawElements(GL_TRIANGLES, numOfVertices, GL_UNSIGNED_INT, 0);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+//	glDrawElements(GL_TRIANGLES, numOfIndices, GL_UNSIGNED_INT, 0);
+	//glDrawArrays(GL_TRIANGLES, 0, 3);
 	glDisableVertexAttribArray(0);
 	glBindVertexArray(0);
 }

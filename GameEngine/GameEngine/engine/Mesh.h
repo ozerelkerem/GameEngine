@@ -23,7 +23,7 @@ public:
 	GLuint vao;
 	void createVAO();
 	void unbindVAO();
-	void storeData(int attribID,int num, GLenum target, GLenum type, void * buffer, bool isIndices=false);
+	void storeData(int attribID,int num, GLenum target, GLenum type, void * buffer, int size, bool isIndices=false);
 
 	void Render();
 
