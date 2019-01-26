@@ -28,18 +28,23 @@ void Mesh::storeData(int attribID,int num, GLenum target, GLenum type, void * bu
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);*/
 	if (!isIndices)
+	{
 		glVertexAttribPointer(attribID, size, type, false, 0, 0);
-
-	glBindBuffer(target, 0);
+		glBindBuffer(target, 0);
+	}
+		
+	
 }
 
 void Mesh::Render()
 {
 	glBindVertexArray(vao);
 	glEnableVertexAttribArray(0);
-	glDrawElements(GL_TRIANGLES, numOfIndices/3, GL_UNSIGNED_INT, 0);
-	//glDrawArrays(GL_TRIANGLES, 0, numOfVertices * 3);
+	glEnableVertexAttribArray(1);
+	glDrawElements(GL_TRIANGLES, numOfVertices*3, GL_UNSIGNED_INT, 0);
+
 	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 	glBindVertexArray(0);
 }
 
