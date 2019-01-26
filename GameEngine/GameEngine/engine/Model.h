@@ -25,7 +25,7 @@ namespace ModelFunctions
 
 		mesh->numOfVertices = 12;
 		mesh->numOfIndices = 18;
-		mesh->vertices = (GLfloat*)malloc(9 * sizeof(GLfloat));
+		mesh->vertices = (GLfloat*)malloc(mesh->numOfVertices * 3 * sizeof(GLfloat));
 		mesh->indicies = (GLuint*)malloc((36) * sizeof(GLuint));
 		mesh->numOfColors = 12;
 		mesh->colors = (GLfloat*)malloc(72 * sizeof(GLfloat));
@@ -42,8 +42,8 @@ namespace ModelFunctions
 			mesh->colors[i] = 1.0f;
 
 		mesh->createVAO();
-		mesh->storeData(0, mesh->numOfVertices*3, GL_ARRAY_BUFFER, GL_FLOAT, mesh->vertices, 3);
-		mesh->storeData(0, mesh->numOfIndices, GL_ELEMENT_ARRAY_BUFFER, GL_UNSIGNED_INT, mesh->indicies, 3, true);
+		mesh->storeData(0, mesh->numOfVertices * 3, GL_ARRAY_BUFFER, GL_FLOAT, mesh->vertices, 3);
+		mesh->storeData(1, mesh->numOfIndices, GL_ELEMENT_ARRAY_BUFFER, GL_UNSIGNED_INT, mesh->indicies, 3, true);
 		mesh->unbindVAO();
 
 		Model *model = new Model(1, scene, "Cube");

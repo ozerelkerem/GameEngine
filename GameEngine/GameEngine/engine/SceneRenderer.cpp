@@ -62,7 +62,7 @@ void SceneRenderer::Render()
 
 	m1->meshes[0]->Render();
 
-//	grid->Draw();
+	grid->Draw();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
