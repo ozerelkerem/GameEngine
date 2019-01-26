@@ -100,7 +100,7 @@ int main(int, char**)
 
 	double prevMousePosition[2];
 	bool travelMode = false, travelMode2 = false;
-	
+
 
 	// Main loop
 	while (!glfwWindowShouldClose(window))
@@ -209,7 +209,7 @@ int main(int, char**)
 						glfwSetCursorPos(window, midx, midy);
 					}
 				}
-				
+
 
 				//travel mode2 camera up down
 				{
@@ -247,9 +247,9 @@ int main(int, char**)
 						glfwSetCursorPos(window, midx, midy);
 					}
 				}
-				
 
-				
+
+
 				if (ImGui::IsMouseHoveringWindow() && (io.MouseDownDuration[1] > 0))
 				{
 					if ((io.KeysDownDuration[ImGuiKey_W_] > 0))
@@ -327,6 +327,12 @@ int main(int, char**)
 					if (ImGui::CollapsingHeader("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
 					{
 						ImGui::DragFloat3("Position", &sceneRenderer->selectedObject->transform->position[0], 1.f, -30000.f, 30000.f);
+						if (ImGui::DragFloat3("Rotation Eular", &sceneRenderer->selectedObject->transform->eRotation[0], 1.f, 0, 359.99999f))
+							sceneRenderer->selectedObject->transform->calcQuatFromEuler();
+						if (ImGui::DragFloat4("Rotation Quat", &sceneRenderer->selectedObject->transform->qRotation[0], 1.f, -30000.f, 30000.f))
+							sceneRenderer->selectedObject->transform->calcEulerFromQuat();
+						ImGui::DragFloat3("Scale", &sceneRenderer->selectedObject->transform->scale[0], 1.f, -30000.f, 30000.f);
+
 					}
 				}
 			}
@@ -337,7 +343,7 @@ int main(int, char**)
 
 			ImGui::Begin("Hierarchy", NULL);
 			{
-				drawHiearchy(sceneRenderer->scene->rootObject);	
+				drawHiearchy(sceneRenderer->scene->rootObject);
 			}
 			ImGui::End();
 			ImGui::Begin("Create Object", NULL);
@@ -385,10 +391,10 @@ void drawHiearchy(Object * root)
 		src_flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_OpenOnArrow;
 	if (sceneRenderer->selectedObject == root)
 		src_flags |= ImGuiTreeNodeFlags_Selected;
-	
 
-	bool node_open = ImGui::TreeNodeEx((void *) root,src_flags,root->name.c_str());
-	
+
+	bool node_open = ImGui::TreeNodeEx((void *)root, src_flags, root->name.c_str());
+
 	//right click popup
 	{
 		ImGui::PushID(root->name.c_str());
@@ -403,7 +409,7 @@ void drawHiearchy(Object * root)
 		}
 		ImGui::PopID();
 	}
-	
+
 
 	{
 		ImGuiDragDropFlags src_flags = 0;
@@ -435,12 +441,12 @@ void drawHiearchy(Object * root)
 				ImGui::EndDragDropTarget();
 			}
 		}
-		
+
 		if (ImGui::IsItemClicked() && sceneRenderer->scene->rootObject != root)
 		{
 			sceneRenderer->selectedObject = root;
 		}
-		
+
 		if (node_open)
 		{
 			for (int i = 0; i < root->numOfChilds; i++)
@@ -449,5 +455,3 @@ void drawHiearchy(Object * root)
 		}
 	}
 }
-
-

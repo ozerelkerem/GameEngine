@@ -11,17 +11,8 @@ SceneRenderer::SceneRenderer()
 
 	backgroundColor = glm::vec3(0.1f, 0.1f, 0.1f);
 
-	Object *o1 = new Object("cube", scene);
-	Object *o2 = new Object("cube2", scene);
-	Object *o3= new Object("cube3", scene);
-	Object *o4 = new Object("cube4", scene);
-	Object *o5 = new Object("cube5", scene);
-	o5->AddParent(o1);
-	o3->AddParent(o5);
-	o2->AddParent(o3);
-	o3->RemoveParent();
-	o3->RemoveObject();
-	o5->AddParent(o2);
+	shader->Use();
+	m1 = ModelFunctions::CreateCube(scene);
 
 	selectedObject = NULL;
 	hoveredObject = NULL;
@@ -69,7 +60,9 @@ void SceneRenderer::Render()
 	glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	grid->Draw();
+	m1->meshes[0]->Render();
+
+//	grid->Draw();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

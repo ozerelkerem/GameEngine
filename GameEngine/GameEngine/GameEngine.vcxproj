@@ -135,6 +135,8 @@
     <ClCompile Include="engine\Object.cpp" />
     <ClCompile Include="engine\Scene.cpp" />
     <ClCompile Include="engine\Transform.cpp" />
+    <ClCompile Include="engine\Mesh.cpp" />
+    <ClCompile Include="engine\Model.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Grid.h" />
@@ -148,6 +150,8 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="engine\Object.h" />
+    <ClInclude Include="engine\Mesh.h" />
+    <ClInclude Include="engine\Model.h" />
     <ClInclude Include="ogl\GLFW\glfw3.h" />
     <ClInclude Include="ogl\GLFW\glfw3native.h" />
     <ClInclude Include="ogl\GL\glew.h" />

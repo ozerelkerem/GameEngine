@@ -6,6 +6,7 @@
 #include "SceneCamera.h"
 #include "Shader.h"
 #include "Scene.h"
+#include "Model.h"
 
 #include "../ogl/glm/glm.hpp"
 
@@ -20,6 +21,7 @@ private:
 
 	Grid *grid;
 	Shader *shader;
+	Model *m1;
 
 	glm::vec2 size;
 public:
