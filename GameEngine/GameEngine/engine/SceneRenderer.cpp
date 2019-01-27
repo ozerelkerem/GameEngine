@@ -7,6 +7,7 @@ SceneRenderer::SceneRenderer()
 	scene = new Scene();
 	sceneCamera = new SceneCamera(glm::vec3(20, -50, 20), 90, 0);
 	shader = new Shader("engine/shaders/mainShadervs.glsl", "engine/shaders/mainShaderfs.glsl");
+	objectPickShader = new Shader("engine/shaders/objectPickervs.glsl", "engine/shaders/objectPickerfs.glsl");
 	grid = new Grid(16, 1, shader->getProgramID());
 
 	backgroundColor = glm::vec3(0.1f, 0.1f, 0.1f);
@@ -49,10 +50,27 @@ void SceneRenderer::GenerateBuffers()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void SceneRenderer::RenderForObjectPicker(GLint x, GLint y)
+{
+	objectPickShader->Use();
+	glViewport(0, 0, size.x, size.y);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glEnable(GL_DEPTH_TEST); 
+	glClearColor(0, 0, 0, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	objectPickShader->setFloat("color", (float)m1->id);
+	m1->Render(objectPickShader);
+	GLubyte test[4];
+	glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &test);
+	std::cout << (int)test[0] << " ";
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void SceneRenderer::Render()
 {
 	shader->Use();
-
+	
 	glViewport(0, 0, size.x, size.y);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
@@ -60,17 +78,24 @@ void SceneRenderer::Render()
 	glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	m1->meshes[0]->Render();
+	m1->Render(shader);
 
+	shader->setMat4("modelMatrix", glm::mat4(1));
 	grid->Draw();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+
+
 void SceneRenderer::Update(glm::vec2 size)
 {
 	this->size = size;
-
+	
 	shader->setMat4("viewMatrix", sceneCamera->getViewMatrix());
 	shader->setMat4("projectionMatrix", glm::perspective(30.0f, (float)(size.x / size.y), 0.1f, 1000.0f));
+
+	objectPickShader->setMat4("viewMatrix", sceneCamera->getViewMatrix());
+	objectPickShader->setMat4("projectionMatrix", glm::perspective(30.0f, (float)(size.x / size.y), 0.1f, 1000.0f));
+
 }

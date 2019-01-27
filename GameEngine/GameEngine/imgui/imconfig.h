@@ -100,4 +100,8 @@ namespace ImGui
 #define ImGuiMouse_Middle_ 2
 #endif 
 
+#ifndef ImGuiMouse_Left_
+#define ImGuiMouse_Left_ 0
+#endif 
+
 

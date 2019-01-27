@@ -8,6 +8,7 @@ class Scene
 {
 public:
 	Object *rootObject;
+	int objectCounter;
 
 	Scene();
 	~Scene();

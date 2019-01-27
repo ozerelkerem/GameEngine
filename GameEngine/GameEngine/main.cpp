@@ -111,8 +111,7 @@ int main(int, char**)
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		sceneRenderer->Update(glm::vec2(size.x, size.y));
-		sceneRenderer->Render();
+	
 
 
 		{
@@ -170,8 +169,27 @@ int main(int, char**)
 			{
 				size = ImGui::GetWindowSize();
 				size.y -= 35;
-				ImGui::Image((void*)sceneRenderer->GetTextureColorBuffer(), size, { 0,0 }, { size.x / sceneMaxWidth, size.y / sceneMaxHeight });
+				
+				ImGui::SetCursorPosY(21);
+				ImGui::SetCursorPosX(0);
+				
+				if (ImGui::IsMouseHoveringWindow() && io.MouseDownDuration[0] > 0)
+				{
+					sceneRenderer->RenderForObjectPicker(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, 
+						ImGui::GetMousePos().y - ImGui::GetWindowPos().y - 20);
+				}
+				else
+				{
+					
+					sceneRenderer->Update(glm::vec2(size.x, size.y));
+					sceneRenderer->Render();
+				}
+					
 
+				
+
+
+				ImGui::Image((void*)sceneRenderer->GetTextureColorBuffer(), size, { 0,0 }, { size.x / sceneMaxWidth, size.y / sceneMaxHeight });
 
 				//travel mode1 rotating camera if travelmode1 works, travelmode2 does not
 				{
@@ -278,22 +296,11 @@ int main(int, char**)
 						else
 							sceneRenderer->sceneCamera->MoveBackward();
 				}
-
-
-
-
-
 			}
 			ImGui::End();
 
 			ImGui::Begin("Game", NULL);
 			{
-
-
-
-
-
-
 			}
 			ImGui::End();
 
@@ -326,12 +333,23 @@ int main(int, char**)
 
 					if (ImGui::CollapsingHeader("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
 					{
-						ImGui::DragFloat3("Position", &sceneRenderer->selectedObject->transform->position[0], 1.f, -30000.f, 30000.f);
+						if(ImGui::DragFloat3("Position", &sceneRenderer->selectedObject->transform->position[0], 1.f, -30000.f, 30000.f))
+							sceneRenderer->selectedObject->transform->calcModelMatrix();
 						if (ImGui::DragFloat3("Rotation Eular", &sceneRenderer->selectedObject->transform->eRotation[0], 1.f, 0, 359.99999f))
+						{
 							sceneRenderer->selectedObject->transform->calcQuatFromEuler();
+							sceneRenderer->selectedObject->transform->calcModelMatrix();
+						}
+							
 						if (ImGui::DragFloat4("Rotation Quat", &sceneRenderer->selectedObject->transform->qRotation[0], 1.f, -30000.f, 30000.f))
+						{
 							sceneRenderer->selectedObject->transform->calcEulerFromQuat();
-						ImGui::DragFloat3("Scale", &sceneRenderer->selectedObject->transform->scale[0], 1.f, -30000.f, 30000.f);
+							sceneRenderer->selectedObject->transform->calcModelMatrix();
+						}
+						if (ImGui::DragFloat3("Scale", &sceneRenderer->selectedObject->transform->scale[0], 1.f, -30000.f, 30000.f))
+						{
+							sceneRenderer->selectedObject->transform->calcModelMatrix();
+						}
 
 					}
 				}

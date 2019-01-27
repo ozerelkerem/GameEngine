@@ -5,6 +5,7 @@ Object::Object(std::string name, Scene *scene)
 {
 	this->name = name;
 	this->scene = scene;
+	id = scene->objectCounter++;
 	transform = new Transform();
 	numOfChilds = 0;
 	childs = (Object**)calloc((numOfChilds + 1), sizeof(Object*));
