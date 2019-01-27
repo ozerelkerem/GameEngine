@@ -13,6 +13,7 @@ Grid::Grid(int lineCount, float spaceLength, unsigned int programID)
 
 void Grid::Draw()
 {
+	
 	lineCount += lineCount % 2;
 
 	int idPosition = glGetAttribLocation(this->programID, "position");

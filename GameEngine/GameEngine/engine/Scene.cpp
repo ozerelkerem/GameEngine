@@ -4,6 +4,7 @@
 Scene::Scene()
 {
 	rootObject = new Object("root", this);
+	objectCounter = 0;
 }
 
 

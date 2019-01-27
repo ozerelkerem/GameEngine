@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdlib.h>
+#include <iostream>
 
 #include "Grid.h"
 #include "SceneCamera.h"
@@ -13,6 +14,9 @@
 #define sceneMaxWidth 2000
 #define sceneMaxHeight 2000
 
+class Model;
+
+
 class SceneRenderer
 {
 private:
@@ -20,7 +24,7 @@ private:
 	unsigned int framebuffer;
 
 	Grid *grid;
-	Shader *shader;
+
 	Model *m1;
 
 	glm::vec2 size;
@@ -28,6 +32,9 @@ public:
 	glm::vec3 backgroundColor;
 	SceneCamera *sceneCamera;
 	Scene * scene;
+
+	Shader *shader;
+	Shader *objectPickShader;
 
 	Object *selectedObject; // for object properties
 	Object *hoveredObject; // for drag and drop at hierarchy
@@ -37,6 +44,8 @@ public:
 
 	void GenerateBuffers();
 
+	void RenderPoint(GLint x, GLint y);
+	void RenderForObjectPicker(GLint x, GLint y);
 	void Render();
 	void Update(glm::vec2 size);
 

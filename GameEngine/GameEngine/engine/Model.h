@@ -2,9 +2,12 @@
 
 #include "Object.h"
 #include "Mesh.h"
-#include "Scene.h"
+#include "SceneRenderer.h"
 
 #include  <string>
+
+class SceneRenderer;
+class Transform;
 
 class Model : public Object
 {
@@ -13,8 +16,12 @@ public:
 	Mesh **meshes;
 
 	Model(int numOfMeshes, Scene *scene, std::string name);
+
+	void Render(Shader *shader);
+
 	~Model();
 };
+
 
 namespace ModelFunctions
 {

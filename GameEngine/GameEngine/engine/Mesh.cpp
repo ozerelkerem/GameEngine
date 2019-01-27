@@ -38,6 +38,7 @@ void Mesh::storeData(int attribID,int num, GLenum target, GLenum type, void * bu
 
 void Mesh::Render()
 {
+	
 	glBindVertexArray(vao);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);

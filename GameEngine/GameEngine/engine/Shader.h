@@ -12,6 +12,7 @@ public:
 	Shader(const char* , const char*);
 	void Use();
 	
+	void setFloat(const std::string &, const float &);
 	void setMat4(const std::string &, const glm::mat4 &);
 
 	unsigned int getProgramID();

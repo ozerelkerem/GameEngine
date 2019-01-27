@@ -13,11 +13,14 @@ public:
 	glm::vec3 scale;
 
 	glm::mat4 localMatrix;
+	glm::mat4 modelMatrix;
 
 	Transform();
 
 	void calcEulerFromQuat();
 	void calcQuatFromEuler();
 
+
+	inline void calcModelMatrix();
 	~Transform();
 };

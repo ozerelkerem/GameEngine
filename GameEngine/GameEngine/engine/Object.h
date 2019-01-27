@@ -9,7 +9,6 @@
 
 class Scene;
 
-
 class Object
 {
 private:
@@ -20,6 +19,7 @@ private:
 
 public:
 	std::string name;
+	int id;
 
 	Transform *transform;
 
