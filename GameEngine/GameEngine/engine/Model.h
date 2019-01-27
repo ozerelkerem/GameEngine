@@ -45,7 +45,9 @@ namespace ModelFunctions
 		mesh->storeData(0, mesh->numOfIndices, GL_ELEMENT_ARRAY_BUFFER, GL_UNSIGNED_INT, mesh->indicies, 3, true);
 		mesh->storeData(0, mesh->numOfVertices * 3, GL_ARRAY_BUFFER, GL_FLOAT, mesh->vertices, 3);
 		mesh->storeData(1, mesh->numOfVertices * 3, GL_ARRAY_BUFFER, GL_FLOAT, mesh->colors, 3);
-	
+		free(mesh->vertices);
+		free(mesh->indicies);
+		free(mesh->colors);
 		mesh->unbindVAO();
 
 		Model *model = new Model(1, scene, "Cube");
