@@ -12,13 +12,16 @@ SceneRenderer::SceneRenderer()
 
 	backgroundColor = glm::vec3(0.1f, 0.1f, 0.1f);
 
-	shader->Use();
 	m1 = ModelFunctions::CreateCube(scene);
 
 	selectedObject = NULL;
 	hoveredObject = NULL;
 
 	GenerateBuffers();
+
+
+
+
 }
 
 SceneRenderer::~SceneRenderer()
@@ -50,40 +53,72 @@ void SceneRenderer::GenerateBuffers()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void SceneRenderer::RenderForObjectPicker(GLint x, GLint y)
+Object * SceneRenderer::RenderForObjectPicker(GLint x, GLint y)
 {
 	objectPickShader->Use();
 	glViewport(0, 0, size.x, size.y);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	glEnable(GL_DEPTH_TEST); 
-	glClearColor(0, 0, 0, 1.0f);
+	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	objectPickShader->setFloat("color", (float)m1->id);
 	m1->Render(objectPickShader);
-	GLubyte test[4];
-	glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &test);
-	std::cout << (int)test[0] << " ";
+	GLfloat test[4];
+	glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, &test);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	if (test[0] == 0)
+		return NULL;
+	else
+		return scene->getObjectByID((int)(test[0] * 255));
+	
 }
+
 
 void SceneRenderer::Render()
 {
+
 	shader->Use();
-	
+	glEnable(GL_DEPTH_TEST);
+
 	glViewport(0, 0, size.x, size.y);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-	glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
 
 	glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	m1->Render(shader);
+
+	if (selectedObject != m1)
+		m1->Render(shader);
+	
 
 	shader->setMat4("modelMatrix", glm::mat4(1));
 	grid->Draw();
+	
+	if (selectedObject) // render outlined object
+	{
+		glEnable(GL_STENCIL_TEST);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+		glStencilMask(0xFF);
+		glClear(GL_STENCIL_BUFFER_BIT);
+
+		static_cast<Model *>(selectedObject)->Render(shader);
+
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		glStencilMask(0x00);
+		objectPickShader->Use();
+		objectPickShader->setFloat("color", 255);
+		selectedObject->transform->modelMatrix = glm::scale(selectedObject->transform->modelMatrix, { 1.1,1.1,1.1 });
+		static_cast<Model *>(selectedObject)->Render(objectPickShader);
+		selectedObject->transform->calcModelMatrix();
+
+		glDisable(GL_STENCIL_TEST);
+	}
+	
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	
 }
 
 
@@ -92,9 +127,11 @@ void SceneRenderer::Update(glm::vec2 size)
 {
 	this->size = size;
 	
+	shader->Use();
 	shader->setMat4("viewMatrix", sceneCamera->getViewMatrix());
 	shader->setMat4("projectionMatrix", glm::perspective(30.0f, (float)(size.x / size.y), 0.1f, 1000.0f));
 
+	objectPickShader->Use();
 	objectPickShader->setMat4("viewMatrix", sceneCamera->getViewMatrix());
 	objectPickShader->setMat4("projectionMatrix", glm::perspective(30.0f, (float)(size.x / size.y), 0.1f, 1000.0f));
 

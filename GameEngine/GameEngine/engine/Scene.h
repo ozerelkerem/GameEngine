@@ -11,6 +11,11 @@ public:
 	int objectCounter;
 
 	Scene();
+
+	Object * getObjectByID(int);
+
+	Object * findObject(Object*, int);
+
 	~Scene();
 };
 

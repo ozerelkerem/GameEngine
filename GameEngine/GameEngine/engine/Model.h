@@ -46,7 +46,7 @@ namespace ModelFunctions
 			mesh->indicies[i] = temp2[i];
 
 		for (int i = 0; i < 72; i++)
-			mesh->colors[i] = 200;
+			mesh->colors[i] = 0.9;
 
 		mesh->createVAO();
 		mesh->storeData(0, mesh->numOfIndices, GL_ELEMENT_ARRAY_BUFFER, GL_UNSIGNED_INT, mesh->indicies, 3, true);

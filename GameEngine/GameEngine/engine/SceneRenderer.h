@@ -45,7 +45,7 @@ public:
 	void GenerateBuffers();
 
 	void RenderPoint(GLint x, GLint y);
-	void RenderForObjectPicker(GLint x, GLint y);
+	Object * RenderForObjectPicker(GLint x, GLint y);
 	void Render();
 	void Update(glm::vec2 size);
 

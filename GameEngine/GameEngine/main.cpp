@@ -173,20 +173,17 @@ int main(int, char**)
 				ImGui::SetCursorPosY(21);
 				ImGui::SetCursorPosX(0);
 				
+				sceneRenderer->Update(glm::vec2(size.x, size.y));
+			
 				if (ImGui::IsMouseHoveringWindow() && io.MouseDownDuration[0] > 0)
 				{
-					sceneRenderer->RenderForObjectPicker(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, 
+					sceneRenderer->selectedObject = sceneRenderer->RenderForObjectPicker(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, 
 						ImGui::GetMousePos().y - ImGui::GetWindowPos().y - 20);
 				}
-				else
-				{
-					
-					sceneRenderer->Update(glm::vec2(size.x, size.y));
-					sceneRenderer->Render();
-				}
+			
 					
 
-				
+				sceneRenderer->Render();
 
 
 				ImGui::Image((void*)sceneRenderer->GetTextureColorBuffer(), size, { 0,0 }, { size.x / sceneMaxWidth, size.y / sceneMaxHeight });

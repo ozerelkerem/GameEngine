@@ -5,6 +5,7 @@
 
 
 #include "Scene.h"
+#include "Shader.h"
 #include "Transform.h"
 
 class Scene;
@@ -32,6 +33,8 @@ public:
 	bool AddParent(Object *newParent);
 	bool RemoveParent();
 	void RemoveObject();
+
+	void Render(Shader *) { return; };
 
 	Object(std::string name, Scene *scene);
 	~Object();

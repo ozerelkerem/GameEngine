@@ -40,7 +40,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	const char * fragmentCode = s_fragmentCode.c_str();
 	const char * vertexCode = s_vertexCode.c_str();
 	
-	glewInit();
+	//glewInit();
 
 	unsigned int vertex, fragment;
 	vertex = glCreateShader(GL_VERTEX_SHADER);
@@ -51,10 +51,14 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	glShaderSource(fragment, 1, &fragmentCode, NULL);
 	glCompileShader(fragment);
 
-	/*int i;
+
 	char infoLog[1024];
-	glGetShaderiv(vertex, GL_COMPILE_STATUS, &i);
-	glGetShaderInfoLog(vertex, 1024, NULL, infoLog);*/
+	glGetShaderInfoLog(fragment, 1024, NULL, infoLog);
+	if (infoLog[0])
+		throw std::exception("Shader Error");
+	glGetShaderInfoLog(vertex, 1024, NULL, infoLog);
+	if (infoLog[0])
+		throw std::exception("Shader Error");
 
 	programID = glCreateProgram();
 	glAttachShader(programID, vertex);
@@ -68,6 +72,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 void Shader::Use()
 {
 	glUseProgram(programID);
+
 }
 
 void Shader::setFloat(const std::string &name, const float &val)

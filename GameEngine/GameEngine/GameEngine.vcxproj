@@ -161,7 +161,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Debug\glew32.dll" />
-    <None Include="engine\shaders\objectPickerfs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
