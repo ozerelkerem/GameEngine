@@ -26,9 +26,11 @@ private:
 	
 
 
-	glm::mat4x4 viewMatrix;
+
 public:
 	glm::vec3 position;
+	glm::mat4x4 viewMatrix;
+	glm::mat4x4 projectionMatrix;
 
 	SceneCamera(glm::vec3, float, float);
 
@@ -51,5 +53,8 @@ public:
 
 	void RotateYaw(float angle);
 	void RotatePitch(float angle);
+
+
+	glm::vec2 worldToScreen(glm::vec3 &worldPos, glm::vec2 &size);
 };
 

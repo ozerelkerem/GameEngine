@@ -99,7 +99,7 @@ int main(int, char**)
 	sceneRenderer = new SceneRenderer();
 
 	double prevMousePosition[2];
-	bool travelMode = false, travelMode2 = false;
+	bool travelMode = false, travelMode2 = false, toolMode = false;
 
 
 	// Main loop
@@ -180,17 +180,31 @@ int main(int, char**)
 				int x = ImGui::GetMousePos().x - ImGui::GetWindowPos().x;
 				int y = ImGui::GetMousePos().y - ImGui::GetWindowPos().y - 20;
 
-				bool flag = false;
+			
 
-				if (ImGui::IsMouseHoveringWindow() && io.MouseDownDuration[ImGuiMouse_Left_] >= 0)
+				if (!toolMode && ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(ImGuiMouse_Left_))
 				{
 					if (sceneRenderer->RenderForObjectTools(x, y))
 					{
-						flag = true;
+						toolMode = true;
 					}
 				}
+				
+				if (toolMode)
+				{
+					sceneRenderer->sceneTool->transObjects(sceneRenderer->selectedObject->transform, x, y, io.MouseDelta.x, io.MouseDelta.y, sceneRenderer->sceneCamera->position, sceneRenderer->screenToWorld(x, y));
+					
+				}
+					
 
-				if (!flag && ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(ImGuiMouse_Left_))
+				if (toolMode && ImGui::IsMouseReleased(ImGuiMouse_Left_))
+				{
+					toolMode = false;
+				
+				}
+					
+
+				if (!toolMode && ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(ImGuiMouse_Left_))
 				{
 					sceneRenderer->selectedObject = sceneRenderer->RenderForObjectPicker(x, y);
 				}

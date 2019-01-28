@@ -5,6 +5,7 @@
 SceneTools::SceneTools()
 {
 	mode = SceneToolModes::MOVE;
+	movemode = SceneToolMoveModes::MOVEX;
 	cone = ModelFunctions::CreateBasicCone();
 }
 
@@ -60,16 +61,19 @@ bool SceneTools::processTool(GLfloat *color, Transform * transform)
 	{
 		if (color[0] == 1.f)
 		{
+			initPos = transform->position;
 			std::cout << "red";
 			return true;
 		}
 		else if (color[1] == 1.f)
 		{
+			initPos = transform->position;
 			std::cout << "gree";
 			return true;
 		}
 		else if (color[2] == 1.f)
 		{
+			initPos = transform->position;
 			std::cout << "bl";
 			return true;
 		}
@@ -79,5 +83,19 @@ bool SceneTools::processTool(GLfloat *color, Transform * transform)
 	}
 
 	return false;
+}
+
+void SceneTools::transObjects(Transform * transform, int x, int y, int dx, int dy, glm::vec3 campos, glm::vec3 worldtoscreen)
+{
+	if (movemode == SceneToolMoveModes::MOVEX)
+	{
+		
+		transform->position =  glm::vec3(worldtoscreen.x, 0, 0);
+		
+		
+		
+		transform->calcModelMatrix();
+	}
+
 }
 

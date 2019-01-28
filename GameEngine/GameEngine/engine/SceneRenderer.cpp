@@ -170,13 +170,36 @@ void SceneRenderer::Update(glm::vec2 size)
 {
 	this->size = size;
 	
+	sceneCamera->projectionMatrix = glm::perspective(30.0f, (float)(size.x / size.y), 0.1f, 1000.0f);
+
 	shader->Use();
-	shader->setMat4("viewMatrix", sceneCamera->getViewMatrix());
-	shader->setMat4("projectionMatrix", glm::perspective(30.0f, (float)(size.x / size.y), 0.1f, 1000.0f));
+	shader->setMat4("viewMatrix", sceneCamera->viewMatrix);
+	shader->setMat4("projectionMatrix", sceneCamera->projectionMatrix);
 
 	objectPickShader->Use();
 	objectPickShader->setMat4("viewMatrix", sceneCamera->getViewMatrix());
-	objectPickShader->setMat4("projectionMatrix", glm::perspective(30.0f, (float)(size.x / size.y), 0.1f, 1000.0f));
+	objectPickShader->setMat4("projectionMatrix", sceneCamera->projectionMatrix);
 
 }
+
+glm::vec3 SceneRenderer::screenToWorld(int x, int y)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+	float depth;
+
+
+
+	glm::vec2 screencords = sceneCamera->worldToScreen(selectedObject->transform->position, size);
+	
+	glReadPixels(screencords.x, screencords.y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+
+	x = glm::clamp((float)x,40.f,size.x-50);
+	glm::vec3 cor = glm::unProject(glm::vec3(x, y, depth), sceneCamera->getViewMatrix(), glm::perspective(30.0f, (float)(size.x / size.y), 0.1f, 1000.0f), glm::vec4(0, 0, size.x, size.y));
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	return cor;
+}
+
 

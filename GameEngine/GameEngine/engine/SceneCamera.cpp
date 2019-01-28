@@ -97,4 +97,14 @@ void SceneCamera::RotatePitch(float angle)
 	UpdateViewMatrix();
 }
 
+glm::vec2 SceneCamera::worldToScreen(glm::vec3 & worldPos, glm::vec2 &size)
+{
+	glm::vec4 pos = projectionMatrix * viewMatrix * glm::vec4(worldPos, 1);
+	glm::vec3 pos2(pos.x / pos.w, pos.y / pos.w, pos.z / pos.w);
+
+	glm::vec2 returnVector(((pos2.x + 1.0) / 2.0) * size.x, ((pos2.y + 1.0) / 2.0) * size.y);
+
+	return returnVector;
+}
+
 glm::mat4 SceneCamera::getViewMatrix(){ return viewMatrix; }

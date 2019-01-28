@@ -56,7 +56,8 @@ public:
 	void Render();
 	void Update(glm::vec2 size);
 
-	
+	glm::vec3 screenToWorld(int x, int y);
+
 	inline unsigned int GetTextureColorBuffer() { return textureColorbuffer; }
 	inline Grid *GetGrid() { return grid; }
 };
