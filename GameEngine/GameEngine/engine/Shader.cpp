@@ -40,7 +40,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	const char * fragmentCode = s_fragmentCode.c_str();
 	const char * vertexCode = s_vertexCode.c_str();
 	
-	//glewInit();
+	
 
 	unsigned int vertex, fragment;
 	vertex = glCreateShader(GL_VERTEX_SHADER);
@@ -78,6 +78,11 @@ void Shader::Use()
 void Shader::setFloat(const std::string &name, const float &val)
 {
 	glUniform1f(glGetUniformLocation(programID, name.c_str()), val);
+}
+
+void Shader::setVec3(const std::string &name, const glm::vec3 &v3)
+{
+	glUniform3f(glGetUniformLocation(programID, name.c_str()), v3[0], v3[1] , v3[2]);
 }
 
 void Shader::setMat4(const std::string &name, const glm::mat4 &m4)

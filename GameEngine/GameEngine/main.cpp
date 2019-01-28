@@ -19,7 +19,7 @@
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
-ImVec2 size = { 1280,720 };
+ImVec2 viewportSize = { 1280,720 };
 SceneRenderer *sceneRenderer;
 
 void drawHiearchy(Object*);
@@ -167,18 +167,32 @@ int main(int, char**)
 
 			ImGui::Begin("Scene", NULL);
 			{
-				size = ImGui::GetWindowSize();
-				size.y -= 35;
+				viewportSize = ImGui::GetWindowSize();
+				viewportSize.y -= 35;
 				
 				ImGui::SetCursorPosY(21);
 				ImGui::SetCursorPosX(0);
 				
-				sceneRenderer->Update(glm::vec2(size.x, size.y));
+				sceneRenderer->Update(glm::vec2(viewportSize.x, viewportSize.y));
 			
-				if (ImGui::IsMouseHoveringWindow() && io.MouseDownDuration[0] > 0)
+			
+
+				int x = ImGui::GetMousePos().x - ImGui::GetWindowPos().x;
+				int y = ImGui::GetMousePos().y - ImGui::GetWindowPos().y - 20;
+
+				bool flag = false;
+
+				if (ImGui::IsMouseHoveringWindow() && io.MouseDownDuration[ImGuiMouse_Left_] >= 0)
 				{
-					sceneRenderer->selectedObject = sceneRenderer->RenderForObjectPicker(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, 
-						ImGui::GetMousePos().y - ImGui::GetWindowPos().y - 20);
+					if (sceneRenderer->RenderForObjectTools(x, y))
+					{
+						flag = true;
+					}
+				}
+
+				if (!flag && ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(ImGuiMouse_Left_))
+				{
+					sceneRenderer->selectedObject = sceneRenderer->RenderForObjectPicker(x, y);
 				}
 			
 					
@@ -186,7 +200,7 @@ int main(int, char**)
 				sceneRenderer->Render();
 
 
-				ImGui::Image((void*)sceneRenderer->GetTextureColorBuffer(), size, { 0,0 }, { size.x / sceneMaxWidth, size.y / sceneMaxHeight });
+				ImGui::Image((void*)sceneRenderer->GetTextureColorBuffer(), viewportSize, { 0,0 }, { viewportSize.x / sceneMaxWidth, viewportSize.y / sceneMaxHeight });
 
 				//travel mode1 rotating camera if travelmode1 works, travelmode2 does not
 				{
@@ -204,8 +218,8 @@ int main(int, char**)
 					if (travelMode && (io.MouseDownDuration[1] > 0))
 					{
 						double midx, midy;
-						midx = (int)(ImGui::GetWindowPos().x + size.x / 2);
-						midy = (int)(ImGui::GetWindowPos().y + size.y / 2);
+						midx = (int)(ImGui::GetWindowPos().x + viewportSize.x / 2);
+						midy = (int)(ImGui::GetWindowPos().y + viewportSize.y / 2);
 
 						double x, y;
 
@@ -243,8 +257,8 @@ int main(int, char**)
 					if (travelMode2 && (io.MouseDownDuration[ImGuiMouse_Middle_] > 0) && !travelMode)
 					{
 						double midx, midy;
-						midx = (int)(ImGui::GetWindowPos().x + size.x / 2);
-						midy = (int)(ImGui::GetWindowPos().y + size.y / 2);
+						midx = (int)(ImGui::GetWindowPos().x + viewportSize.x / 2);
+						midy = (int)(ImGui::GetWindowPos().y + viewportSize.y / 2);
 
 						double x, y;
 

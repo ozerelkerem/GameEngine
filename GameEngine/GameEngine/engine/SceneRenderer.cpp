@@ -2,12 +2,17 @@
 
 #include "../ogl/GL/glew.h"
 
+Shader * colorShader;
+
 SceneRenderer::SceneRenderer()
 {
+	sceneTool = new SceneTools();
 	scene = new Scene();
 	sceneCamera = new SceneCamera(glm::vec3(20, -50, 20), 90, 0);
 	shader = new Shader("engine/shaders/mainShadervs.glsl", "engine/shaders/mainShaderfs.glsl");
+
 	objectPickShader = new Shader("engine/shaders/objectPickervs.glsl", "engine/shaders/objectPickerfs.glsl");
+	colorShader = objectPickShader;
 	grid = new Grid(16, 1, shader->getProgramID());
 
 	backgroundColor = glm::vec3(0.1f, 0.1f, 0.1f);
@@ -16,12 +21,10 @@ SceneRenderer::SceneRenderer()
 
 	selectedObject = NULL;
 	hoveredObject = NULL;
-
+	
+	//glEnable(GL_CULL_FACE);
+	
 	GenerateBuffers();
-
-
-
-
 }
 
 SceneRenderer::~SceneRenderer()
@@ -53,6 +56,26 @@ void SceneRenderer::GenerateBuffers()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+inline void SceneRenderer::RenderOutlined(Object * o)
+{
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	glStencilMask(0xFF);
+	glClear(GL_STENCIL_BUFFER_BIT);
+
+	static_cast<Model *>(o)->Render(shader);
+
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilMask(0x00);
+	objectPickShader->Use();
+	objectPickShader->setVec3("color", glm::vec3(1,1,0));
+	o->transform->modelMatrix = glm::scale(o->transform->modelMatrix, { 1.1,1.1,1.1 });
+	static_cast<Model *>(o)->Render(objectPickShader);
+	o->transform->calcModelMatrix();
+
+	glDisable(GL_STENCIL_TEST);
+}
+
 Object * SceneRenderer::RenderForObjectPicker(GLint x, GLint y)
 {
 	objectPickShader->Use();
@@ -62,7 +85,7 @@ Object * SceneRenderer::RenderForObjectPicker(GLint x, GLint y)
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	objectPickShader->setFloat("color", (float)m1->id);
+	objectPickShader->setVec3("color", glm::vec3(m1->id/255.f, 0, 0));
 	m1->Render(objectPickShader);
 	GLfloat test[4];
 	glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, &test);
@@ -74,6 +97,33 @@ Object * SceneRenderer::RenderForObjectPicker(GLint x, GLint y)
 		return scene->getObjectByID((int)(test[0] * 255));
 	
 }
+
+bool SceneRenderer::RenderForObjectTools(GLint x, GLint y)
+{
+	if (!selectedObject)
+		return false;
+	colorShader->Use();
+	glViewport(0, 0, size.x, size.y);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glEnable(GL_DEPTH_TEST);
+	glClearColor(0, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	sceneTool->Render(selectedObject->transform, glm::distance(sceneCamera->position, selectedObject->transform->position)/ 10);
+
+
+	GLfloat test[4];
+	glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, &test);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	 
+	Update(size);
+
+	return sceneTool->processTool(test, selectedObject->transform);
+	
+
+
+}
+
 
 
 void SceneRenderer::Render()
@@ -92,30 +142,23 @@ void SceneRenderer::Render()
 	if (selectedObject != m1)
 		m1->Render(shader);
 	
+	
 
+
+	shader->Use();
 	shader->setMat4("modelMatrix", glm::mat4(1));
 	grid->Draw();
-	
-	if (selectedObject) // render outlined object
+
+	if (selectedObject)
 	{
-		glEnable(GL_STENCIL_TEST);
-		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-		glStencilMask(0xFF);
-		glClear(GL_STENCIL_BUFFER_BIT);
+		RenderOutlined(selectedObject);
+		glDisable(GL_DEPTH_TEST);
 
-		static_cast<Model *>(selectedObject)->Render(shader);
+		sceneTool->Render(selectedObject->transform, glm::distance(sceneCamera->position, selectedObject->transform->position) / 10);
 
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		glStencilMask(0x00);
-		objectPickShader->Use();
-		objectPickShader->setFloat("color", 255);
-		selectedObject->transform->modelMatrix = glm::scale(selectedObject->transform->modelMatrix, { 1.1,1.1,1.1 });
-		static_cast<Model *>(selectedObject)->Render(objectPickShader);
-		selectedObject->transform->calcModelMatrix();
-
-		glDisable(GL_STENCIL_TEST);
+		glEnable(GL_DEPTH_TEST);
 	}
-	
+		
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
@@ -136,3 +179,4 @@ void SceneRenderer::Update(glm::vec2 size)
 	objectPickShader->setMat4("projectionMatrix", glm::perspective(30.0f, (float)(size.x / size.y), 0.1f, 1000.0f));
 
 }
+

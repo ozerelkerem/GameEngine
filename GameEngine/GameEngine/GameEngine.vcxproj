@@ -137,6 +137,7 @@
     <ClCompile Include="engine\Transform.cpp" />
     <ClCompile Include="engine\Mesh.cpp" />
     <ClCompile Include="engine\Model.cpp" />
+    <ClCompile Include="engine\SceneTools.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Grid.h" />
@@ -158,6 +159,9 @@
     <ClInclude Include="engine\SceneRenderer.h" />
     <ClInclude Include="engine\Scene.h" />
     <ClInclude Include="engine\Transform.h" />
+    <ClInclude Include="engine\SceneTools.h">
+      <DeploymentContent>false</DeploymentContent>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Debug\glew32.dll" />

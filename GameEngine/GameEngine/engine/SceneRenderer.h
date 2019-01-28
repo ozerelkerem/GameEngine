@@ -8,13 +8,15 @@
 #include "Shader.h"
 #include "Scene.h"
 #include "Model.h"
-
+#include "SceneTools.h"
 #include "../ogl/glm/glm.hpp"
+#include "../ogl/glm/gtx/matrix_decompose.hpp"
 
 #define sceneMaxWidth 2000
 #define sceneMaxHeight 2000
 
 class Model;
+
 
 
 class SceneRenderer
@@ -36,6 +38,9 @@ public:
 	Shader *shader;
 	Shader *objectPickShader;
 
+	SceneTools *sceneTool;
+
+
 	Object *selectedObject; // for object properties
 	Object *hoveredObject; // for drag and drop at hierarchy
 
@@ -44,11 +49,14 @@ public:
 
 	void GenerateBuffers();
 
-	void RenderPoint(GLint x, GLint y);
+	inline void RenderOutlined(Object *);
 	Object * RenderForObjectPicker(GLint x, GLint y);
+	bool RenderForObjectTools(GLint x, GLint y);
+	
 	void Render();
 	void Update(glm::vec2 size);
 
+	
 	inline unsigned int GetTextureColorBuffer() { return textureColorbuffer; }
 	inline Grid *GetGrid() { return grid; }
 };

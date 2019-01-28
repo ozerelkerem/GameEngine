@@ -13,7 +13,7 @@
 class SceneCamera
 {
 private:
-	glm::vec3 position;
+
 
 	float yaw;
 	float pitch;
@@ -28,6 +28,8 @@ private:
 
 	glm::mat4x4 viewMatrix;
 public:
+	glm::vec3 position;
+
 	SceneCamera(glm::vec3, float, float);
 
 	float cameraSpeed;
