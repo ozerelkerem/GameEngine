@@ -61,18 +61,21 @@ bool SceneTools::processTool(GLfloat *color, Transform * transform)
 	{
 		if (color[0] == 1.f)
 		{
+			movemode = MOVEX;
 			initPos = transform->position;
 			std::cout << "red";
 			return true;
 		}
 		else if (color[1] == 1.f)
 		{
+			movemode = MOVEY;
 			initPos = transform->position;
 			std::cout << "gree";
 			return true;
 		}
 		else if (color[2] == 1.f)
 		{
+			movemode = MOVEZ;
 			initPos = transform->position;
 			std::cout << "bl";
 			return true;
@@ -90,12 +93,26 @@ void SceneTools::transObjects(Transform * transform, int x, int y, int dx, int d
 	if (movemode == SceneToolMoveModes::MOVEX)
 	{
 		
-		transform->position =  glm::vec3(worldtoscreen.x, 0, 0);
-		
-		
-		
-		transform->calcModelMatrix();
+		transform->position =  glm::vec3(worldtoscreen.x, initPos.y, initPos.z);
+	
 	}
-
+	else if (movemode == SceneToolMoveModes::MOVEZ)
+	{
+		transform->position = glm::vec3(initPos.x, initPos.y, worldtoscreen.z);
+		
+	}
+	else if (movemode == SceneToolMoveModes::MOVEY)
+	{
+		transform->position = glm::vec3(initPos.x, worldtoscreen.y, initPos.z);
+		
+	}
+	if (glm::distance(transform->position.x, campos.x) > 150.f)
+		transform->position.x = initPos.x;
+	if (glm::distance(transform->position.y, campos.y) > 150.f)
+		transform->position.y = initPos.y;
+	if (glm::distance(transform->position.z, campos.z) > 150.f)
+		transform->position.z = initPos.z;
+	initPos = transform->position;
+	transform->calcModelMatrix();
 }
 
