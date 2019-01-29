@@ -23,13 +23,17 @@ public:
 	SceneToolModes mode;
 	unsigned int modedirection;
 
-	void Render(Transform *transform, float);
+	
 	
 
 	bool processTool(GLfloat *color, Transform * transform);
 	void transObjects(Transform * transform, int x, int y, int dx, int dy, glm::vec3 campos, glm::vec3 worldtoscreen);
 
+	void Render(Transform * transform, float dis, glm::vec3 &);
+
 	~SceneTools();
+
+	
 
 	
 
@@ -39,7 +43,7 @@ private:
 
 	glm::vec3 initPos;
 
-	void RenderRotate(Transform * transform, float dis);
+	void RenderRotate(Transform * transform, float dis, glm::vec3 &);
 	void RenderScale(Transform * transform, float dis);
 	void RenderMove(Transform * transform, float);
 

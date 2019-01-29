@@ -12,12 +12,12 @@ SceneTools::SceneTools()
 }
 
 
-void SceneTools::Render(Transform * transform, float dis)
+void SceneTools::Render(Transform * transform, float dis, glm::vec3  &camera)
 {
 	switch (mode)
 	{
 	case ROTATE:
-		RenderRotate(transform, dis);
+		RenderRotate(transform, dis, camera);
 		break;
 	case SCALE:
 		RenderScale(transform, dis*0.9);
@@ -32,22 +32,49 @@ SceneTools::~SceneTools()
 {
 }
 
-void SceneTools::RenderRotate(Transform * transform, float dis)
+void SceneTools::RenderRotate(Transform * transform, float dis, glm::vec3 &camerapos)
 {
+	float rY = 0;
+	float rX = 270.f;
+	float rZ = 90.f;
+	if (camerapos.x < transform->position.x && camerapos.z > transform->position.z)
+		rY = -90.f;
+	else if (camerapos.x < transform->position.x && camerapos.z < transform->position.z)
+		rY = 180.f;
+	else if (camerapos.x > transform->position.x && camerapos.z < transform->position.z)
+		rY = 90.f;
+
+
+	if (camerapos.y < transform->position.y && camerapos.z > transform->position.z)
+		rX = 0.f;
+	else if (camerapos.y < transform->position.y && camerapos.z < transform->position.z)
+		rX = 90.f;
+	else if (camerapos.y > transform->position.y && camerapos.z < transform->position.z)
+		rX = 180.f;
+
+	if (camerapos.y < transform->position.y && camerapos.x > transform->position.x)
+		rZ = 0.f;
+	else if (camerapos.y < transform->position.y && camerapos.x < transform->position.x)
+		rZ = -90.f;
+	else if (camerapos.y > transform->position.y && camerapos.x < transform->position.x)
+		rZ = 180.f;
+
+
 	glm::vec3 scale(dis, dis, dis);
 	colorShader->Use();
 	colorShader->setVec3("color", glm::vec3(1, 0, 0));
+	colorShader->setMat4("modelMatrix", glm::scale(glm::rotate(glm::rotate(glm::translate(transform->position), glm::radians(rX), glm::vec3(1, 0, 0)), glm::radians(-90.f), glm::vec3(0, 0, 1)), scale));
 
-	colorShader->setMat4("modelMatrix", glm::scale(glm::translate(transform->position), scale));
 	sphere->Render();
 
 	colorShader->setVec3("color", glm::vec3(0, 1, 0));
-	colorShader->setMat4("modelMatrix", glm::scale(glm::rotate(glm::translate(transform->position), glm::radians(90.f), glm::vec3(0.f, 0, 1)), scale));
+	colorShader->setMat4("modelMatrix", glm::scale(glm::rotate(glm::translate(transform->position), glm::radians(rY), glm::vec3(0.f, 1, 0)), scale));
 
 	sphere->Render();
 
 	colorShader->setVec3("color", glm::vec3(0, 0, 1));
-	colorShader->setMat4("modelMatrix", glm::scale(glm::rotate(glm::translate(transform->position), glm::radians(-90.f), glm::vec3(0.f, 1.f, 0.f)), scale));
+	colorShader->setMat4("modelMatrix", glm::scale(glm::rotate(glm::rotate(glm::translate(transform->position), glm::radians(rZ), glm::vec3(0, 0, 1)), glm::radians(90.f), glm::vec3(1, 0, 0)), scale));
+
 	sphere->Render();
 }
 
@@ -57,16 +84,16 @@ void SceneTools::RenderScale(Transform * transform, float dis)
 	colorShader->Use();
 	colorShader->setVec3("color", glm::vec3(1, 0, 0));
 
-	colorShader->setMat4("modelMatrix", glm::scale(glm::translate(transform->position), scale));
+	colorShader->setMat4("modelMatrix", glm::scale(glm::translate(transform->position) * glm::toMat4(transform->qRotation), scale));
 	cube->Render();
 
 	colorShader->setVec3("color", glm::vec3(0, 1, 0));
-	colorShader->setMat4("modelMatrix", glm::scale(glm::rotate(glm::translate(transform->position), glm::radians(90.f), glm::vec3(0.f, 0, 1)), scale));
+	colorShader->setMat4("modelMatrix", glm::scale(glm::rotate(glm::translate(transform->position) * glm::toMat4(transform->qRotation), glm::radians(90.f), glm::vec3(0.f, 0, 1)) , scale));
 
 	cube->Render();
 
 	colorShader->setVec3("color", glm::vec3(0, 0, 1));
-	colorShader->setMat4("modelMatrix", glm::scale(glm::rotate(glm::translate(transform->position), glm::radians(-90.f), glm::vec3(0.f, 1.f, 0.f)), scale));
+	colorShader->setMat4("modelMatrix", glm::scale(glm::rotate(glm::translate(transform->position)  * glm::toMat4(transform->qRotation), glm::radians(-90.f), glm::vec3(0.f, 1.f, 0.f)), scale));
 	cube->Render();
 }
 
@@ -109,14 +136,44 @@ bool SceneTools::processTool(GLfloat *color, Transform * transform)
 
 void SceneTools::transObjects(Transform * transform, int x, int y, int dx, int dy, glm::vec3 campos, glm::vec3 worldtoscreen)
 {
+	
 	switch (mode)
 	{
 	case ROTATE:
+		{
+			if (modedirection & TOOLX)
+			{
+				transform->eRotation.x += dx;
+			}
+			if (modedirection & TOOLY)
+			{
+				transform->eRotation.y += dx/4;
+			}
+			if (modedirection & TOOLZ)
+			{
+				transform->eRotation.z += dx;
+			}
+			transform->calcQuatFromEuler();
+			transform->calcModelMatrix();
+		}
 		
 		break;
 	case SCALE:
 		{
-			
+		if (modedirection & TOOLX)
+		{
+			transform->scale.x += dx;
+		}
+		if (modedirection & TOOLY)
+		{
+			transform->scale.y += dx;
+		}
+		if (modedirection & TOOLZ)
+		{
+			transform->scale.z += dx;
+		}
+
+		transform->calcModelMatrix();
 		}
 		break;
 	case MOVE:

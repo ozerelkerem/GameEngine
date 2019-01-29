@@ -183,6 +183,16 @@ int main(int, char**)
 				//toolmode
 				{
 
+					if (ImGui::IsKeyDown(GLFW_KEY_S))
+						sceneRenderer->sceneTool->mode = SCALE;
+
+					if (ImGui::IsKeyDown(GLFW_KEY_R))
+						sceneRenderer->sceneTool->mode = ROTATE;
+
+					if (ImGui::IsKeyDown(GLFW_KEY_T))
+						sceneRenderer->sceneTool->mode = MOVE;
+
+
 					if (!toolMode && ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(ImGuiMouse_Left_))
 					{
 						if (sceneRenderer->RenderForObjectTools(x, y))

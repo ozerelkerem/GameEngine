@@ -1,5 +1,6 @@
 #include "Transform.h"
 
+#define GLM_FORCE_
 Transform::Transform()
 {
 	position = glm::vec3(0, 0, 0);
@@ -17,12 +18,12 @@ void Transform::calcEulerFromQuat()
 
 void Transform::calcQuatFromEuler()
 {
-	qRotation = glm::toQuat((glm::orientate3(eRotation)));
+	qRotation = glm::toQuat((glm::orientate3(glm::radians(eRotation))));
 }
 
 inline void Transform::calcModelMatrix()
 {
-	modelMatrix = glm::scale( glm::translate(glm::mat4(1), position) * (glm::orientate4(eRotation)), scale);
+	modelMatrix = glm::scale( glm::translate(glm::mat4(1), position) * (glm::toMat4(qRotation)), scale);
 }
 
 Transform::~Transform()
