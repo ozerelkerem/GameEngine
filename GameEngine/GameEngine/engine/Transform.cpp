@@ -20,8 +20,6 @@ void Transform::calcQuatFromEuler()
 	qRotation = glm::toQuat((glm::orientate3(eRotation)));
 }
 
-
-
 inline void Transform::calcModelMatrix()
 {
 	modelMatrix = glm::scale( glm::translate(glm::mat4(1), position) * (glm::orientate4(eRotation)), scale);

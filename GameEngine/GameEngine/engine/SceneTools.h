@@ -13,7 +13,7 @@ enum SceneToolModes
 
 enum SceneToolMoveModes
 {
-	MOVEXY, MOVEXZ, MOVEYZ, MOVEX, MOVEY, MOVEZ
+	TOOLX=1, TOOLY=2, TOOLZ=4
 };
 class SceneTools
 {
@@ -21,7 +21,7 @@ public:
 	SceneTools();
 
 	SceneToolModes mode;
-	SceneToolMoveModes movemode;
+	unsigned int modedirection;
 
 	void Render(Transform *transform, float);
 	
@@ -39,8 +39,8 @@ private:
 
 	glm::vec3 initPos;
 
-	void RenderRotate(Transform * transform);
-	void RenderScale(Transform * transform);
+	void RenderRotate(Transform * transform, float dis);
+	void RenderScale(Transform * transform, float dis);
 	void RenderMove(Transform * transform, float);
 
 };

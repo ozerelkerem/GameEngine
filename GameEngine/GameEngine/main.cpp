@@ -169,46 +169,50 @@ int main(int, char**)
 			{
 				viewportSize = ImGui::GetWindowSize();
 				viewportSize.y -= 35;
-				
+
 				ImGui::SetCursorPosY(21);
 				ImGui::SetCursorPosX(0);
-				
+
 				sceneRenderer->Update(glm::vec2(viewportSize.x, viewportSize.y));
-			
-			
+
+
 
 				int x = ImGui::GetMousePos().x - ImGui::GetWindowPos().x;
 				int y = ImGui::GetMousePos().y - ImGui::GetWindowPos().y - 20;
 
-			
-
-				if (!toolMode && ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(ImGuiMouse_Left_))
+				//toolmode
 				{
-					if (sceneRenderer->RenderForObjectTools(x, y))
+
+					if (!toolMode && ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(ImGuiMouse_Left_))
 					{
-						toolMode = true;
+						if (sceneRenderer->RenderForObjectTools(x, y))
+						{
+							toolMode = true;
+						}
+					}
+
+					if (toolMode)
+					{
+						glm::vec3 normal(0, 0, 1);
+						if ((sceneRenderer->sceneTool->modedirection & TOOLZ))
+							normal = { 0,1,0 };
+						glm::vec2 size; size.x = viewportSize.x; size.y = viewportSize.y;
+
+						sceneRenderer->sceneTool->transObjects(sceneRenderer->selectedObject->transform, x, y, io.MouseDelta.x, io.MouseDelta.y,
+							sceneRenderer->sceneCamera->position, sceneRenderer->sceneCamera->screenToWorld(x, y, normal, size));
+					}
+
+
+					if (toolMode && ImGui::IsMouseReleased(ImGuiMouse_Left_))
+					{
+						toolMode = false;
+					}
+
+					if (!toolMode && ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(ImGuiMouse_Left_))
+					{
+						sceneRenderer->selectedObject = sceneRenderer->RenderForObjectPicker(x, y);
 					}
 				}
-				
-				if (toolMode)
-				{
-					sceneRenderer->sceneTool->transObjects(sceneRenderer->selectedObject->transform, x, y, io.MouseDelta.x, io.MouseDelta.y, sceneRenderer->sceneCamera->position, sceneRenderer->screenToWorld(x, y));
-					
-				}
-					
-
-				if (toolMode && ImGui::IsMouseReleased(ImGuiMouse_Left_))
-				{
-					toolMode = false;
-				
-				}
-					
-
-				if (!toolMode && ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(ImGuiMouse_Left_))
-				{
-					sceneRenderer->selectedObject = sceneRenderer->RenderForObjectPicker(x, y);
-				}
-			
 					
 
 				sceneRenderer->Render();

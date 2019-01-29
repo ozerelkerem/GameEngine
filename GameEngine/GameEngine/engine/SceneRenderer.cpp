@@ -184,18 +184,49 @@ void SceneRenderer::Update(glm::vec2 size)
 
 glm::vec3 SceneRenderer::screenToWorld(int x, int y)
 {
+	glm::vec3 nearSource((float)x, (float)y, 0.f);
+	glm::vec3 farSource((float)x, (float)y, 1.f);
+	glm::vec3 nearPoint = glm::unProject(nearSource, sceneCamera->viewMatrix, sceneCamera->projectionMatrix, glm::vec4(0, 0, size.x, size.y));
+	glm::vec3 farPoint = glm::unProject(farSource, sceneCamera->viewMatrix, sceneCamera->projectionMatrix, glm::vec4(0, 0, size.x, size.y));
+
+	// Create a ray from the near clip plane to the far clip plane.
+	glm::vec3 direction = farPoint - nearPoint;
+	direction = glm::normalize(direction);
+
+
+	// Create a ray.
+	
+
+	// Calculate the ray-plane intersection point.
+	glm::vec3 n(0, 0, 1);
+
+	// Calculate distance of intersection point from r.origin.
+	float denominator = glm::dot(n, direction);
+	float numerator = glm::dot(n, nearPoint);
+	float t = -(numerator / denominator);
+
+
+	// Calculate the picked position on the y = 0 plane.
+	glm::vec3 pickedPosition = nearPoint + direction * t;
+	return pickedPosition;
+	/**/
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
 	float depth;
-
-
-
 	glm::vec2 screencords = sceneCamera->worldToScreen(selectedObject->transform->position, size);
-	
+
 	glReadPixels(screencords.x, screencords.y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
 
+	glClearColor(0, 0, 0, 1);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	shader->Use();
+	m1->Render(shader);
+
+	std::cout << " d1:" << depth;
+	glReadPixels(screencords.x, screencords.y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+	std::cout << " d2:" << depth;
 	x = glm::clamp((float)x,40.f,size.x-50);
-	glm::vec3 cor = glm::unProject(glm::vec3(x, y, depth), sceneCamera->getViewMatrix(), glm::perspective(30.0f, (float)(size.x / size.y), 0.1f, 1000.0f), glm::vec4(0, 0, size.x, size.y));
+	glm::vec3 cor = glm::unProject(glm::vec3(x, y, depth), sceneCamera->viewMatrix, sceneCamera->projectionMatrix, glm::vec4(0, 0, size.x, size.y));
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

@@ -107,4 +107,27 @@ glm::vec2 SceneCamera::worldToScreen(glm::vec3 & worldPos, glm::vec2 &size)
 	return returnVector;
 }
 
+glm::vec3 SceneCamera::screenToWorld(int x, int y, glm::vec3 &planeNormal, glm::vec2 &viewportSize)
+{
+	glm::vec3 nearSource((float)x, (float)y, 0.f);
+	glm::vec3 farSource((float)x, (float)y, 1.f);
+	glm::vec3 nearPoint = glm::unProject(nearSource, viewMatrix, projectionMatrix, glm::vec4(0, 0, viewportSize.x, viewportSize.y));
+	glm::vec3 farPoint = glm::unProject(farSource, viewMatrix, projectionMatrix, glm::vec4(0, 0, viewportSize.x, viewportSize.y));
+
+	// Create a ray from the near clip plane to the far clip plane.
+	glm::vec3 direction = farPoint - nearPoint;
+	direction = glm::normalize(direction);
+
+	// Calculate distance of intersection point from r.origin.
+	float denominator = glm::dot(planeNormal, direction);
+	float numerator = glm::dot(planeNormal, nearPoint);
+	float t = -(numerator / denominator);
+
+
+	// Calculate the picked position on the y = 0 plane.
+	glm::vec3 pickedPosition = nearPoint + direction * t;
+	return pickedPosition;
+	/**/
+}
+
 glm::mat4 SceneCamera::getViewMatrix(){ return viewMatrix; }
