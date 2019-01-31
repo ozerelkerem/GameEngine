@@ -111,9 +111,6 @@ int main(int, char**)
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-	
-
-
 		{
 			static bool opt_fullscreen_persistant = true;
 			static ImGuiDockNodeFlags opt_flags = ImGuiDockNodeFlags_None;
@@ -163,8 +160,6 @@ int main(int, char**)
 			}
 			ImGui::End();
 
-
-
 			ImGui::Begin("Scene", NULL);
 			{
 				viewportSize = ImGui::GetWindowSize();
@@ -174,8 +169,6 @@ int main(int, char**)
 				ImGui::SetCursorPosX(0);
 
 				sceneRenderer->Update(glm::vec2(viewportSize.x, viewportSize.y));
-
-
 
 				int x = ImGui::GetMousePos().x - ImGui::GetWindowPos().x;
 				int y = ImGui::GetMousePos().y - ImGui::GetWindowPos().y - 20;
@@ -189,15 +182,14 @@ int main(int, char**)
 				//toolmode
 				{
 
-					if (ImGui::IsKeyDown(GLFW_KEY_S))
+					if (ImGui::IsKeyDown(GLFW_KEY_S) && !travelMode)
 						sceneRenderer->sceneTool->mode = SCALE;
 
-					if (ImGui::IsKeyDown(GLFW_KEY_R))
+					if (ImGui::IsKeyDown(GLFW_KEY_R) && !travelMode)
 						sceneRenderer->sceneTool->mode = ROTATE;
 
-					if (ImGui::IsKeyDown(GLFW_KEY_T))
+					if (ImGui::IsKeyDown(GLFW_KEY_T) && !travelMode)
 						sceneRenderer->sceneTool->mode = MOVE;
-
 
 					if (!toolMode && ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(ImGuiMouse_Left_))
 					{
@@ -218,7 +210,6 @@ int main(int, char**)
 							sceneRenderer->sceneCamera->position, sceneRenderer->sceneCamera->screenToWorld(x, y, normal, size));
 					}
 
-
 					if (toolMode && ImGui::IsMouseReleased(ImGuiMouse_Left_))
 					{
 						toolMode = false;
@@ -229,10 +220,8 @@ int main(int, char**)
 						sceneRenderer->selectedObject = sceneRenderer->RenderForObjectPicker(x, y);
 					}
 				}
-					
 
 				sceneRenderer->Render();
-
 
 				ImGui::Image((void*)sceneRenderer->GetTextureColorBuffer(), viewportSize, { 0,0 }, { viewportSize.x / sceneMaxWidth, viewportSize.y / sceneMaxHeight });
 
@@ -259,9 +248,7 @@ int main(int, char**)
 
 						ImGui::GetWindowDrawList()->AddCircle({ (float)midx,(float)midy }, 10.f, IM_COL32(255, 0, 0, 255), 12, 2.f);
 
-
 						glfwGetCursorPos(window, &x, &y);
-
 
 						sceneRenderer->sceneCamera->RotatePitch(-(y - prevMousePosition[1])*0.01);
 						sceneRenderer->sceneCamera->RotateYaw(-(x - prevMousePosition[0])*0.01);
@@ -272,7 +259,6 @@ int main(int, char**)
 						glfwSetCursorPos(window, midx, midy);
 					}
 				}
-
 
 				//travel mode2 camera up down
 				{
@@ -298,9 +284,7 @@ int main(int, char**)
 
 						ImGui::GetWindowDrawList()->AddCircle({ (float)midx,(float)midy }, 10.f, IM_COL32(255, 0, 0, 255), 12, 2.f);
 
-
 						glfwGetCursorPos(window, &x, &y);
-
 
 						sceneRenderer->sceneCamera->MoveUp(-(y - prevMousePosition[1])*0.01);
 
@@ -310,8 +294,6 @@ int main(int, char**)
 						glfwSetCursorPos(window, midx, midy);
 					}
 				}
-
-
 
 				if (ImGui::IsMouseHoveringWindow() && (io.MouseDownDuration[1] > 0))
 				{
@@ -381,7 +363,7 @@ int main(int, char**)
 					{
 						if(ImGui::DragFloat3("Position", &sceneRenderer->selectedObject->transform->position[0], 1.f, -30000.f, 30000.f))
 							sceneRenderer->selectedObject->transform->calcModelMatrix();
-						if (ImGui::DragFloat3("Rotation Eular", &sceneRenderer->selectedObject->transform->eRotation[0], 1.f, 0, 359.99999f))
+						if (ImGui::DragFloat3("Rotation Eular", &sceneRenderer->selectedObject->transform->eRotation[0], 1.f, -359.99999f, 359.99999f))
 						{
 							sceneRenderer->selectedObject->transform->calcQuatFromEuler();
 							sceneRenderer->selectedObject->transform->calcModelMatrix();
