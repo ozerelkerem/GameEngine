@@ -18,12 +18,12 @@ void Transform::calcEulerFromQuat()
 
 void Transform::calcQuatFromEuler()
 {
-	qRotation = glm::toQuat((glm::orientate3(glm::radians(eRotation))));
+	qRotation = glm::toQuat((glm::orientate3(glm::radians(glm::vec3(eRotation.x, eRotation.z, eRotation.y)))));
 }
 
 inline void Transform::calcModelMatrix()
 {
-	modelMatrix = glm::scale( glm::translate(glm::mat4(1), position) * (glm::toMat4(qRotation)), scale);
+	modelMatrix = glm::scale(glm::translate(glm::mat4(1), position) * (glm::toMat4(qRotation)), scale);
 }
 
 Transform::~Transform()

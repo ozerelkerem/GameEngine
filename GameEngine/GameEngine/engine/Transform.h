@@ -3,6 +3,7 @@
 #include "../ogl/glm/glm.hpp"
 #include "../ogl/glm/gtx/euler_angles.hpp"
 #include "../ogl/glm/gtx/quaternion.hpp"
+#include "../ogl/glm/gtx/transform.hpp"
 
 class Transform
 {
