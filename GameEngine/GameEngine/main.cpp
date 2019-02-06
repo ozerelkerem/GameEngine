@@ -198,6 +198,12 @@ int main(int, char**)
 				int x = ImGui::GetMousePos().x - ImGui::GetWindowPos().x;
 				int y = ImGui::GetMousePos().y - ImGui::GetWindowPos().y - 20;
 
+				if (ImGui::IsKeyPressed(GLFW_KEY_ESCAPE))
+				{
+					toolMode = travelMode = travelMode2  = false;
+					sceneRenderer->selectedObject = NULL;
+				}
+
 				//toolmode
 				{
 
@@ -354,8 +360,9 @@ int main(int, char**)
 			{
 				if (ImGui::CollapsingHeader("Grid", ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					ImGui::DragInt("Line Count", &(sceneRenderer->GetGrid()->lineCount), 1.f, 2.f, 1000.f);
-					ImGui::DragFloat("Space Lenght", &(sceneRenderer->GetGrid()->spaceLength), 1.0f, 0.01f, 1000.f);
+					ImGui::DragInt("Line Count", &(sceneRenderer->GetGrid()->lineCount), 1, 2, 1000);
+					if (ImGui::DragFloat("Space Lenght", &(sceneRenderer->GetGrid()->spaceLength), 1.0f, 0.01f, 1000.f) && !sceneRenderer->GetGrid()->spaceLength)
+						sceneRenderer->GetGrid()->spaceLength = 1;
 					ImGui::ColorEdit3("Grid Color", (sceneRenderer->GetGrid()->gridColor));
 				}
 				if (ImGui::CollapsingHeader("Render Settings", ImGuiTreeNodeFlags_DefaultOpen))
