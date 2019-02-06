@@ -36,34 +36,28 @@
     <ClCompile Include="imgui\imgui_impl_glfw.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Grid.cpp">
+    <ClCompile Include="engine2\Object.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-    <ClCompile Include="engine\SceneCamera.cpp">
+    <ClCompile Include="engine2\Light.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Shader.cpp">
+    <ClCompile Include="engine2\Mesh.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-    <ClCompile Include="engine\SceneRenderer.cpp">
+    <ClCompile Include="engine2\Camera.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Scene.cpp">
+    <ClCompile Include="engine2\Model.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Object.cpp">
+    <ClCompile Include="engine2\Prefab.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Transform.cpp">
+    <ClCompile Include="engine2\Material.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Mesh.cpp">
-      <Filter>Kaynak Dosyalar</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\Model.cpp">
-      <Filter>Kaynak Dosyalar</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\SceneTools.cpp">
+    <ClCompile Include="engine2\PrefabNode.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
   </ItemGroup>
@@ -98,34 +92,31 @@
     <ClInclude Include="ogl\GLFW\glfw3native.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Grid.h">
+    <ClInclude Include="engine2\Object.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
-    <ClInclude Include="engine\SceneCamera.h">
+    <ClInclude Include="engine2\Mesh.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Shader.h">
+    <ClInclude Include="engine2\Light.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
-    <ClInclude Include="engine\SceneRenderer.h">
+    <ClInclude Include="engine2\Camera.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Scene.h">
+    <ClInclude Include="engine2\ModelLoader.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Object.h">
+    <ClInclude Include="engine2\Model.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Transform.h">
+    <ClInclude Include="engine2\Prefab.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Mesh.h">
+    <ClInclude Include="engine2\Material.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Model.h">
-      <Filter>Üst Bilgi Dosyaları</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\SceneTools.h">
+    <ClInclude Include="engine2\PrefabNode.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
   </ItemGroup>

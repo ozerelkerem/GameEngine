@@ -30,6 +30,7 @@ void SceneCamera::UpdateCameraVectors()
 
 void SceneCamera::UpdateViewMatrix()
 {
+	
 	viewMatrix = glm::lookAt(this->position, this->position + frontVector, upVector);
 }
 

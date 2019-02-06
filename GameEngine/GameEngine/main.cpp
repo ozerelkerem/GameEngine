@@ -5,24 +5,46 @@
 #include <stdio.h>
 #include <iostream>
 
+#include <ModelLoader.h>
+
 #include "ogl/GL/glew.h" 
 #include "ogl/GLFW/glfw3.h"
 #include "ogl/glm/glm.hpp"
 
-#include "engine/Scene.h"
-#include "engine/Shader.h"
-#include "engine/SceneCamera.h"
-#include "engine/Grid.h"
-#include "engine/SceneRenderer.h"
+#ifndef GLFW_EXPOSE_NATIVE_WIN32
+#define GLFW_EXPOSE_NATIVE_WIN32
+#endif
+
+#include "ogl/GLFW/glfw3native.h"
+
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
 ImVec2 viewportSize = { 1280,720 };
-SceneRenderer *sceneRenderer;
 
-void drawHiearchy(Object*);
+
+//void drawHiearchy(Object*);
+void handle_dropped_file(const char *path)
+{
+
+
+	std::string str = path;
+	std::string extension = str.substr(str.find_last_of('.') + 1);
+	if (extension == "fbx")
+	{
+		Prefab *p  = ModelLoader::loadPrefab(path);
+		int a = 3;
+		a = 5;
+	}
+}
+void drop_callback(GLFWwindow* window, int count, const char** paths)
+{
+	int i;
+	for (i = 0; i < count; i++)
+		handle_dropped_file(paths[i]);
+}
 
 
 void resize_callback(GLFWwindow * window, int width, int height)
@@ -67,6 +89,7 @@ int main(int, char**)
 	glfwSwapInterval(1); // Enable vsync
 
 	glfwSetWindowSizeCallback(window, resize_callback);
+	glfwSetDropCallback(window, drop_callback);
 
 	bool err = glewInit() != GLEW_OK;
 	if (err)
@@ -96,7 +119,7 @@ int main(int, char**)
 
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-	sceneRenderer = new SceneRenderer();
+	//sceneRenderer = new SceneRenderer();
 
 	double prevMousePosition[2];
 	bool travelMode = false, travelMode2 = false, toolMode = false;
@@ -111,6 +134,8 @@ int main(int, char**)
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
+
+		/*
 		{
 			static bool opt_fullscreen_persistant = true;
 			static ImGuiDockNodeFlags opt_flags = ImGuiDockNodeFlags_None;
@@ -388,6 +413,7 @@ int main(int, char**)
 			ImGui::Begin("Create Object", NULL);
 			ImGui::End();
 		}
+		*/
 
 		// Rendering
 		ImGui::Render();
@@ -419,78 +445,78 @@ int main(int, char**)
 
 	return 0;
 }
-
-void drawHiearchy(Object * root)
-{
-	int n;
-	ImGuiTreeNodeFlags src_flags = 0;
-	if (root->numOfChilds == 0)
-		src_flags = ImGuiTreeNodeFlags_Leaf;
-	else
-		src_flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_OpenOnArrow;
-	if (sceneRenderer->selectedObject == root)
-		src_flags |= ImGuiTreeNodeFlags_Selected;
-
-
-	bool node_open = ImGui::TreeNodeEx((void *)root, src_flags, root->name.c_str());
-
-	//right click popup
-	{
-		ImGui::PushID(root->name.c_str());
-		if (ImGui::BeginPopupContextItem())
-		{
-			if (ImGui::MenuItem("Delete") && root->name != "root")
-			{
-				root->RemoveObject();
-				sceneRenderer->selectedObject = NULL;
-			}
-			ImGui::EndPopup();
-		}
-		ImGui::PopID();
-	}
-
-
-	{
-		ImGuiDragDropFlags src_flags = 0;
-		src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;     // Keep the source displayed as hovered
-		src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers; // Because our dragging is local, we disable the feature of opening foreign treenodes/tabs while dragging
-		//src_flags |= ImGuiDragDropFlags_SourceNoPreviewTooltip; // Hide the tooltip
-		//drag and drop 
-		{
-			if (root->name != "root" && ImGui::BeginDragDropSource(src_flags))
-			{
-				if (!(src_flags & ImGuiDragDropFlags_SourceNoPreviewTooltip))
-				{
-					ImGui::Text("%s", root->name.c_str());
-					sceneRenderer->hoveredObject = root;
-				}
-
-				ImGui::SetDragDropPayload("DND_DEMO_NAME", &n, sizeof(int));
-				ImGui::EndDragDropSource();
-			}
-
-			if (ImGui::BeginDragDropTarget())
-			{
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_NAME"))
-				{
-					if (sceneRenderer->hoveredObject)
-						sceneRenderer->hoveredObject->AddParent(root);
-					sceneRenderer->hoveredObject = NULL;
-				}
-				ImGui::EndDragDropTarget();
-			}
-		}
-
-		if (ImGui::IsItemClicked() && sceneRenderer->scene->rootObject != root)
-		{
-			sceneRenderer->selectedObject = root;
-		}
-
-		if (node_open)
-		{
-			for (int i = 0; i < root->numOfChilds; i++)
-				drawHiearchy(root->childs[i]);
-			ImGui::TreePop();
-		}
-	}
-}
+//
+//void drawHiearchy(Object * root)
+//{
+//	int n;
+//	ImGuiTreeNodeFlags src_flags = 0;
+//	if (root->numOfChilds == 0)
+//		src_flags = ImGuiTreeNodeFlags_Leaf;
+//	else
+//		src_flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_OpenOnArrow;
+//	if (sceneRenderer->selectedObject == root)
+//		src_flags |= ImGuiTreeNodeFlags_Selected;
+//
+//
+//	bool node_open = ImGui::TreeNodeEx((void *)root, src_flags, root->name.c_str());
+//
+//	//right click popup
+//	{
+//		ImGui::PushID(root->name.c_str());
+//		if (ImGui::BeginPopupContextItem())
+//		{
+//			if (ImGui::MenuItem("Delete") && root->name != "root")
+//			{
+//				root->RemoveObject();
+//				sceneRenderer->selectedObject = NULL;
+//			}
+//			ImGui::EndPopup();
+//		}
+//		ImGui::PopID();
+//	}
+//
+//
+//	{
+//		ImGuiDragDropFlags src_flags = 0;
+//		src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;     // Keep the source displayed as hovered
+//		src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers; // Because our dragging is local, we disable the feature of opening foreign treenodes/tabs while dragging
+//		//src_flags |= ImGuiDragDropFlags_SourceNoPreviewTooltip; // Hide the tooltip
+//		//drag and drop 
+//		{
+//			if (root->name != "root" && ImGui::BeginDragDropSource(src_flags))
+//			{
+//				if (!(src_flags & ImGuiDragDropFlags_SourceNoPreviewTooltip))
+//				{
+//					ImGui::Text("%s", root->name.c_str());
+//					sceneRenderer->hoveredObject = root;
+//				}
+//
+//				ImGui::SetDragDropPayload("DND_DEMO_NAME", &n, sizeof(int));
+//				ImGui::EndDragDropSource();
+//			}
+//
+//			if (ImGui::BeginDragDropTarget())
+//			{
+//				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_NAME"))
+//				{
+//					if (sceneRenderer->hoveredObject)
+//						sceneRenderer->hoveredObject->AddParent(root);
+//					sceneRenderer->hoveredObject = NULL;
+//				}
+//				ImGui::EndDragDropTarget();
+//			}
+//		}
+//
+//		if (ImGui::IsItemClicked() && sceneRenderer->scene->rootObject != root)
+//		{
+//			sceneRenderer->selectedObject = root;
+//		}
+//
+//		if (node_open)
+//		{
+//			for (int i = 0; i < root->numOfChilds; i++)
+//				drawHiearchy(root->childs[i]);
+//			ImGui::TreePop();
+//		}
+//	}
+//}

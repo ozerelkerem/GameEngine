@@ -16,8 +16,6 @@ public:
 	int numOfColors;
 	GLfloat *colors;
 
-
-
 	Mesh();
 			
 	GLuint vao;

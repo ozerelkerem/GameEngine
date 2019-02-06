@@ -2,8 +2,6 @@
 
 #include <string>
 
-
-
 #include "Scene.h"
 #include "Shader.h"
 #include "Transform.h"
