@@ -2,15 +2,15 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 
-#include "../ogl/glm/glm.hpp"
-#include "../ogl/glm/gtx/rotate_vector.hpp"
-#include "../ogl/glm/gtx/vector_angle.hpp"
-#include "../ogl/glm/gtc/matrix_transform.hpp"
-#include "../ogl/GL/glew.h"
+#include <glm/glm.hpp>
+#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/vector_angle.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <GL/glew.h>
 
-#include "../ogl/glm/gtx/matrix_decompose.hpp"
+#include <glm/gtx/matrix_decompose.hpp>
 
-#include <vector>
+
 
 class SceneCamera
 {

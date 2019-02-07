@@ -1,22 +1,22 @@
 #pragma once
 
-#include <Mesh.h>
+
 #include <Model.h>
-#include <Camera.h>
-#include <Light.h>
 #include <PrefabNode.h>
 
 class Prefab
 {
 public:
-	Prefab();
+	Prefab(std::string);
 	~Prefab();
 
+	std::string name;
+
 	unsigned int numberOfCameras;
-	Camera **cameras;
+	Object **cameras;
 	
 	unsigned int numberOfLights;
-	Light **lights;
+	Object **lights;
 
 	unsigned int numberOfModels;
 	Model *(*models);
@@ -27,8 +27,10 @@ public:
 	PrefabNode *rootNode;
 
 	void addModel(Model *model);
-	void addLight(Light *light);
-	void addCamera(Camera *camera);
+	void addLight(Object *light);
+	void addCamera(Object *camera);
 	void addMaterials(Material *material);
+
+	Object *getObject(std::string name);
 };
 

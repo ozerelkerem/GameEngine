@@ -4,9 +4,18 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <map>
+#include <set>
+#include <unordered_map>
+#include <unordered_set>
+#include <forward_list>
 
+#include <Scene.h>
+#include <SceneRenderer.h>
 #include <ModelLoader.h>
-
+#include <GameBase.h>
+#include <Component.h>
+#include <CameraComponent.h>
 #include "ogl/GL/glew.h" 
 #include "ogl/GLFW/glfw3.h"
 #include "ogl/glm/glm.hpp"
@@ -23,9 +32,12 @@
 #endif
 
 ImVec2 viewportSize = { 1280,720 };
+Scene *scene = new Scene("Taso");
+SceneRenderer * sceneRenderer;
+GameBase *gameBase = new GameBase(scene);
 
 
-//void drawHiearchy(Object*);
+void drawHiearchy(Actor * root);
 void handle_dropped_file(const char *path)
 {
 
@@ -36,6 +48,10 @@ void handle_dropped_file(const char *path)
 	{
 		Prefab *p  = ModelLoader::loadPrefab(path);
 		int a = 3;
+		a = 5;
+
+		scene->addActor(p, glm::vec3(1));
+		
 		a = 5;
 	}
 }
@@ -119,7 +135,7 @@ int main(int, char**)
 
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-	//sceneRenderer = new SceneRenderer();
+	sceneRenderer = new SceneRenderer(gameBase);
 
 	double prevMousePosition[2];
 	bool travelMode = false, travelMode2 = false, toolMode = false;
@@ -133,6 +149,15 @@ int main(int, char**)
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+
+		/**/
+		
+		
+
+	
+		
+
+		/**/
 
 
 		/*
@@ -185,15 +210,19 @@ int main(int, char**)
 			}
 			ImGui::End();
 
+			*/
 			ImGui::Begin("Scene", NULL);
 			{
 				viewportSize = ImGui::GetWindowSize();
 				viewportSize.y -= 35;
-
+				//sceneRenderer->Update(glm::vec2(viewportSize.x, viewportSize.y));
+				sceneRenderer->sceneSize.x = viewportSize.x;
+				sceneRenderer->sceneSize.y = viewportSize.y;
+				/*
 				ImGui::SetCursorPosY(21);
 				ImGui::SetCursorPosX(0);
 
-				sceneRenderer->Update(glm::vec2(viewportSize.x, viewportSize.y));
+			
 
 				int x = ImGui::GetMousePos().x - ImGui::GetWindowPos().x;
 				int y = ImGui::GetMousePos().y - ImGui::GetWindowPos().y - 20;
@@ -244,12 +273,12 @@ int main(int, char**)
 					{
 						sceneRenderer->selectedObject = sceneRenderer->RenderForObjectPicker(x, y);
 					}
-				}
+				}*/
 
-				sceneRenderer->Render();
+				sceneRenderer->render();
 
 				ImGui::Image((void*)sceneRenderer->GetTextureColorBuffer(), viewportSize, { 0,0 }, { viewportSize.x / sceneMaxWidth, viewportSize.y / sceneMaxHeight });
-
+/*
 				//travel mode1 rotating camera if travelmode1 works, travelmode2 does not
 				{
 					if (ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(1))
@@ -348,9 +377,10 @@ int main(int, char**)
 						else
 							sceneRenderer->sceneCamera->MoveBackward();
 				}
+				*/
 			}
 			ImGui::End();
-
+			/*
 			ImGui::Begin("Game", NULL);
 			{
 			}
@@ -410,13 +440,14 @@ int main(int, char**)
 			ImGui::End();
 
 			ImGui::Begin("Project Explorer", NULL);
-			ImGui::End();
+			ImGui::End();*/
 
 			ImGui::Begin("Hierarchy", NULL);
 			{
-				drawHiearchy(sceneRenderer->scene->rootObject);
+				drawHiearchy(scene->rootActor);		
 			}
 			ImGui::End();
+			/*
 			ImGui::Begin("Create Object", NULL);
 			ImGui::End();
 		}
@@ -440,6 +471,7 @@ int main(int, char**)
 		}
 
 		glfwSwapBuffers(window);
+		
 	}
 
 	// Cleanup
@@ -452,78 +484,77 @@ int main(int, char**)
 
 	return 0;
 }
-//
-//void drawHiearchy(Object * root)
-//{
-//	int n;
-//	ImGuiTreeNodeFlags src_flags = 0;
-//	if (root->numOfChilds == 0)
-//		src_flags = ImGuiTreeNodeFlags_Leaf;
-//	else
-//		src_flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_OpenOnArrow;
-//	if (sceneRenderer->selectedObject == root)
-//		src_flags |= ImGuiTreeNodeFlags_Selected;
-//
-//
-//	bool node_open = ImGui::TreeNodeEx((void *)root, src_flags, root->name.c_str());
-//
-//	//right click popup
-//	{
-//		ImGui::PushID(root->name.c_str());
-//		if (ImGui::BeginPopupContextItem())
-//		{
-//			if (ImGui::MenuItem("Delete") && root->name != "root")
-//			{
-//				root->RemoveObject();
-//				sceneRenderer->selectedObject = NULL;
-//			}
-//			ImGui::EndPopup();
-//		}
-//		ImGui::PopID();
-//	}
-//
-//
-//	{
-//		ImGuiDragDropFlags src_flags = 0;
-//		src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;     // Keep the source displayed as hovered
-//		src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers; // Because our dragging is local, we disable the feature of opening foreign treenodes/tabs while dragging
-//		//src_flags |= ImGuiDragDropFlags_SourceNoPreviewTooltip; // Hide the tooltip
-//		//drag and drop 
-//		{
-//			if (root->name != "root" && ImGui::BeginDragDropSource(src_flags))
-//			{
-//				if (!(src_flags & ImGuiDragDropFlags_SourceNoPreviewTooltip))
-//				{
-//					ImGui::Text("%s", root->name.c_str());
-//					sceneRenderer->hoveredObject = root;
-//				}
-//
-//				ImGui::SetDragDropPayload("DND_DEMO_NAME", &n, sizeof(int));
-//				ImGui::EndDragDropSource();
-//			}
-//
-//			if (ImGui::BeginDragDropTarget())
-//			{
-//				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_NAME"))
-//				{
-//					if (sceneRenderer->hoveredObject)
-//						sceneRenderer->hoveredObject->AddParent(root);
-//					sceneRenderer->hoveredObject = NULL;
-//				}
-//				ImGui::EndDragDropTarget();
-//			}
-//		}
-//
-//		if (ImGui::IsItemClicked() && sceneRenderer->scene->rootObject != root)
-//		{
-//			sceneRenderer->selectedObject = root;
-//		}
-//
-//		if (node_open)
-//		{
-//			for (int i = 0; i < root->numOfChilds; i++)
-//				drawHiearchy(root->childs[i]);
-//			ImGui::TreePop();
-//		}
-//	}
-//}
+
+void drawHiearchy(Actor * root)
+{
+	int n;
+	ImGuiTreeNodeFlags src_flags = 0;
+	if (root->numberOfChildren == 0)
+		src_flags = ImGuiTreeNodeFlags_Leaf;
+	else
+		src_flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_OpenOnArrow;
+	/*if (sceneRenderer->selectedObject == root)
+		src_flags |= ImGuiTreeNodeFlags_Selected;*/
+
+	bool node_open = ImGui::TreeNodeEx((void *)root, src_flags, root->name.c_str());
+
+	//right click popup
+	{
+	/*	ImGui::PushID(root->name.c_str());
+		if (ImGui::BeginPopupContextItem())
+		{
+			if (ImGui::MenuItem("Delete") && root->name != "root")
+			{
+				root->RemoveObject();
+				sceneRenderer->selectedObject = NULL;
+			}
+			ImGui::EndPopup();
+		}
+		ImGui::PopID();*/
+	}
+
+
+	//{
+	//	ImGuiDragDropFlags src_flags = 0;
+	//	src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;     // Keep the source displayed as hovered
+	//	src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers; // Because our dragging is local, we disable the feature of opening foreign treenodes/tabs while dragging
+	//	//src_flags |= ImGuiDragDropFlags_SourceNoPreviewTooltip; // Hide the tooltip
+	//	//drag and drop 
+	//	{
+	//		if (root->name != "root" && ImGui::BeginDragDropSource(src_flags))
+	//		{
+	//			if (!(src_flags & ImGuiDragDropFlags_SourceNoPreviewTooltip))
+	//			{
+	//				ImGui::Text("%s", root->name.c_str());
+	//				sceneRenderer->hoveredObject = root;
+	//			}
+
+	//			ImGui::SetDragDropPayload("DND_DEMO_NAME", &n, sizeof(int));
+	//			ImGui::EndDragDropSource();
+	//		}
+
+	//		if (ImGui::BeginDragDropTarget())
+	//		{
+	//			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_NAME"))
+	//			{
+	//				if (sceneRenderer->hoveredObject)
+	//					sceneRenderer->hoveredObject->AddParent(root);
+	//				sceneRenderer->hoveredObject = NULL;
+	//			}
+	//			ImGui::EndDragDropTarget();
+	//		}
+	//	}
+
+	//	if (ImGui::IsItemClicked() && sceneRenderer->scene->rootObject != root)
+	//	{
+	//		sceneRenderer->selectedObject = root;
+	//	}
+
+		if (node_open)
+		{
+			for (int i = 0; i < root->numberOfChildren; i++)
+				drawHiearchy(root->children[i]);
+			ImGui::TreePop();
+		}
+	//}
+}

@@ -1,13 +1,15 @@
 #pragma once
 
-#include <Object.h>
+
 #include <Mesh.h>
 
-class Model : public Object
+class Model
 {
 public:
 	Model(std::string);
 	~Model();
+
+	std::string name;
 
 	unsigned int numOfMeshes;
 	Mesh *(*meshes);

@@ -4,6 +4,10 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
+#include <CameraComponent.h>
+#include <LightComponent.h>
+#include <ModelComponent.h>
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -14,9 +18,10 @@ namespace ModelLoader
 {
 	Prefab *loadPrefab(const char *path);
 	Mesh *generateMesh(const aiMesh *mesh);
-	Prefab *processScene(const aiScene *scene);
+	Prefab *processScene(const aiScene *scene, std::string);
 	Material *generateMaterial(const aiMaterial *material);
-	Camera * generateCamera(const aiCamera *camera);
+	Object * generateCamera(const aiCamera *camera);
+	Object * generateLight(const aiLight *light);
 
 	void startingNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene);
 	void processNode(Mesh **meshes, Prefab *prefab, PrefabNode *prefabNode, aiNode *node, const aiScene *scene);
@@ -31,14 +36,14 @@ namespace ModelLoader
 			std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
 			return NULL;
 		}
-
-		return processScene(scene);
+		std::string name = path;
+		name = name.substr(name.find_last_of('\\') + 1, name.find_last_of('.') - name.find_last_of('\\') - 1);
+		return processScene(scene, name);
 	}
 
-	Prefab *processScene(const aiScene *scene)
+	Prefab *processScene(const aiScene *scene, std::string name)
 	{
-		Prefab * prefab = new Prefab();
-
+		Prefab * prefab = new Prefab(name);
 		
 		for (int i = 0; i < scene->mNumLights; i++)
 			prefab->addLight(generateLight(scene->mLights[i]));
@@ -54,9 +59,10 @@ namespace ModelLoader
 		for (int i = 0; i < scene->mNumMeshes; i++)
 		{
 			meshes[i] = generateMesh(scene->mMeshes[i]);
-			meshes[i]->material = prefab->materials[scene->mMeshes[i]->mMaterialIndex];
+			//meshes[i]->material = prefab->materials[scene->mMeshes[i]->mMaterialIndex];
 		}
 
+		
 		startingNode(meshes, prefab, prefab->rootNode, scene->mRootNode, scene);
 
 		return prefab;
@@ -65,7 +71,7 @@ namespace ModelLoader
 	void startingNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene)
 	{
 	
-		prefab->rootNode = new PrefabNode(NULL, glm::make_mat4(node->mTransformation[0]));
+		prefab->rootNode = new PrefabNode(new Object(prefab->name), glm::make_mat4(node->mTransformation[0]));
 
 		for (int i = 0; i < node->mNumChildren; i++)
 		{
@@ -75,7 +81,7 @@ namespace ModelLoader
 	
 	void processNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene)
 	{
-		Object *o=NULL;
+		Object *o = NULL;
 		if (node->mNumMeshes > 0) // it is a model
 		{
 			Model *m = new Model(node->mName.C_Str());
@@ -84,13 +90,22 @@ namespace ModelLoader
 				m->addMesh(meshes[node->mMeshes[i]]);
 			}
 			prefab->addModel(m);
-			o = m;
-	
+			o = new Object(node->mName.C_Str());
+			o->componentObject->addComponent(new ModelComponent(m));
 		}
-		else; //kamera veya ýþýk veya empty
+		else
+		{
+			o = prefab->getObject(node->mName.C_Str());
+
+			if (!o)
+			{
+				o = new Object(node->mName.C_Str());
+			}
+		}
 
 		PrefabNode *tmpprefabNode = new PrefabNode(o, glm::make_mat4(node->mTransformation[0]));
 		rootPNode->addChild(tmpprefabNode);
+
 		for (int i = 0; i < node->mNumChildren; i++)
 		{
 			processNode(meshes,prefab, tmpprefabNode, node->mChildren[i], scene);
@@ -125,65 +140,18 @@ namespace ModelLoader
 
 		return tmpMesh;
 	}
-
-	Camera * generateCamera(const aiCamera *camera)
+	
+	Object *generateLight(const aiLight *light)
 	{
-		Camera *c = new Camera(camera->mHorizontalFOV, camera->mAspect, camera->mClipPlaneNear, camera->mClipPlaneFar, camera->mName.C_Str());
+		Object *c = new Object(light->mName.C_Str());
+		c->componentObject->addComponent(new LightComponent((LightType)light->mType, aicolortovec3(light->mColorDiffuse), aicolortovec3(light->mColorAmbient), aicolortovec3(light->mColorSpecular)));
 		return c;
 	}
 
-	Light *generateLight(const aiLight *light)
+	Object * generateCamera(const aiCamera *camera)
 	{
-		Light *l = new Light((LightType)light->mType, aicolortovec3(light->mColorDiffuse), aicolortovec3(light->mColorAmbient), aicolortovec3(light->mColorSpecular), light->mName.C_Str());
-		return l;
+		Object *c = new Object(camera->mName.C_Str());
+		c->componentObject->addComponent(new CameraComponent(camera->mHorizontalFOV, camera->mAspect, camera->mClipPlaneNear, camera->mClipPlaneFar));
+		return c;
 	}
-
-	//void processNode(Model *model, aiNode *node, const aiScene *scene);
-	//Model * loadModelFromFile(const char *path);
-	//Mesh *createMesh(aiMesh *mesh);
-
-	//Model * loadModelFromFile(const char *path)
-	//{
-	//	Assimp::Importer importer;
-
-	//	const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-	//	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
-	//	{
-	//		std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
-	//		return NULL;
-	//	}
-
-
-
-	//	std::string name = path;
-	//	name = name.substr(name.find_last_of('\\') + 1, name.find_last_of('.') - name.find_last_of('\\') - 1);
-
-	//	Model *m = new Model(name);
-	//	processNode(m, scene->mRootNode, scene);
-
-	//	return NULL;
-	//}
-
-	//void processNode(Model *model, aiNode *node, const aiScene *scene)
-	//{
-	//	for (int i = 0; i < node->mNumMeshes; i++)
-	//	{
-	//		Mesh *m = createMesh(scene->mMeshes[node->mMeshes[i]]);
-
-
-	//	}
-
-	//	for (int i = 0; i < node->mNumChildren; i++)
-	//	{
-	//		processNode(model, node->mChildren[i], scene);
-	//	}
-	//}
-
-	//Mesh *createMesh(aiMesh *mesh)
-	//{
-	//	Mesh * m = new Mesh();
-	//	return m;
-	//}
-
-
 };

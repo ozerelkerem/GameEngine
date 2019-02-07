@@ -123,14 +123,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="engine2\Camera.cpp" />
+    <ClCompile Include="engine2\ComponentSystem.cpp" />
+    <ClCompile Include="engine2\Actor.cpp" />
+    <ClCompile Include="engine2\CameraComponent.cpp" />
+    <ClCompile Include="engine2\Component.cpp" />
+    <ClCompile Include="engine2\ComponentObject.cpp" />
+    <ClCompile Include="engine2\Scene.cpp" />
+    <ClCompile Include="engine2\SceneCamera.cpp" />
+    <ClCompile Include="engine2\Shader.cpp" />
+    <ClCompile Include="engine2\Transform.cpp" />
+    <ClCompile Include="engine2\GameBase.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_impl_glfw.cpp" />
     <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="engine2\Light.cpp" />
+    <ClCompile Include="engine2\LightComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine2\Object.cpp" />
     <ClCompile Include="engine2\Mesh.cpp" />
@@ -138,9 +147,23 @@
     <ClCompile Include="engine2\Prefab.cpp" />
     <ClCompile Include="engine2\Material.cpp" />
     <ClCompile Include="engine2\PrefabNode.cpp" />
+    <ClCompile Include="engine2\ModelComponent.cpp" />
+    <ClCompile Include="engine2\Renderer.cpp" />
+    <ClCompile Include="engine2\SceneRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine2\Camera.h" />
+    <ClInclude Include="engine2\ComponentSystem.h" />
+    <ClInclude Include="engine2\Actor.h" />
+    <ClInclude Include="engine2\CameraComponent.h" />
+    <ClInclude Include="engine2\Component.h" />
+    <ClInclude Include="engine2\ComponentObject.h" />
+    <ClInclude Include="engine2\GameEngine.h" />
+    <ClInclude Include="engine2\ModelLoader.h" />
+    <ClInclude Include="engine2\Scene.h" />
+    <ClInclude Include="engine2\SceneCamera.h" />
+    <ClInclude Include="engine2\Shader.h" />
+    <ClInclude Include="engine2\Transform.h" />
+    <ClInclude Include="engine2\GameBase.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_glfw.h" />
     <ClInclude Include="imgui\imgui_impl_opengl3.h" />
@@ -149,16 +172,18 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="engine2\Object.h" />
-    <ClInclude Include="engine2\Light.h" />
     <ClInclude Include="engine2\Mesh.h" />
     <ClInclude Include="engine2\Model.h" />
-    <ClInclude Include="engine2\ModelLoader.h" />
     <ClInclude Include="engine2\Material.h" />
+    <ClInclude Include="engine2\LightComponent.h" />
+    <ClInclude Include="engine2\ModelComponent.h" />
     <ClInclude Include="ogl\GLFW\glfw3.h" />
     <ClInclude Include="ogl\GLFW\glfw3native.h" />
     <ClInclude Include="ogl\GL\glew.h" />
     <ClInclude Include="engine2\Prefab.h" />
     <ClInclude Include="engine2\PrefabNode.h" />
+    <ClInclude Include="engine2\Renderer.h" />
+    <ClInclude Include="engine2\SceneRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Debug\glew32.dll" />

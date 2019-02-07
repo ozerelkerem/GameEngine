@@ -2,8 +2,9 @@
 
 
 
-Model::Model(std::string name) : Object(name)
+Model::Model(std::string name)
 {
+	this->name = name;
 	numOfMeshes = 0;
 	meshes = (Mesh**)calloc(numOfMeshes + 1, sizeof(Mesh*));
 }

@@ -5,7 +5,6 @@ Scene::Scene()
 {
 	objectCounter = 1;
 	rootObject = new Object("root", this);
-	
 }
 
 Object * Scene::getObjectByID(int id)
