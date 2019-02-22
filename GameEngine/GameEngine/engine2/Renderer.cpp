@@ -4,8 +4,8 @@
 
 Renderer::Renderer(GameBase *gb)
 {
-	normalShader = new Shader("engine2/shaders/mainShadervs.glsl", "engine2/shaders/mainShaderfs.glsl");
-
+	
+	
 	gamebase = gb;
 }
 
@@ -25,6 +25,7 @@ void Renderer::renderModels()
 
 			for (auto actor : modelmap.second)
 			{
+				
 				normalShader->setMat4("modelMatrix", actor->transformation->realMatrix);
 				modelmap.first->meshes[i]->render();
 			}

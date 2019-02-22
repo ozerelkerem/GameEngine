@@ -1,6 +1,9 @@
 #pragma once
 #include <Renderer.h>
+
 #include <SceneCamera.h>
+#include <Grid.h>
+
 #define sceneMaxWidth 2000
 #define sceneMaxHeight 2000
 
@@ -14,6 +17,7 @@ public:
 	glm::vec2 sceneSize;
 
 	SceneCamera *sceneCamera;
+	Grid *grid;
 
 	void render();
 

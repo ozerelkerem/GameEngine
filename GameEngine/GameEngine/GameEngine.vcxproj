@@ -133,6 +133,7 @@
     <ClCompile Include="engine2\Shader.cpp" />
     <ClCompile Include="engine2\Transform.cpp" />
     <ClCompile Include="engine2\GameBase.cpp" />
+    <ClCompile Include="engine2\Grid.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="engine2\Shader.h" />
     <ClInclude Include="engine2\Transform.h" />
     <ClInclude Include="engine2\GameBase.h" />
+    <ClInclude Include="engine2\Grid.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_glfw.h" />
     <ClInclude Include="imgui\imgui_impl_opengl3.h" />

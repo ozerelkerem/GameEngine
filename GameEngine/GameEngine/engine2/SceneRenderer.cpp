@@ -6,6 +6,8 @@ SceneRenderer::SceneRenderer(GameBase *b) : Renderer(b)
 {
 	sceneCamera = new SceneCamera(glm::vec3(200, -500, 200), 90, 0);
 	GenerateBuffers();
+
+	grid = new Grid(16, 1, colorShader->getProgramID());
 }
 
 
@@ -15,6 +17,7 @@ SceneRenderer::~SceneRenderer()
 
 void SceneRenderer::render()
 {
+	
 	glEnable(GL_DEPTH_TEST);
 
 	glViewport(0, 0, sceneSize.x, sceneSize.y);
@@ -30,6 +33,12 @@ void SceneRenderer::render()
 	normalShader->setMat4("projectionMatrix", sceneCamera->projectionMatrix);
 	
 	renderModels();
+
+	colorShader->Use();
+	colorShader->setMat4("viewMatrix", sceneCamera->viewMatrix);
+	colorShader->setMat4("projectionMatrix", sceneCamera->projectionMatrix);
+	colorShader->setMat4("modelMatrix", glm::mat4(1));
+	grid->Draw();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

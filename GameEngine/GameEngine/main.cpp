@@ -37,6 +37,9 @@ SceneRenderer * sceneRenderer;
 GameBase *gameBase = new GameBase(scene);
 
 
+Shader *normalShader;
+Shader *colorShader;
+
 void drawHiearchy(Actor * root);
 void handle_dropped_file(const char *path)
 {
@@ -135,10 +138,15 @@ int main(int, char**)
 
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+	normalShader = new Shader("engine2/shaders/mainShadervs.glsl", "engine2/shaders/mainShaderfs.glsl");
+	colorShader = new Shader("engine2/shaders/colorShadervs.glsl", "engine2/shaders/colorShaderfs.glsl");
+
 	sceneRenderer = new SceneRenderer(gameBase);
 
 	double prevMousePosition[2];
 	bool travelMode = false, travelMode2 = false, toolMode = false;
+
+
 
 
 	// Main loop
@@ -152,7 +160,7 @@ int main(int, char**)
 
 		/**/
 		
-		
+	
 
 	
 		
@@ -215,14 +223,14 @@ int main(int, char**)
 			{
 				viewportSize = ImGui::GetWindowSize();
 				viewportSize.y -= 35;
+				
 				//sceneRenderer->Update(glm::vec2(viewportSize.x, viewportSize.y));
+				
 				sceneRenderer->sceneSize.x = viewportSize.x;
 				sceneRenderer->sceneSize.y = viewportSize.y;
 				/*
 				ImGui::SetCursorPosY(21);
 				ImGui::SetCursorPosX(0);
-
-			
 
 				int x = ImGui::GetMousePos().x - ImGui::GetWindowPos().x;
 				int y = ImGui::GetMousePos().y - ImGui::GetWindowPos().y - 20;
@@ -278,7 +286,7 @@ int main(int, char**)
 				sceneRenderer->render();
 
 				ImGui::Image((void*)sceneRenderer->GetTextureColorBuffer(), viewportSize, { 0,0 }, { viewportSize.x / sceneMaxWidth, viewportSize.y / sceneMaxHeight });
-/*
+
 				//travel mode1 rotating camera if travelmode1 works, travelmode2 does not
 				{
 					if (ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(1))
@@ -313,7 +321,7 @@ int main(int, char**)
 						glfwSetCursorPos(window, midx, midy);
 					}
 				}
-
+				
 				//travel mode2 camera up down
 				{
 					if (ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(ImGuiMouse_Middle_) && !travelMode)
@@ -377,9 +385,9 @@ int main(int, char**)
 						else
 							sceneRenderer->sceneCamera->MoveBackward();
 				}
-				*/
 			}
 			ImGui::End();
+			
 			/*
 			ImGui::Begin("Game", NULL);
 			{

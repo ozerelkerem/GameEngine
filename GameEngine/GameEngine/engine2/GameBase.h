@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Scene.h>
+#include <Shader.h>
+
 class GameBase
 {
 public:
@@ -10,4 +12,3 @@ public:
 	Scene *currentScene;
 
 };
-

@@ -1,6 +1,9 @@
 #pragma once
 #include <Shader.h>
 #include <GameBase.h>
+
+extern Shader *normalShader;
+extern Shader *colorShader;
 class Renderer
 {
 public:
@@ -8,7 +11,7 @@ public:
 	~Renderer();
 
 	/*Shaders*/
-	Shader *normalShader;
+
 
 	GameBase *gamebase;
 
