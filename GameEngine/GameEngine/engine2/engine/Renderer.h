@@ -1,6 +1,6 @@
 #pragma once
-#include <Shader.h>
-#include <GameBase.h>
+#include <engine/Shader.h>
+#include <engine/GameBase.h>
 
 extern Shader *normalShader;
 extern Shader *colorShader;

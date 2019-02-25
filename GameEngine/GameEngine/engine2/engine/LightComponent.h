@@ -1,6 +1,8 @@
 #pragma once
+
 #include <glm/glm.hpp>
-#include <Component.h>
+
+#include <engine/Component.h>
 
 
 enum LightType { Undefined, Directional, Point, Spotlight };

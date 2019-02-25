@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Scene.h>
-#include <Shader.h>
+#include <engine/Scene.h>
+#include <engine/Shader.h>
 
 class GameBase
 {

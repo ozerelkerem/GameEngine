@@ -1,10 +1,10 @@
 #pragma once
-#include <Renderer.h>
+#include <engine/Renderer.h>
+#include <engine/Actor.h>
 
-#include <SceneCamera.h>
-#include <Grid.h>
-#include <Actor.h>
-#include <SceneTools.h>
+#include <editor/SceneCamera.h>
+#include <editor/Grid.h>
+#include <editor/SceneTools.h>
 
 #define sceneMaxWidth 2000
 #define sceneMaxHeight 2000

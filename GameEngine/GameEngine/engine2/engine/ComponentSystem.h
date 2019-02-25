@@ -1,8 +1,9 @@
 #pragma once
 
-#include <Model.h>
-#include <Actor.h>
-#include <ModelComponent.h>
+#include <engine/Model.h>
+#include <engine/Actor.h>
+#include <engine/ModelComponent.h>
+
 #include <unordered_map>
 #include <forward_list>
 

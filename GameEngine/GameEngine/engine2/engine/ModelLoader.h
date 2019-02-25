@@ -1,12 +1,13 @@
 #pragma once
 
-#include <Prefab.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-#include <CameraComponent.h>
-#include <LightComponent.h>
-#include <ModelComponent.h>
+
+#include <engine/Prefab.h>
+#include <engine/CameraComponent.h>
+#include <engine/LightComponent.h>
+#include <engine/ModelComponent.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>

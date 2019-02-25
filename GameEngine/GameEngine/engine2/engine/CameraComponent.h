@@ -1,5 +1,5 @@
 #pragma once
-#include <Component.h>
+#include <engine/Component.h>
 
 class CameraComponent :public Component
 {

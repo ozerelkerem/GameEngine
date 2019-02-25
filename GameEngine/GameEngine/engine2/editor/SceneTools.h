@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Mesh.h"
-#include "Transform.h"
-#include "Shader.h"
+#include <engine/Mesh.h>
+#include <engine/Transform.h>
+#include <engine/Shader.h>
 
-#include <ConstantModels.h>
-#include <SceneRenderer.h>
+#include <editor/ConstantModels.h>
+#include <editor/SceneRenderer.h>
 
 extern Shader* colorShader;
 

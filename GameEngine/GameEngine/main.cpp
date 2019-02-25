@@ -10,12 +10,15 @@
 #include <unordered_set>
 #include <forward_list>
 
-#include <Scene.h>
-#include <SceneRenderer.h>
-#include <ModelLoader.h>
-#include <GameBase.h>
-#include <Component.h>
-#include <CameraComponent.h>
+
+#include <editor/SceneRenderer.h>
+
+#include <engine/Scene.h>
+#include <engine/ModelLoader.h>
+#include <engine/GameBase.h>
+#include <engine/Component.h>
+#include <engine/CameraComponent.h>
+
 #include "ogl/GL/glew.h" 
 #include "ogl/GLFW/glfw3.h"
 #include "ogl/glm/glm.hpp"

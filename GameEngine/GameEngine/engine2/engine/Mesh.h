@@ -1,7 +1,7 @@
 #pragma once
-#include <Material.h>
 
-#include <Object.h>
+#include <engine/Material.h>
+#include <engine/Object.h>
 
 #include <GL/glew.h>
 
