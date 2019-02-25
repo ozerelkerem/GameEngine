@@ -131,8 +131,7 @@ Actor * SceneRenderer::RenderForObjectPicker(GLint x, GLint y)
 			for (auto actor : modelmap.second)
 			{
 				colorShader->setVec3("color", glm::vec3(actor->id / 255.f, 0, 0));
-
-				normalShader->setMat4("modelMatrix", actor->transformation->realMatrix);
+				colorShader->setMat4("modelMatrix", actor->transformation->realMatrix);
 				modelmap.first->meshes[i]->render();
 			}
 

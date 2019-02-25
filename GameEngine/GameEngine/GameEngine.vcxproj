@@ -70,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)engine2;$(ProjectDir)assimp;$(ProjectDir)ogl</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)engine2;$(ProjectDir)imgui;$(ProjectDir)assimp;$(ProjectDir)ogl</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -126,6 +126,7 @@
     <None Include="Debug\glew32.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="engine2\editor\editor.cpp" />
     <ClCompile Include="engine2\editor\Grid.cpp" />
     <ClCompile Include="engine2\editor\SceneCamera.cpp" />
     <ClCompile Include="engine2\editor\SceneRenderer.cpp" />
@@ -157,6 +158,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine2\editor\editor.h" />
     <ClInclude Include="engine2\editor\ConstantModels.h" />
     <ClInclude Include="engine2\editor\Grid.h" />
     <ClInclude Include="engine2\editor\SceneCamera.h" />
