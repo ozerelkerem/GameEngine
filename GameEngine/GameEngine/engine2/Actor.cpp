@@ -5,7 +5,9 @@ Actor::Actor(std::string name, Scene *scene)
 	this->name = name;
 	this->scene = scene;
 	id = scene->actorCounter++;
+
 	transformation = new Transform();
+
 	numberOfChildren = 0;
 	children = (Actor**)calloc((numberOfChildren + 1), sizeof(Actor*));
 	if (name != scene->name)
@@ -91,6 +93,22 @@ bool Actor::RemoveParent()
 	this->AddParent(scene->rootActor);
 
 	return true;
+}
+
+void Actor::processTransformation()
+{
+	RecalculateRealMatrix();
+	
+	for (int i = 0; i < numberOfChildren; i++)
+	{
+		children[i]->processTransformation();
+	}
+}
+
+void Actor::RecalculateRealMatrix()
+{
+	transformation->relativeMatrix = glm::scale(glm::translate(glm::mat4(1), transformation->position) * (glm::toMat4(transformation->qRotation)), transformation->scale);
+	transformation->realMatrix = parent->transformation->realMatrix * transformation->relativeMatrix;
 }
 
 Actor::~Actor()

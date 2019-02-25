@@ -32,5 +32,8 @@ public:
 	bool isParent(Actor * root);
 	bool AddParent(Actor * newParent);
 	bool RemoveParent();
+
+	void processTransformation();
+	void RecalculateRealMatrix();
 };
 

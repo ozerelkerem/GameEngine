@@ -151,6 +151,7 @@
     <ClCompile Include="engine2\ModelComponent.cpp" />
     <ClCompile Include="engine2\Renderer.cpp" />
     <ClCompile Include="engine2\SceneRenderer.cpp" />
+    <ClCompile Include="engine2\SceneTools.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine2\ComponentSystem.h" />
@@ -158,6 +159,7 @@
     <ClInclude Include="engine2\CameraComponent.h" />
     <ClInclude Include="engine2\Component.h" />
     <ClInclude Include="engine2\ComponentObject.h" />
+    <ClInclude Include="engine2\ConstantModels.h" />
     <ClInclude Include="engine2\GameEngine.h" />
     <ClInclude Include="engine2\ModelLoader.h" />
     <ClInclude Include="engine2\Scene.h" />
@@ -186,6 +188,7 @@
     <ClInclude Include="engine2\PrefabNode.h" />
     <ClInclude Include="engine2\Renderer.h" />
     <ClInclude Include="engine2\SceneRenderer.h" />
+    <ClInclude Include="engine2\SceneTools.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Debug\glew32.dll" />

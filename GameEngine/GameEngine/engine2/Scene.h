@@ -28,6 +28,6 @@ public:
 	Actor *findActor(Actor*, int);
 	
 	void addActor(Prefab *, glm::vec3);
-	void recursionPrefab(PrefabNode *, Actor *);
+	void recursionPrefab(PrefabNode *, glm::mat4 , Actor *);
 };
 

@@ -5,9 +5,16 @@
 #include "../ogl/glm/gtx/quaternion.hpp"
 #include "../ogl/glm/gtx/transform.hpp"
 
+#include <glm/gtc/constants.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+
 class Transform
 {
 public:
+	Transform();
+
+	void divideRealMatrix();
+
 	glm::vec3 position;
 	glm::quat qRotation;
 	glm::vec3 eRotation;
@@ -15,8 +22,6 @@ public:
 	
 	glm::mat4 relativeMatrix;
 	glm::mat4 realMatrix;
-
-	Transform();
 
 	void calcEulerFromQuat();
 	void calcQuatFromEuler();

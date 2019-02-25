@@ -29,25 +29,27 @@ Actor *Scene::findActor(Actor *root, int target)
 
 void Scene::addActor(Prefab *prefab, glm::vec3 pos)
 {
-	recursionPrefab(prefab->rootNode, this->rootActor);
+	recursionPrefab(prefab->rootNode, glm::mat4(1), this->rootActor);
 }
 
-void Scene::recursionPrefab(PrefabNode *node, Actor *actorNode)
+void Scene::recursionPrefab(PrefabNode *node, glm::mat4 parent, Actor *actorNode)
 {
 	Actor *a = new Actor(node->object->name, this);
 	for (auto t : node->object->componentObject->componentlist)
 		for (auto c : t.second)
 			a->componentObject->addComponent(c->copy());
 	
-	a->transformation->relativeMatrix = node->transformation;
-	a->transformation->realMatrix = node->transformation;
+	a->transformation->relativeMatrix = glm::transpose(node->transformation);
+	glm::mat4 temp = parent *a->transformation->relativeMatrix ;
+	a->transformation->realMatrix = temp;
+	a->transformation->divideRealMatrix();
 	a->AddParent(actorNode);
 	componentSystem->addActor(a);
 
 			
 	for (int i = 0; i < node->numofChildren; i++)
 	{
-		recursionPrefab(node->children[i], a);
+		recursionPrefab(node->children[i], temp, a);
 	}
 }
 

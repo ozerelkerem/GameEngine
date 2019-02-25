@@ -158,17 +158,7 @@ int main(int, char**)
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		/**/
 		
-	
-
-	
-		
-
-		/**/
-
-
-		/*
 		{
 			static bool opt_fullscreen_persistant = true;
 			static ImGuiDockNodeFlags opt_flags = ImGuiDockNodeFlags_None;
@@ -217,8 +207,7 @@ int main(int, char**)
 				ImGui::EndMenuBar();
 			}
 			ImGui::End();
-
-			*/
+			
 			ImGui::Begin("Scene", NULL);
 			{
 				viewportSize = ImGui::GetWindowSize();
@@ -228,7 +217,7 @@ int main(int, char**)
 				
 				sceneRenderer->sceneSize.x = viewportSize.x;
 				sceneRenderer->sceneSize.y = viewportSize.y;
-				/*
+				
 				ImGui::SetCursorPosY(21);
 				ImGui::SetCursorPosX(0);
 
@@ -238,12 +227,11 @@ int main(int, char**)
 				if (ImGui::IsKeyPressed(GLFW_KEY_ESCAPE))
 				{
 					toolMode = travelMode = travelMode2  = false;
-					sceneRenderer->selectedObject = NULL;
+					sceneRenderer->selectedActor = NULL;
 				}
 
 				//toolmode
 				{
-
 					if (ImGui::IsKeyDown(GLFW_KEY_S) && !travelMode)
 						sceneRenderer->sceneTool->mode = SCALE;
 
@@ -268,8 +256,10 @@ int main(int, char**)
 							normal = { 0,1,0 };
 						glm::vec2 size; size.x = viewportSize.x; size.y = viewportSize.y;
 
-						sceneRenderer->sceneTool->transObjects(sceneRenderer->selectedObject->transform, x, y, io.MouseDelta.x, io.MouseDelta.y,
+						sceneRenderer->sceneTool->transObjects(sceneRenderer->selectedActor->transformation, x, y, io.MouseDelta.x, io.MouseDelta.y,
 							sceneRenderer->sceneCamera->position, sceneRenderer->sceneCamera->screenToWorld(x, y, normal, size));
+						
+						sceneRenderer->selectedActor->processTransformation();
 					}
 
 					if (toolMode && ImGui::IsMouseReleased(ImGuiMouse_Left_))
@@ -279,9 +269,9 @@ int main(int, char**)
 
 					if (!toolMode && ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(ImGuiMouse_Left_))
 					{
-						sceneRenderer->selectedObject = sceneRenderer->RenderForObjectPicker(x, y);
+						sceneRenderer->selectedActor = sceneRenderer->RenderForObjectPicker(x, y);
 					}
-				}*/
+				}
 
 				sceneRenderer->render();
 
@@ -388,20 +378,20 @@ int main(int, char**)
 			}
 			ImGui::End();
 			
-			/*
 			ImGui::Begin("Game", NULL);
 			{
 			}
 			ImGui::End();
 
+			
 			ImGui::Begin("Scene Properties", NULL);
 			{
 				if (ImGui::CollapsingHeader("Grid", ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					ImGui::DragInt("Line Count", &(sceneRenderer->GetGrid()->lineCount), 1, 2, 1000);
-					if (ImGui::DragFloat("Space Lenght", &(sceneRenderer->GetGrid()->spaceLength), 1.0f, 0.01f, 1000.f) && !sceneRenderer->GetGrid()->spaceLength)
-						sceneRenderer->GetGrid()->spaceLength = 1;
-					ImGui::ColorEdit3("Grid Color", (sceneRenderer->GetGrid()->gridColor));
+					ImGui::DragInt("Line Count", &(sceneRenderer->grid->lineCount), 1, 2, 1000);
+					if (ImGui::DragFloat("Space Lenght", &(sceneRenderer->grid->spaceLength), 1.0f, 0.01f, 1000.f) && !sceneRenderer->grid->spaceLength)
+						sceneRenderer->grid->spaceLength = 1;
+					ImGui::ColorEdit3("Grid Color", (sceneRenderer->grid->gridColor));
 				}
 				if (ImGui::CollapsingHeader("Render Settings", ImGuiTreeNodeFlags_DefaultOpen))
 				{
@@ -415,51 +405,53 @@ int main(int, char**)
 			}
 			ImGui::End();
 
+			
 			ImGui::Begin("Object Properties", NULL);
 			{
-				if (!sceneRenderer->selectedObject)
-					ImGui::Text("Please Select a Object");
+				if (!sceneRenderer->selectedActor)
+					ImGui::Text("Please Select a Actor");
 				else
 				{
-
+					ImGui::Text(sceneRenderer->selectedActor->name.c_str());
 					if (ImGui::CollapsingHeader("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
 					{
-						if(ImGui::DragFloat3("Position", &sceneRenderer->selectedObject->transform->position[0], 1.f, -30000.f, 30000.f))
-							sceneRenderer->selectedObject->transform->calcModelMatrix();
-						if (ImGui::DragFloat3("Rotation Eular", &sceneRenderer->selectedObject->transform->eRotation[0], 1.f, -359.99999f, 359.99999f))
+						if(ImGui::DragFloat3("Position", &sceneRenderer->selectedActor->transformation->position[0], 0.1f, -30000.f, 30000.f))
+							sceneRenderer->selectedActor->processTransformation();
+						if (ImGui::DragFloat3("Rotation Eular", &sceneRenderer->selectedActor->transformation->eRotation[0], 1.f, -359.99999f, 359.99999f))
 						{
-							sceneRenderer->selectedObject->transform->calcQuatFromEuler();
-							sceneRenderer->selectedObject->transform->calcModelMatrix();
+							sceneRenderer->selectedActor->transformation->calcQuatFromEuler();
+							sceneRenderer->selectedActor->processTransformation();
 						}
 							
-						if (ImGui::DragFloat4("Rotation Quat", &sceneRenderer->selectedObject->transform->qRotation[0], 1.f, -30000.f, 30000.f))
+						if (ImGui::DragFloat4("Rotation Quat", &sceneRenderer->selectedActor->transformation->qRotation[0], 1.f, -30000.f, 30000.f))
 						{
-							sceneRenderer->selectedObject->transform->calcEulerFromQuat();
-							sceneRenderer->selectedObject->transform->calcModelMatrix();
+							sceneRenderer->selectedActor->transformation->calcEulerFromQuat();
+							sceneRenderer->selectedActor->processTransformation();
 						}
-						if (ImGui::DragFloat3("Scale", &sceneRenderer->selectedObject->transform->scale[0], 1.f, -30000.f, 30000.f))
+						if (ImGui::DragFloat3("Scale", &sceneRenderer->selectedActor->transformation->scale[0], 1.f, -30000.f, 30000.f))
 						{
-							sceneRenderer->selectedObject->transform->calcModelMatrix();
+							sceneRenderer->selectedActor->processTransformation();
 						}
 
 					}
 				}
 			}
 			ImGui::End();
+			
 
 			ImGui::Begin("Project Explorer", NULL);
-			ImGui::End();*/
+			ImGui::End();
 
 			ImGui::Begin("Hierarchy", NULL);
 			{
 				drawHiearchy(scene->rootActor);		
 			}
 			ImGui::End();
-			/*
+			
 			ImGui::Begin("Create Object", NULL);
 			ImGui::End();
+			
 		}
-		*/
 
 		// Rendering
 		ImGui::Render();
@@ -501,62 +493,63 @@ void drawHiearchy(Actor * root)
 		src_flags = ImGuiTreeNodeFlags_Leaf;
 	else
 		src_flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_OpenOnArrow;
-	/*if (sceneRenderer->selectedObject == root)
-		src_flags |= ImGuiTreeNodeFlags_Selected;*/
+	if (sceneRenderer->selectedActor == root)
+		src_flags |= ImGuiTreeNodeFlags_Selected;
 
 	bool node_open = ImGui::TreeNodeEx((void *)root, src_flags, root->name.c_str());
 
 	//right click popup
 	{
-	/*	ImGui::PushID(root->name.c_str());
+		ImGui::PushID(root->name.c_str());
 		if (ImGui::BeginPopupContextItem())
 		{
 			if (ImGui::MenuItem("Delete") && root->name != "root")
 			{
-				root->RemoveObject();
-				sceneRenderer->selectedObject = NULL;
+				root->RemoveActor();
+				sceneRenderer->selectedActor = NULL;
 			}
 			ImGui::EndPopup();
 		}
-		ImGui::PopID();*/
+		ImGui::PopID();
 	}
 
 
-	//{
-	//	ImGuiDragDropFlags src_flags = 0;
-	//	src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;     // Keep the source displayed as hovered
-	//	src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers; // Because our dragging is local, we disable the feature of opening foreign treenodes/tabs while dragging
-	//	//src_flags |= ImGuiDragDropFlags_SourceNoPreviewTooltip; // Hide the tooltip
-	//	//drag and drop 
-	//	{
-	//		if (root->name != "root" && ImGui::BeginDragDropSource(src_flags))
-	//		{
-	//			if (!(src_flags & ImGuiDragDropFlags_SourceNoPreviewTooltip))
-	//			{
-	//				ImGui::Text("%s", root->name.c_str());
-	//				sceneRenderer->hoveredObject = root;
-	//			}
+	{
+		ImGuiDragDropFlags src_flags = 0;
+		src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;     // Keep the source displayed as hovered
+		src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers; // Because our dragging is local, we disable the feature of opening foreign treenodes/tabs while dragging
+		//src_flags |= ImGuiDragDropFlags_SourceNoPreviewTooltip; // Hide the tooltip
 
-	//			ImGui::SetDragDropPayload("DND_DEMO_NAME", &n, sizeof(int));
-	//			ImGui::EndDragDropSource();
-	//		}
+		//drag and drop 
+		{
+			if (root->name != "root" && ImGui::BeginDragDropSource(src_flags))
+			{
+				if (!(src_flags & ImGuiDragDropFlags_SourceNoPreviewTooltip))
+				{
+					ImGui::Text("%s", root->name.c_str());
+					sceneRenderer->hoveredActor = root;
+				}
 
-	//		if (ImGui::BeginDragDropTarget())
-	//		{
-	//			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_NAME"))
-	//			{
-	//				if (sceneRenderer->hoveredObject)
-	//					sceneRenderer->hoveredObject->AddParent(root);
-	//				sceneRenderer->hoveredObject = NULL;
-	//			}
-	//			ImGui::EndDragDropTarget();
-	//		}
-	//	}
+				ImGui::SetDragDropPayload("DND_DEMO_NAME", &n, sizeof(int));
+				ImGui::EndDragDropSource();
+			}
 
-	//	if (ImGui::IsItemClicked() && sceneRenderer->scene->rootObject != root)
-	//	{
-	//		sceneRenderer->selectedObject = root;
-	//	}
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_NAME"))
+				{
+					if (sceneRenderer->hoveredActor)
+						sceneRenderer->hoveredActor->AddParent(root);
+					sceneRenderer->hoveredActor = NULL;
+				}
+				ImGui::EndDragDropTarget();
+			}
+		}
+		
+		if (ImGui::IsItemClicked() && sceneRenderer->gamebase->currentScene->rootActor != root)
+		{
+			sceneRenderer->selectedActor = root;
+		}
 
 		if (node_open)
 		{
@@ -564,5 +557,5 @@ void drawHiearchy(Actor * root)
 				drawHiearchy(root->children[i]);
 			ImGui::TreePop();
 		}
-	//}
+	}
 }

@@ -16,5 +16,6 @@ public:
 	bool hasComponent(ComponentType);
 	bool removeComponent(ComponentType);
 	bool removeComponent(Component *c);
+	Component *getComponentByComponentType(ComponentType);
 };
 

@@ -15,7 +15,5 @@ public:
 	Mesh *(*meshes);
 
 	void addMesh(Mesh * m);
-
-
 };
 

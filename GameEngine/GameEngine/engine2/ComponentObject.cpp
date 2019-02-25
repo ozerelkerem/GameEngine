@@ -55,3 +55,11 @@ bool ComponentObject::removeComponent(Component * c)
 
 	return false;
 }
+
+Component * ComponentObject::getComponentByComponentType(ComponentType ct)
+{
+	if (!componentlist[ct].empty())
+		return componentlist[ct].front();
+	else
+		return NULL;
+}

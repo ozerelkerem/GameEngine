@@ -16,21 +16,21 @@
 
 namespace ModelLoader
 {
-	Prefab *loadPrefab(const char *path);
-	Mesh *generateMesh(const aiMesh *mesh);
-	Prefab *processScene(const aiScene *scene, std::string);
-	Material *generateMaterial(const aiMaterial *material);
-	Object * generateCamera(const aiCamera *camera);
-	Object * generateLight(const aiLight *light);
+	static Prefab *loadPrefab(const char *path);
+	static Mesh *generateMesh(const aiMesh *mesh);
+	static Prefab *processScene(const aiScene *scene, std::string);
+	static Material *generateMaterial(const aiMaterial *material);
+	static Object * generateCamera(const aiCamera *camera);
+	static Object * generateLight(const aiLight *light);
 
-	void startingNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene);
-	void processNode(Mesh **meshes, Prefab *prefab, PrefabNode *prefabNode, aiNode *node, const aiScene *scene);
+	static void startingNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene);
+	static void processNode(Mesh **meshes, Prefab *prefab, PrefabNode *prefabNode, aiNode *node, const aiScene *scene);
 
 
-	Prefab *loadPrefab(const char *path)
+	static Prefab *loadPrefab(const char *path)
 	{
 		Assimp::Importer importer;
-		const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+		const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace );
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 		{
 			std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
@@ -41,7 +41,7 @@ namespace ModelLoader
 		return processScene(scene, name);
 	}
 
-	Prefab *processScene(const aiScene *scene, std::string name)
+	static Prefab *processScene(const aiScene *scene, std::string name)
 	{
 		Prefab * prefab = new Prefab(name);
 		
@@ -68,7 +68,7 @@ namespace ModelLoader
 		return prefab;
 	}
 
-	void startingNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene)
+	static void startingNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene)
 	{
 	
 		prefab->rootNode = new PrefabNode(new Object(prefab->name), glm::make_mat4(node->mTransformation[0]));
@@ -79,7 +79,7 @@ namespace ModelLoader
 		}
 	}
 	
-	void processNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene)
+	static void processNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene)
 	{
 		Object *o = NULL;
 		if (node->mNumMeshes > 0) // it is a model
@@ -112,14 +112,14 @@ namespace ModelLoader
 		}
 	}
 
-	Material *generateMaterial(const aiMaterial *material)
+	static Material *generateMaterial(const aiMaterial *material)
 	{
 		Material *m = new Material();
 
 		return m;
 	}
 
-	Mesh * generateMesh(const aiMesh *mesh)
+	static Mesh * generateMesh(const aiMesh *mesh)
 	{
 		unsigned int *indices = (unsigned int *)calloc(mesh->mNumFaces * mesh->mFaces[0].mNumIndices, sizeof(unsigned int));
 		for (int i = 0; i < mesh->mNumFaces; i++)
@@ -141,17 +141,18 @@ namespace ModelLoader
 		return tmpMesh;
 	}
 	
-	Object *generateLight(const aiLight *light)
+	static Object *generateLight(const aiLight *light)
 	{
 		Object *c = new Object(light->mName.C_Str());
 		c->componentObject->addComponent(new LightComponent((LightType)light->mType, aicolortovec3(light->mColorDiffuse), aicolortovec3(light->mColorAmbient), aicolortovec3(light->mColorSpecular)));
 		return c;
 	}
 
-	Object * generateCamera(const aiCamera *camera)
+	static Object * generateCamera(const aiCamera *camera)
 	{
 		Object *c = new Object(camera->mName.C_Str());
 		c->componentObject->addComponent(new CameraComponent(camera->mHorizontalFOV, camera->mAspect, camera->mClipPlaneNear, camera->mClipPlaneFar));
 		return c;
 	}
 };
+
