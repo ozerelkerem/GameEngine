@@ -137,7 +137,7 @@
     <ClCompile Include="engine2\engine\ComponentObject.cpp" />
     <ClCompile Include="engine2\engine\ComponentSystem.cpp" />
     <ClCompile Include="engine2\engine\GameBase.cpp" />
-    <ClCompile Include="engine2\engine\LightComponent.cpp" />
+    <ClCompile Include="engine2\engine\components\LightComponent.cpp" />
     <ClCompile Include="engine2\engine\Material.cpp" />
     <ClCompile Include="engine2\engine\Mesh.cpp" />
     <ClCompile Include="engine2\engine\Model.cpp" />
@@ -171,7 +171,7 @@
     <ClInclude Include="engine2\engine\ComponentSystem.h" />
     <ClInclude Include="engine2\engine\GameBase.h" />
     <ClInclude Include="engine2\engine\GameEngine.h" />
-    <ClInclude Include="engine2\engine\LightComponent.h" />
+    <ClInclude Include="engine2\engine\components\LightComponent.h" />
     <ClInclude Include="engine2\engine\Material.h" />
     <ClInclude Include="engine2\engine\Mesh.h" />
     <ClInclude Include="engine2\engine\Model.h" />

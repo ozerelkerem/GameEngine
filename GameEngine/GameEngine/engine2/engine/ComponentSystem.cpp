@@ -10,7 +10,7 @@ ComponentSystem::ComponentSystem()
 ComponentSystem::~ComponentSystem()
 {
 }
-
+//@TODO ADD LIGHT COMPONENT
 void ComponentSystem::addActor(Actor *a)
 {
 	if (a->componentObject->hasComponent(ComponentType::ModelComp))

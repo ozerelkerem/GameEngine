@@ -826,18 +826,18 @@ static void ShowDemoWindowWidgets()
         // (your selection data could be an index, a pointer to the object, an id for the object, a flag stored in the object itself, etc.)
         const char* items[] = { "AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIII", "JJJJ", "KKKK", "LLLLLLL", "MMMM", "OOOOOOO" };
         static const char* item_current = items[0];            // Here our selection is a single pointer stored outside the object.
-        if (ImGui::BeginCombo("combo 1", item_current, flags)) // The second parameter is the label previewed before opening the combo.
-        {
-            for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-            {
-                bool is_selected = (item_current == items[n]);
-                if (ImGui::Selectable(items[n], is_selected))
-                    item_current = items[n];
-                if (is_selected)
-                    ImGui::SetItemDefaultFocus();   // Set the initial focus when opening the combo (scrolling + for keyboard navigation support in the upcoming navigation branch)
-            }
-            ImGui::EndCombo();
-        }
+			if (ImGui::BeginCombo("combo 1", item_current, flags)) // The second parameter is the label previewed before opening the combo.
+			{
+				for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+				{
+					bool is_selected = (item_current == items[n]);
+					if (ImGui::Selectable(items[n], is_selected))
+						item_current = items[n];
+					if (is_selected)
+						ImGui::SetItemDefaultFocus();   // Set the initial focus when opening the combo (scrolling + for keyboard navigation support in the upcoming navigation branch)
+				}
+				ImGui::EndCombo();
+			}
 
         // Simplified one-liner Combo() API, using values packed in a single constant string
         static int item_current_2 = 0;

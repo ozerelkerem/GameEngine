@@ -46,6 +46,7 @@ void SceneRenderer::render()
 	normalShader->Use();
 	normalShader->setMat4("viewMatrix", sceneCamera->viewMatrix);
 	normalShader->setMat4("projectionMatrix", sceneCamera->projectionMatrix);
+	normalShader->setVec3("viewPos", sceneCamera->position);
 
 	renderModels();
 	

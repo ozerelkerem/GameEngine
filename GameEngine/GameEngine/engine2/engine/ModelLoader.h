@@ -6,7 +6,7 @@
 
 #include <engine/Prefab.h>
 #include <engine/CameraComponent.h>
-#include <engine/LightComponent.h>
+#include <engine/components/LightComponent.h>
 #include <engine/ModelComponent.h>
 
 #include <assimp/Importer.hpp>
@@ -145,7 +145,8 @@ namespace ModelLoader
 	static Object *generateLight(const aiLight *light)
 	{
 		Object *c = new Object(light->mName.C_Str());
-		c->componentObject->addComponent(new LightComponent((LightType)light->mType, aicolortovec3(light->mColorDiffuse), aicolortovec3(light->mColorAmbient), aicolortovec3(light->mColorSpecular)));
+		//	c->componentObject->addComponent(new LightComponent((LightType)light->mType, aicolortovec3(light->mColorDiffuse), aicolortovec3(light->mColorAmbient), aicolortovec3(light->mColorSpecular)));
+		c->componentObject->addComponent(new LightComponent());
 		return c;
 	}
 

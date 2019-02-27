@@ -36,9 +36,6 @@
     <ClCompile Include="engine2\engine\GameBase.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-    <ClCompile Include="engine2\engine\LightComponent.cpp">
-      <Filter>Kaynak Dosyalar</Filter>
-    </ClCompile>
     <ClCompile Include="engine2\engine\Material.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
@@ -108,6 +105,9 @@
     <ClCompile Include="engine2\editor\editor.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
+    <ClCompile Include="engine2\engine\components\LightComponent.cpp">
+      <Filter>Kaynak Dosyalar</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine2\engine\Actor.h">
@@ -129,9 +129,6 @@
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
     <ClInclude Include="engine2\engine\GameEngine.h">
-      <Filter>Üst Bilgi Dosyaları</Filter>
-    </ClInclude>
-    <ClInclude Include="engine2\engine\LightComponent.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
     <ClInclude Include="engine2\engine\Material.h">
@@ -210,6 +207,9 @@
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
     <ClInclude Include="engine2\editor\editor.h">
+      <Filter>Üst Bilgi Dosyaları</Filter>
+    </ClInclude>
+    <ClInclude Include="engine2\engine\components\LightComponent.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
   </ItemGroup>

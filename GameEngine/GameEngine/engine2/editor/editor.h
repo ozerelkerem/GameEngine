@@ -32,6 +32,9 @@ public:
 	void Render();
 	void DrawHierarchy(Actor *);
 
+	void ShowComponentList();
+	void ObjectProperties();
+
 
 	void handle_dropped_file(const char *path);
 	

@@ -1,4 +1,5 @@
 #include "Editor.h"
+#define stringify( name ) # name
 
 
 
@@ -9,6 +10,112 @@ Editor::Editor(GLFWwindow *window)
 	scene = new Scene("Taso");
 	gameBase = new GameBase(scene);
 	sceneRenderer = new SceneRenderer(gameBase);
+}
+
+void Editor::ShowComponentList()
+{
+	for (auto components : this->sceneRenderer->selectedActor->componentObject->componentlist)
+	{
+		for (auto component : components.second)
+		{
+			ImGui::Separator();
+			if (ImGui::CollapsingHeader(ComponentNames[component->getType()], ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				switch (component->getType())
+				{
+					case ComponentType::Light:
+					{
+						LightComponent *lightcomp = (LightComponent *)component;
+		
+						if (ImGui::BeginCombo("##lighttype", LightTypeNames[lightcomp->lightType])) // The second parameter is the label previewed before opening the combo.
+						{
+							for (int n = 0; n < IM_ARRAYSIZE(LightTypeNames); n++)
+							{
+								if (ImGui::Selectable(LightTypeNames[n]))
+									lightcomp->lightType = (LightType)n;
+							}
+							ImGui::EndCombo();
+						}
+
+						ImGui::ColorEdit4("Light Color##LightComponent", (float*)&lightcomp->color, ImGuiColorEditFlags_NoInputs);
+						ImGui::DragFloat("Intensity##LightComponent", &lightcomp->intensity, 0.1f);
+
+						if(lightcomp->lightType == LightType::Spotlight)
+							ImGui::DragFloat("Angle##LightComponent", &lightcomp->angle, 0.1f);
+
+						if (!(lightcomp->lightType == LightType::Directional))
+						{
+							ImGui::DragFloat("Constant##LightComponent", &lightcomp->constant, 0.1f);
+							ImGui::DragFloat("Linear##LightComponent", &lightcomp->linear, 0.1f);
+							ImGui::DragFloat("Quadratic##LightComponent", &lightcomp->quadratic, 0.1f);
+							ImGui::DragFloat("Distance##LightComponent", &lightcomp->distance, 0.1f);
+						}
+
+					}break;
+				
+				}
+			}
+		}
+	
+	}
+}
+
+void Editor::ObjectProperties()
+{
+	ImGui::Begin("Object Properties", NULL);
+	{
+		if (!sceneRenderer->selectedActor)
+			ImGui::Text("Please Select a Actor");
+		else
+		{
+			ImGui::Text(sceneRenderer->selectedActor->name.c_str());
+			if (ImGui::CollapsingHeader("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				if (ImGui::DragFloat3("Position", &sceneRenderer->selectedActor->transformation->position[0], 0.1f, -30000.f, 30000.f))
+					sceneRenderer->selectedActor->processTransformation();
+				if (ImGui::DragFloat3("Rotation Eular", &sceneRenderer->selectedActor->transformation->eRotation[0], 1.f, -359.99999f, 359.99999f))
+				{
+					sceneRenderer->selectedActor->transformation->calcQuatFromEuler();
+					sceneRenderer->selectedActor->processTransformation();
+				}
+
+				if (ImGui::DragFloat4("Rotation Quat", &sceneRenderer->selectedActor->transformation->qRotation[0], 1.f, -30000.f, 30000.f))
+				{
+					sceneRenderer->selectedActor->transformation->calcEulerFromQuat();
+					sceneRenderer->selectedActor->processTransformation();
+				}
+				if (ImGui::DragFloat3("Scale", &sceneRenderer->selectedActor->transformation->scale[0], 1.f, -30000.f, 30000.f))
+				{
+					sceneRenderer->selectedActor->processTransformation();
+				}
+
+				ShowComponentList();
+
+				ImGui::Separator();
+
+				const char *items[] = {"Light Component", "Kokore"};
+				if (ImGui::BeginCombo("##addcomponent", "Add Component", ImGuiComboFlags_NoArrowButton)) // The second parameter is the label previewed before opening the combo.
+				{
+					for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+					{
+						if (ImGui::Selectable(items[n]))
+							switch (n)
+							{
+							case 0://light component
+							{
+								this->sceneRenderer->selectedActor->componentObject->addComponent(new LightComponent());
+							}break;
+
+							default:
+								break;
+							}
+					}
+					ImGui::EndCombo();
+				}
+			}
+		}
+	}
+	ImGui::End();
 }
 
 
@@ -241,6 +348,7 @@ void Editor::Render()
 	}
 	ImGui::End();
 
+	this->ObjectProperties();
 
 	ImGui::Begin("Scene Properties", NULL);
 	{
@@ -264,37 +372,7 @@ void Editor::Render()
 	ImGui::End();
 
 
-	ImGui::Begin("Object Properties", NULL);
-	{
-		if (!sceneRenderer->selectedActor)
-			ImGui::Text("Please Select a Actor");
-		else
-		{
-			ImGui::Text(sceneRenderer->selectedActor->name.c_str());
-			if (ImGui::CollapsingHeader("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
-			{
-				if (ImGui::DragFloat3("Position", &sceneRenderer->selectedActor->transformation->position[0], 0.1f, -30000.f, 30000.f))
-					sceneRenderer->selectedActor->processTransformation();
-				if (ImGui::DragFloat3("Rotation Eular", &sceneRenderer->selectedActor->transformation->eRotation[0], 1.f, -359.99999f, 359.99999f))
-				{
-					sceneRenderer->selectedActor->transformation->calcQuatFromEuler();
-					sceneRenderer->selectedActor->processTransformation();
-				}
-
-				if (ImGui::DragFloat4("Rotation Quat", &sceneRenderer->selectedActor->transformation->qRotation[0], 1.f, -30000.f, 30000.f))
-				{
-					sceneRenderer->selectedActor->transformation->calcEulerFromQuat();
-					sceneRenderer->selectedActor->processTransformation();
-				}
-				if (ImGui::DragFloat3("Scale", &sceneRenderer->selectedActor->transformation->scale[0], 1.f, -30000.f, 30000.f))
-				{
-					sceneRenderer->selectedActor->processTransformation();
-				}
-
-			}
-		}
-	}
-	ImGui::End();
+	
 
 
 	ImGui::Begin("Project Explorer", NULL);
