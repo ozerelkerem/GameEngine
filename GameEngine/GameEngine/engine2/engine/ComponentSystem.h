@@ -10,12 +10,6 @@
 
 class Actor;
 
-struct LightHolder
-{
-	Actor * actor;
-	LightComponent * lightcomp;
-};
-
 class ComponentSystem
 {
 public:
@@ -23,8 +17,25 @@ public:
 	~ComponentSystem();
 
 	std::unordered_map<Model *, std::forward_list<Actor *>> actorsWhichContainsModelComponent;
-	std::list<LightHolder *> actorsWhichContainsLightComponent;
+	std::unordered_map<Actor *, LightComponent *> actorsWhichContainsLightComponent;
 
+
+	void AddComponent(Actor *actor, Component *);
 	void addActor(Actor *);
+
+	void changeModel(Actor *, Model *);
+
+	inline void addLightComponent(Actor *actor, Component *comp) {
+		actorsWhichContainsLightComponent[actor] = (LightComponent *)comp;
+	}
+	inline void addModelComponent(Actor *actor, Component *comp) {
+		bool tf = actorsWhichContainsModelComponent[static_cast<ModelComponent *>(comp)->model].empty();
+		actorsWhichContainsModelComponent[static_cast<ModelComponent *>(comp)->model].push_front(actor);
+		auto model = static_cast<ModelComponent *>(comp)->model;
+		if (tf)
+			for (int i = 0; i < model->numOfMeshes; i++)
+				model->meshes[i]->loadMesh();
+	}
+
 };
 

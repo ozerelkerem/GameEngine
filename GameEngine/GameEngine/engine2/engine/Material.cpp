@@ -2,8 +2,9 @@
 
 
 
-Material::Material()
+Material::Material(std::string name)
 {
+	this->name = name;
 }
 
 

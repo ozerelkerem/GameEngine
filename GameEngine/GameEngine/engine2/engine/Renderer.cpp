@@ -60,3 +60,20 @@ void Renderer::renderModels()
 		}
 	}
 }
+
+void Renderer::prepareLights()
+{
+
+	int maxlight = 7;
+	for (auto lightactor : this->gamebase->currentScene->componentSystem->actorsWhichContainsLightComponent)
+	{
+		lightactor.second->passShader(normalShader, lightactor.first->transformation, maxlight);
+		if (maxlight-- < 0)
+			break;
+	} 
+	while (maxlight-- > 0)
+	{
+		normalShader->setInt("lights[" + std::to_string(maxlight) + "].type", 5);
+	}
+
+}

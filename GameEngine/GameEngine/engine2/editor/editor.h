@@ -10,6 +10,7 @@
 #include <glm/glm.hpp>
 
 #include <editor/SceneRenderer.h>
+#include <editor/ProjectManager.h>
 
 class Editor
 {
@@ -18,15 +19,16 @@ public:
 	~Editor();
 
 	GLFWwindow *window;
-
+	ImVec2 viewportSize = { 1280,720 };
 	double prevMousePosition[2];
+
 	bool travelMode = false, travelMode2 = false, toolMode = false;
 
-
-	ImVec2 viewportSize = { 1280,720 };
-
-	Scene *scene;
 	SceneRenderer * sceneRenderer;
+
+	ProjectManager *projectManager;
+
+
 	GameBase *gameBase;
 
 	void Render();
@@ -41,4 +43,3 @@ public:
 
 
 };
-

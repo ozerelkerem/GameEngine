@@ -1,13 +1,13 @@
 #include "Editor.h"
+
 #define stringify( name ) # name
-
-
 
 Editor::Editor(GLFWwindow *window)
 {
-	
 	this->window = window;
-	scene = new Scene("Taso");
+	Scene *scene = new Scene("Taso");
+	projectManager = new ProjectManager();
+	projectManager->add(scene);
 	gameBase = new GameBase(scene);
 	sceneRenderer = new SceneRenderer(gameBase);
 }
@@ -38,17 +38,56 @@ void Editor::ShowComponentList()
 						}
 
 						ImGui::ColorEdit4("Light Color##LightComponent", (float*)&lightcomp->color, ImGuiColorEditFlags_NoInputs);
-						ImGui::DragFloat("Intensity##LightComponent", &lightcomp->intensity, 0.1f);
+						ImGui::DragFloat("Intensity##LightComponent", &lightcomp->intensity, 0.1f, 0.f);
 
 						if(lightcomp->lightType == LightType::Spotlight)
-							ImGui::DragFloat("Angle##LightComponent", &lightcomp->angle, 0.1f);
+							ImGui::DragFloat("Angle##LightComponent", &lightcomp->angle, 0.1f, 0.f);
 
 						if (!(lightcomp->lightType == LightType::Directional))
 						{
-							ImGui::DragFloat("Constant##LightComponent", &lightcomp->constant, 0.1f);
-							ImGui::DragFloat("Linear##LightComponent", &lightcomp->linear, 0.1f);
-							ImGui::DragFloat("Quadratic##LightComponent", &lightcomp->quadratic, 0.1f);
-							ImGui::DragFloat("Distance##LightComponent", &lightcomp->distance, 0.1f);
+							ImGui::DragFloat("Constant##LightComponent", &lightcomp->constant, 0.1f, 0.f);
+							ImGui::DragFloat("Linear##LightComponent", &lightcomp->linear, 0.1f, 0.f);
+							ImGui::DragFloat("Quadratic##LightComponent", &lightcomp->quadratic, 0.1f, 0.f);
+							ImGui::DragFloat("Distance##LightComponent", &lightcomp->distance, 0.1f, 0.f);
+						}
+
+					}break;
+
+					case ComponentType::ModelComp:
+					{
+						ModelComponent *modelcomp = (ModelComponent *)component;
+						if (ImGui::BeginCombo(("Select Model##selectmodel"), modelcomp->model->name.c_str())) // The second parameter is the label previewed before opening the combo.
+						{
+							for (auto model : projectManager->models)
+							{
+								if (ImGui::Selectable(model->name.c_str()))
+								{
+									gameBase->currentScene->componentSystem->changeModel(sceneRenderer->selectedActor, model);
+									modelcomp->model = model;
+								}
+							}
+							ImGui::EndCombo();
+						}
+						if (ImGui::InputInt("Number of Materials##numberofmaterials", &modelcomp->numberOfMaterials))
+							modelcomp->materials.resize(modelcomp->numberOfMaterials);
+						
+						for (int i = 0; i < modelcomp->numberOfMaterials; i++)
+						{ //meshleri dön
+
+							const char *name = "No Material";
+							if (modelcomp->materials[i])
+								name = modelcomp->materials[i]->name.c_str();
+
+							if (ImGui::BeginCombo(("Material" + std::to_string(i) + "##choicematerial").c_str(), name)) // The second parameter is the label previewed before opening the combo.
+							{
+								for (auto material : projectManager->materials)
+								{//projedeki bütün materialyerlleri göster
+									if (ImGui::Selectable(material->name.c_str()))
+										modelcomp->materials.insert(modelcomp->materials.begin(), 1, material);
+								}
+								ImGui::EndCombo();
+							}
+						
 						}
 
 					}break;
@@ -56,7 +95,6 @@ void Editor::ShowComponentList()
 				}
 			}
 		}
-	
 	}
 }
 
@@ -103,7 +141,7 @@ void Editor::ObjectProperties()
 							{
 							case 0://light component
 							{
-								this->sceneRenderer->selectedActor->componentObject->addComponent(new LightComponent());
+								this->sceneRenderer->selectedActor->AddComponent(new LightComponent());
 							}break;
 
 							default:
@@ -380,7 +418,7 @@ void Editor::Render()
 
 	ImGui::Begin("Hierarchy", NULL);
 	{
-		DrawHierarchy(scene->rootActor);
+		DrawHierarchy(gameBase->currentScene->rootActor);
 	}
 	ImGui::End();
 
@@ -473,11 +511,11 @@ void Editor::handle_dropped_file(const char * path)
 	std::string extension = str.substr(str.find_last_of('.') + 1);
 	if (extension == "fbx")
 	{
-		Prefab *p = ModelLoader::loadPrefab(path);
+		Prefab *p = ModelLoader::loadPrefab(path, projectManager);
 		int a = 3;
 		a = 5;
 
-		scene->addActor(p, glm::vec3(1));
+		gameBase->currentScene->addActor(p, glm::vec3(1));
 
 		a = 5;
 	}

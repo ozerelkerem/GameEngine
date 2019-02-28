@@ -48,6 +48,8 @@ void SceneRenderer::render()
 	normalShader->setMat4("projectionMatrix", sceneCamera->projectionMatrix);
 	normalShader->setVec3("viewPos", sceneCamera->position);
 
+	prepareLights();
+
 	renderModels();
 	
 	colorShader->Use();

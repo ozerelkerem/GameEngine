@@ -5,6 +5,7 @@
 ModelComponent::ModelComponent(Model *m) : Component()
 {
 	model = m;
+	numberOfMaterials = m->numOfMeshes;
 }
 
 

@@ -95,6 +95,12 @@ bool Actor::RemoveParent()
 	return true;
 }
 
+void Actor::AddComponent(Component *r)
+{
+	componentObject->addComponent(r);
+	scene->componentSystem->AddComponent(this,r);
+}
+
 void Actor::processTransformation()
 {
 	RecalculateRealMatrix();

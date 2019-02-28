@@ -33,6 +33,8 @@ public:
 	bool AddParent(Actor * newParent);
 	bool RemoveParent();
 
+	void AddComponent(Component *r);
+
 	void processTransformation();
 	void RecalculateRealMatrix();
 };

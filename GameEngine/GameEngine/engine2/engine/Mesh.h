@@ -20,6 +20,7 @@ public:
 	unsigned int numberOfIndices;
 	unsigned int *indices;
 
+	
 
 	void loadMesh();
 	void bind();

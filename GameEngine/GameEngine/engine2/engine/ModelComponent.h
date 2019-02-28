@@ -13,6 +13,9 @@ public:
 
 	Model *model;
 
+	int numberOfMaterials;
+	std::vector<Material*> materials;
+
 	ComponentType getType() { return ComponentType::ModelComp; }
 	Component * copy() { return new ModelComponent(*this); }
 };

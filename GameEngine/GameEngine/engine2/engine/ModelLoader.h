@@ -8,6 +8,7 @@
 #include <engine/CameraComponent.h>
 #include <engine/components/LightComponent.h>
 #include <engine/ModelComponent.h>
+#include <editor/ProjectManager.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -17,10 +18,10 @@
 
 namespace ModelLoader
 {
-	static Prefab *loadPrefab(const char *path);
+	static Prefab *loadPrefab(const char *path, ProjectManager *project);
 	static Mesh *generateMesh(const aiMesh *mesh);
-	static Prefab *processScene(const aiScene *scene, std::string);
-	static Material *generateMaterial(const aiMaterial *material);
+	static Prefab *processScene(const aiScene *scene, std::string, ProjectManager *project);
+	static Material *generateMaterial(const aiMaterial *material, std::string);
 	static Object * generateCamera(const aiCamera *camera);
 	static Object * generateLight(const aiLight *light);
 
@@ -28,7 +29,7 @@ namespace ModelLoader
 	static void processNode(Mesh **meshes, Prefab *prefab, PrefabNode *prefabNode, aiNode *node, const aiScene *scene);
 
 
-	static Prefab *loadPrefab(const char *path)
+	static Prefab *loadPrefab(const char *path, ProjectManager *project = NULL)
 	{
 		Assimp::Importer importer;
 		const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace );
@@ -39,10 +40,10 @@ namespace ModelLoader
 		}
 		std::string name = path;
 		name = name.substr(name.find_last_of('\\') + 1, name.find_last_of('.') - name.find_last_of('\\') - 1);
-		return processScene(scene, name);
+		return processScene(scene, name, project);
 	}
 
-	static Prefab *processScene(const aiScene *scene, std::string name)
+	static Prefab *processScene(const aiScene *scene, std::string name, ProjectManager *project = NULL)
 	{
 		Prefab * prefab = new Prefab(name);
 		
@@ -54,17 +55,26 @@ namespace ModelLoader
 
 		
 		for (int i = 0; i < scene->mNumMaterials; i++)
-			prefab->addMaterials(generateMaterial(scene->mMaterials[i]));
+		{
+			Material *m = generateMaterial(scene->mMaterials[i], prefab->name + " Material " + std::to_string(i));
+			if (project)
+				project->add(m);
+			prefab->addMaterials(m);
+		}
 
 		Mesh *(*meshes) = (Mesh **)calloc(scene->mNumMeshes,sizeof(Mesh *));
 		for (int i = 0; i < scene->mNumMeshes; i++)
 		{
 			meshes[i] = generateMesh(scene->mMeshes[i]);
-			//meshes[i]->material = prefab->materials[scene->mMeshes[i]->mMaterialIndex];
+		//	meshes[i]->material = prefab->materials[scene->mMeshes[i]->mMaterialIndex];
 		}
 
 		
 		startingNode(meshes, prefab, prefab->rootNode, scene->mRootNode, scene);
+
+		for (int i = 0; i < prefab->numberOfModels; i++)
+			if(project)
+				project->add(prefab->models[i]);
 
 		return prefab;
 	}
@@ -86,13 +96,17 @@ namespace ModelLoader
 		if (node->mNumMeshes > 0) // it is a model
 		{
 			Model *m = new Model(node->mName.C_Str());
+			ModelComponent *mc = new ModelComponent(m);
 			for (int i = 0; i < node->mNumMeshes; i++)
 			{
 				m->addMesh(meshes[node->mMeshes[i]]);
+				mc->materials.insert(mc->materials.begin(), 1, prefab->materials[scene->mMeshes[node->mMeshes[i]]->mMaterialIndex]);
 			}
 			prefab->addModel(m);
 			o = new Object(node->mName.C_Str());
-			o->componentObject->addComponent(new ModelComponent(m));
+	
+			
+			o->componentObject->addComponent(mc);
 		}
 		else
 		{
@@ -113,9 +127,11 @@ namespace ModelLoader
 		}
 	}
 
-	static Material *generateMaterial(const aiMaterial *material)
+	static Material *generateMaterial(const aiMaterial *material, std::string name)
 	{
-		Material *m = new Material();
+		
+
+		Material *m = new Material(name);
 
 		return m;
 	}

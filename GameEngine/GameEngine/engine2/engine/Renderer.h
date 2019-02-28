@@ -19,6 +19,7 @@ public:
 
 	virtual void render() = 0;
 	void renderModels();
+	void prepareLights();
 
 };
 

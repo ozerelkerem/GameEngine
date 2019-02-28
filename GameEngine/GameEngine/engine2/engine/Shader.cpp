@@ -94,4 +94,10 @@ void Shader::setMat4(const std::string &name, const glm::mat4 &m4)
 	glUniformMatrix4fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, &m4[0][0]);
 }
 
+void Shader::setInt(const std::string &name, const int &val)
+{
+	glUniform1i(glGetUniformLocation(programID, name.c_str()), val);
+}
+
+
 unsigned int Shader::getProgramID() { return programID; }

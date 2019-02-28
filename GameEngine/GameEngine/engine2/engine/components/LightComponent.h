@@ -3,7 +3,8 @@
 #include <glm/glm.hpp>
 
 #include <engine/Component.h>
-
+#include <engine/Transform.h>
+#include <engine/Shader.h>
 
 enum LightType { Point, Directional, Spotlight };
 
@@ -28,6 +29,8 @@ public:
 	float quadratic;
 	float distance;
 	float intensity;
+
+	void passShader(Shader *s, Transform *, int);
 
 	ComponentType getType() { return ComponentType::Light; }
 	Component * copy() { return new LightComponent(*this); }

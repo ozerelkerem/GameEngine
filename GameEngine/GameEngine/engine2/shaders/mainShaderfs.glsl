@@ -36,7 +36,7 @@ void main()
 	vec3 specular = vec3(0, 0, 0);
 
 	
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < MAX_LIGHT_COUNT; i++)
 	{		
 		if (lights[i].type == LIGHT_POINT)
 		{
@@ -52,11 +52,11 @@ void main()
 			float diff = max(dot(lights[i].direction, v_normal), 0.f);
 			diffuse += (lights[i].color * diff) * lights[i].intensity;
 		}
-		else // SPOTLIGHT
+		else if(lights[i].type == LIGHT_SPOT) // SPOTLIGHT
 		{
 			vec3 lightDir = normalize(lights[i].position - v_position);
-			float theta = dot(lightDir, normalize(-lights[i].direction));
-			if (lights[i].angle < theta)
+			float theta = acos(dot(lightDir, normalize(-lights[i].direction)));
+			if (lights[i].angle > theta)
 			{
 				float diff = max(dot(lightDir, v_normal), 0.f);
 				float distance = length(lights[i].position - v_position);
