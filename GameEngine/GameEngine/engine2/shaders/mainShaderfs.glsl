@@ -12,7 +12,6 @@ struct Light{
 	vec3 color;
 	float angle;
 
-	//attenuation
 	float constant;
 	float linear;
 	float quadratic;
@@ -20,8 +19,18 @@ struct Light{
 	float intensity;
 };
 
+struct Material
+{
+	sampler2D ambientTexture;
+	vec3 ambientColor;
+	int hasTexture;
+};
+
+
+uniform Material material;
 uniform Light lights[MAX_LIGHT_COUNT];
 uniform uint curLightCount;
+
 
 uniform vec3 viewPos;
 
@@ -29,10 +38,16 @@ out vec4 FragColor;
 
 in vec3 v_normal;
 in vec3 v_position;
+in vec2 v_textureCoords;
 
 void main()
 {
-	vec3 diffuse = vec3(0, 0, 0);
+	vec3 diffuse;
+	vec3 diffuseLight = vec3(0,0,0);
+	if(material.hasTexture > 0)
+		diffuse = vec3(texture(material.ambientTexture, v_textureCoords));
+	else
+		diffuse = material.ambientColor;
 	vec3 specular = vec3(0, 0, 0);
 
 	
@@ -44,13 +59,13 @@ void main()
 			float diff = max(dot(lightDir, v_normal), 0.f);
 			float distance = length(lights[i].position - v_position);
 			float attenuation = 1.0 / (lights[i].constant + lights[i].linear * distance + lights[i].quadratic * distance * distance);
-			diffuse += (lights[i].color * diff) * attenuation * lights[i].intensity;
+			diffuseLight += (lights[i].color * diff) * attenuation * lights[i].intensity;
 
 		}
 		else if (lights[i].type == LIGHT_DIRECTIONAL)
 		{
 			float diff = max(dot(lights[i].direction, v_normal), 0.f);
-			diffuse += (lights[i].color * diff) * lights[i].intensity;
+			diffuseLight += (lights[i].color * diff) * lights[i].intensity;
 		}
 		else if(lights[i].type == LIGHT_SPOT) // SPOTLIGHT
 		{
@@ -61,7 +76,7 @@ void main()
 				float diff = max(dot(lightDir, v_normal), 0.f);
 				float distance = length(lights[i].position - v_position);
 				float attenuation = 1.0 / (lights[i].constant + lights[i].linear * distance + lights[i].quadratic * distance * distance);
-				diffuse += (lights[i].color * diff) * attenuation * lights[i].intensity;
+				diffuseLight += (lights[i].color * diff) * attenuation * lights[i].intensity;
 			}
 				
 
@@ -93,7 +108,7 @@ void main()
 	else
 		FragColor = vec4(0, 0, 1, 1);*/
 
-	FragColor = vec4(diffuse, 1);
+	FragColor = vec4(diffuse * diffuseLight, 1.0f);
 
 
 }

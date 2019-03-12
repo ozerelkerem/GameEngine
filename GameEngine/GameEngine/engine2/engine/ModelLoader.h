@@ -3,6 +3,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
+#include<string.h>
 
 #include <engine/Prefab.h>
 #include <engine/CameraComponent.h>
@@ -13,6 +14,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include<assimp/types.h>
 
 #define aicolortovec3(x) glm::vec3(x.r, x.g, x.b)
 
@@ -129,9 +131,13 @@ namespace ModelLoader
 
 	static Material *generateMaterial(const aiMaterial *material, std::string name)
 	{
-		
-
 		Material *m = new Material(name);
+		if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
+		{
+			aiString *path = new aiString();
+			material->GetTexture(aiTextureType_DIFFUSE, 0, path);
+			m->ambientTexture = new Texture(path->data);
+		}
 
 		return m;
 	}
@@ -153,7 +159,26 @@ namespace ModelLoader
 			for (int j = 0; j < 3; j++)
 				normals[i * 3 + j] = mesh->mNormals[i][j];
 
-		Mesh *tmpMesh = new Mesh(mesh->mNumVertices, mesh->mNumFaces, vertices, normals, indices);
+		float *textureCoords = NULL;
+		if (mesh->mTextureCoords[0] > 0)
+		{
+			textureCoords = (float *)calloc(mesh->mNumVertices * 2, sizeof(float));
+			for (int i = 0; i < mesh->mNumVertices; i++)
+				for (int j = 0; j < 2; j++)
+					if (j == 0)
+					{
+						textureCoords[i * 2 + j] = mesh->mTextureCoords[0][i].x;
+						std::cout << textureCoords[i * 2 + j] << std::endl;
+					}
+					else
+					{
+						textureCoords[i * 2 + j] = mesh->mTextureCoords[0][i].y;
+						std::cout << textureCoords[i * 2 + j] << std::endl;
+					}
+					
+		}
+		
+		Mesh *tmpMesh = new Mesh(mesh->mNumVertices, mesh->mNumFaces, vertices, normals, indices, textureCoords);
 
 		return tmpMesh;
 	}

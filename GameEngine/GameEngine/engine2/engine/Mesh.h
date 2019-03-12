@@ -8,7 +8,7 @@
 class Mesh
 {
 public:
-	Mesh(unsigned int, unsigned int, float *, float *, unsigned int *);
+	Mesh(unsigned int, unsigned int, float *, float *, unsigned int *, float * = NULL);
 	~Mesh();
 
 	unsigned int vao;
@@ -16,6 +16,7 @@ public:
 	unsigned int numberOfVertices;
 	float *vertices;
 	float *normals;
+	float *textureCoords;
 
 	unsigned int numberOfIndices;
 	unsigned int *indices;

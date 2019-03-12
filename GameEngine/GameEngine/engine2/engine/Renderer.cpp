@@ -30,7 +30,7 @@ void Renderer::RenderAnActor(Model *model)
 void Renderer::RenderAnActor(Actor *actor)
 {
 	ModelComponent *m = static_cast<ModelComponent *>(actor->componentObject->getComponentByComponentType(ComponentType::ModelComp));
-
+	
 	if (m)
 	{
 		for (int i = 0; i < m->model->numOfMeshes; i++)
@@ -48,12 +48,20 @@ void Renderer::renderModels()
 	{
 		for (int i = 0; i < modelmap.first->numOfMeshes; i++)
 		{
+	
 			modelmap.first->meshes[i]->bind();
 
 			for (auto actor : modelmap.second)
 			{
+				ModelComponent *mcmp = (ModelComponent*)actor->componentObject->getComponentByComponentType(ComponentType::ModelComp);
+				if (mcmp->numberOfMaterials > i && mcmp->materials[i])
+					mcmp->materials[i]->active();
+				else
+					Material::noMaterial();
 				normalShader->setMat4("modelMatrix", actor->transformation->realMatrix);
 				modelmap.first->meshes[i]->render();
+				
+				glActiveTexture(GL_TEXTURE0);
 			}
 
 			modelmap.first->meshes[i]->unbind();

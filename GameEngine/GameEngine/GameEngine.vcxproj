@@ -70,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)engine2;$(ProjectDir)imgui;$(ProjectDir)assimp;$(ProjectDir)ogl</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)stb;$(ProjectDir)engine2;$(ProjectDir)imgui;$(ProjectDir)assimp;$(ProjectDir)ogl</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -126,6 +126,7 @@
     <None Include="Debug\glew32.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="engine2\Api.cpp" />
     <ClCompile Include="engine2\editor\editor.cpp" />
     <ClCompile Include="engine2\editor\Grid.cpp" />
     <ClCompile Include="engine2\editor\SceneCamera.cpp" />
@@ -157,9 +158,11 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine2\editor\ProjectManager.cpp" />
-    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="engine2\engine\Texture.cpp" />
+    <ClCompile Include="stb\stb_image.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine2\Api.h" />
     <ClInclude Include="engine2\editor\editor.h" />
     <ClInclude Include="engine2\editor\ConstantModels.h" />
     <ClInclude Include="engine2\editor\Grid.h" />
@@ -195,7 +198,7 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="engine2\editor\ProjectManager.h" />
-    <ClInclude Include="Texture.h" />
+    <ClInclude Include="engine2\engine\Texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
