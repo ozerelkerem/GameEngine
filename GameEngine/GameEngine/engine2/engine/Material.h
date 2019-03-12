@@ -1,17 +1,22 @@
 #pragma once
 #include <engine/Texture.h>
-
+#include <limits>
 #include <glm/glm.hpp>
 
 #include <string>
 
 #include <Api.h>
 
+using MaterialID = uint16_t;
+
+
 class Material
 {
 public:
 	Material(std::string);
 	~Material();
+
+	static const MaterialID INVALID_MATERIAL_ID = std::numeric_limits<MaterialID>::max();
 
 	std::string name;
 

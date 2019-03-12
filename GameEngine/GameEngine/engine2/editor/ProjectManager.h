@@ -12,14 +12,21 @@ public:
 	~ProjectManager();
 
 	std::list<Model *> models;
-	std::list<Material *> materials;
+	
 	std::list<Scene *> scenes;
 	std::list<Prefab *> prefabs;
+
+	std::vector<Texture *> textures;
+	std::vector<Material *> materials;
+
+	std::vector<std::vector<TextureID>> materialTextureMap;
 
 	template <class T>
 	void add(T *piece);
 
 	
+	
+
 };
 
 template<class T>
@@ -34,4 +41,8 @@ inline void ProjectManager::add(T *piece)
 		materials.push_back((Material *)piece);
 	else if (typeid(T) == typeid(Prefab))
 		prefabs.push_back((Prefab *)piece);
+	else if (typeid(T) == typeid(Texture))
+		textures.push_back((Texture *)piece);
 };
+
+

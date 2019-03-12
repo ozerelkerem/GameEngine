@@ -5,11 +5,18 @@
 
 #include<string>
 #include <stb_image.h>
+
+#include<limits>
+
+using TextureID = uint16_t;
+
 class Texture
 {
 public:
 	Texture(std::string path);
 	~Texture();
+
+	static const TextureID INVALID_TEXTURE_ID = std::numeric_limits<TextureID>::max();
 
 
 	unsigned int textureID;

@@ -130,7 +130,9 @@ void Editor::ObjectProperties()
 				ShowComponentList();
 
 				ImGui::Separator();
-
+				
+				ObjectPropertiesMaterials();
+				
 				const char *items[] = {"Light Component", "Kokore"};
 				if (ImGui::BeginCombo("##addcomponent", "Add Component", ImGuiComboFlags_NoArrowButton)) // The second parameter is the label previewed before opening the combo.
 				{
@@ -154,6 +156,33 @@ void Editor::ObjectProperties()
 		}
 	}
 	ImGui::End();
+}
+
+void Editor::ObjectPropertiesMaterials()
+{
+	
+	if (sceneRenderer->selectedActor)
+	{
+		bool flag = false;
+		ModelComponent *mcmp = (ModelComponent*)sceneRenderer->selectedActor->componentObject->getComponentByComponentType(ComponentType::ModelComp);
+		if (mcmp)
+		{
+			for (int i = 0; i < mcmp->numberOfMaterials; i++)
+			{
+				if (Material *m = mcmp->materials[i])
+				{
+					flag = true;
+					if (ImGui::CollapsingHeader(("Material " + m->name +"##" + std::to_string(i)).c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+					{
+						ImGui::ColorEdit3(("Ambient Color##Material" + std::to_string(i)).c_str(), (float*)&m->ambientColor, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_RGB);
+					}
+				}
+			}
+		}
+		if (flag)
+			ImGui::Separator();
+	}
+	
 }
 
 

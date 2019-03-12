@@ -159,23 +159,21 @@ namespace ModelLoader
 			for (int j = 0; j < 3; j++)
 				normals[i * 3 + j] = mesh->mNormals[i][j];
 
-		float *textureCoords = NULL;
-		if (mesh->mTextureCoords[0] > 0)
+		float *textureCoords = (float *)calloc(mesh->mNumVertices * 2, sizeof(float));
+	
+		for (int i = 0; i < mesh->mNumVertices; i++)
 		{
-			textureCoords = (float *)calloc(mesh->mNumVertices * 2, sizeof(float));
-			for (int i = 0; i < mesh->mNumVertices; i++)
-				for (int j = 0; j < 2; j++)
-					if (j == 0)
-					{
-						textureCoords[i * 2 + j] = mesh->mTextureCoords[0][i].x;
-						std::cout << textureCoords[i * 2 + j] << std::endl;
-					}
-					else
-					{
-						textureCoords[i * 2 + j] = mesh->mTextureCoords[0][i].y;
-						std::cout << textureCoords[i * 2 + j] << std::endl;
-					}
-					
+			if (mesh->mTextureCoords[0] > 0)
+			{
+				textureCoords[i * 2 + 0] = mesh->mTextureCoords[0][i].x;
+				textureCoords[i * 2 + 1] = mesh->mTextureCoords[0][i].y;
+			}
+			else
+			{
+				textureCoords[i * 2 + 0] = 0;
+				textureCoords[i * 2 + 1] = 0;
+			}
+		
 		}
 		
 		Mesh *tmpMesh = new Mesh(mesh->mNumVertices, mesh->mNumFaces, vertices, normals, indices, textureCoords);

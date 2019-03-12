@@ -36,6 +36,7 @@ public:
 
 	void ShowComponentList();
 	void ObjectProperties();
+	void ObjectPropertiesMaterials();
 
 
 	void handle_dropped_file(const char *path);
