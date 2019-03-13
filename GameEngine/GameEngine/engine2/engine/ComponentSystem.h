@@ -1,14 +1,13 @@
 #pragma once
 
 
-#include <engine/Actor.h>
-#include <engine/ModelComponent.h>
-#include <engine/components/LightComponent.h>
+
 
 #include <unordered_map>
 #include <forward_list>
 
 class Component;
+class LightComponent;
 class ModelComponent;
 class Model;
 class Actor;
@@ -29,8 +28,25 @@ public:
 
 	void changeModel(Actor *, Model *);
 
-	 void addLightComponent(Actor *actor, Component *comp);
-	 void addModelComponent(Actor *actor, Component *comp);
+	 inline void addLightComponent(Actor *actor, Component *comp);
+	 inline void addModelComponent(Actor *actor, Component *comp);
 };
 
+#include <engine/Model.h>
+#include <engine/Actor.h>
+#include <engine/ModelComponent.h>
+#include <engine/components/LightComponent.h>
+
+
+inline void ComponentSystem::addLightComponent(Actor *actor, Component *comp) {
+	actorsWhichContainsLightComponent[actor] = (LightComponent *)comp;
+}
+inline void ComponentSystem::addModelComponent(Actor *actor, Component *comp) {
+	bool tf = actorsWhichContainsModelComponent[static_cast<ModelComponent *>(comp)->model].empty();
+	actorsWhichContainsModelComponent[static_cast<ModelComponent *>(comp)->model].push_front(actor);
+	auto model = static_cast<ModelComponent *>(comp)->model;
+	if (tf);
+	for (int i = 0; i < model->numOfMeshes; i++)
+		model->meshes[i]->loadMesh();
+}
 

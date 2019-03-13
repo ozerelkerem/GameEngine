@@ -7,7 +7,7 @@
 #include <editor/ProjectManager.h>
 
 class ProjectManager;
-class Model;
+
 
 using namespace std;
 

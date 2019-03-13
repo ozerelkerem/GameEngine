@@ -2,11 +2,11 @@
 
 #include <engine/Namable.h>
 #include <engine/Mesh.h>
-#include<editor/ProjectManager.h>
-#include<editor/Serializable.h>
+
+
 #include<fstream>
 
-class Serializable;
+
 class ProjectManager;
 class ComponentSystem;
 

@@ -39,14 +39,3 @@ void ComponentSystem::changeModel(Actor *actor, Model *newmodel)
 
 
 
-void ComponentSystem::addLightComponent(Actor *actor, Component *comp) {
-	actorsWhichContainsLightComponent[actor] = (LightComponent *)comp;
-}
-void ComponentSystem::addModelComponent(Actor *actor, Component *comp) {
-	bool tf = actorsWhichContainsModelComponent[static_cast<ModelComponent *>(comp)->model].empty();
-	actorsWhichContainsModelComponent[static_cast<ModelComponent *>(comp)->model].push_front(actor);
-	auto model = static_cast<ModelComponent *>(comp)->model;
-	if (tf);
-	for (int i = 0; i < model->numOfMeshes; i++)
-		model->meshes[i]->loadMesh();
-}

@@ -1,5 +1,5 @@
 #include "Model.h"
-
+#include<editor/Serializable.h>
 
 
 Model::Model(std::string name) : Namable(name)
