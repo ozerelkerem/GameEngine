@@ -11,6 +11,7 @@
 
 #include <editor/SceneRenderer.h>
 #include <editor/ProjectManager.h>
+#include <editor/Serializable.h>
 
 class Editor
 {
@@ -27,7 +28,6 @@ public:
 	SceneRenderer * sceneRenderer;
 
 	ProjectManager *projectManager;
-
 
 	GameBase *gameBase;
 

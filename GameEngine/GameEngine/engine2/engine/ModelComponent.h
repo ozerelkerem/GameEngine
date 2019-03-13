@@ -3,7 +3,9 @@
 #include <engine/Model.h>
 #include <engine/Component.h>
 
-
+class Model;
+class Component;
+class ComponentSystem;
 
 class ModelComponent :public Component
 {

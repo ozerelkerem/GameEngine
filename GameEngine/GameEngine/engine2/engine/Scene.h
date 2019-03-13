@@ -5,8 +5,11 @@
 #include <engine/Actor.h>
 #include <engine/Prefab.h>
 #include <engine/ComponentSystem.h>
+
 class Actor;
 class ComponentSystem;
+class Prefab;
+class PrefabNode;
 
 class Scene
 {

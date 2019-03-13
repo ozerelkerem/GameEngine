@@ -10,7 +10,7 @@
 #include <engine/components/LightComponent.h>
 #include <engine/ModelComponent.h>
 #include <editor/ProjectManager.h>
-
+#include <editor/Serializable.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -75,9 +75,16 @@ namespace ModelLoader
 		startingNode(meshes, prefab, prefab->rootNode, scene->mRootNode, scene);
 
 		for (int i = 0; i < prefab->numberOfModels; i++)
-			if(project)
+		{
+			if (project)
 				project->add(prefab->models[i]);
-
+			Serializable::SaveModel(project, prefab->models[i]);
+			for (int j = 0; j < prefab->models[j]->numOfMeshes; j++)
+			{
+				prefab->models[i]->meshes[j]->~Mesh();
+			}
+			
+		}
 		return prefab;
 	}
 

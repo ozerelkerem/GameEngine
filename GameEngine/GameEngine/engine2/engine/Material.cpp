@@ -2,9 +2,9 @@
 
 
 
-Material::Material(std::string name) : ambientColor(1,0,0)
+Material::Material(std::string name) : ambientColor(1,0,0), Namable(name)
 {
-	this->name = name;
+
 }
 
 

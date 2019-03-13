@@ -6,11 +6,12 @@
 #include <string>
 
 #include <Api.h>
+#include <engine/Namable.h>
 
 using MaterialID = uint16_t;
 
 
-class Material
+class Material : public Namable
 {
 public:
 	Material(std::string);

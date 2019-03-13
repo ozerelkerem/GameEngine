@@ -45,8 +45,6 @@ void Scene::recursionPrefab(PrefabNode *node, glm::mat4 parent, Actor *actorNode
 	a->transformation->divideRealMatrix();
 	a->AddParent(actorNode);
 	componentSystem->addActor(a);
-
-
 			
 	for (int i = 0; i < node->numofChildren; i++)
 	{

@@ -4,6 +4,8 @@
 #include <engine/Model.h>
 #include <engine/PrefabNode.h>
 
+class Model;
+
 class Prefab
 {
 public:

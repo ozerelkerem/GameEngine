@@ -1,20 +1,29 @@
 #pragma once
 
+#include <direct.h>
+
 #include <engine/Model.h>
 #include <engine/Material.h>
 #include <engine/Scene.h>
 #include <engine/Prefab.h>
 
+class Model;
+class Prefab;
+class Scene;
+
 class ProjectManager
 {
 public:
-	ProjectManager();
+	ProjectManager(std::string, std::string);
 	~ProjectManager();
 
-	std::list<Model *> models;
+	std::string name;
+	std::string path;
+
+	std::vector<Model *> models;
 	
-	std::list<Scene *> scenes;
-	std::list<Prefab *> prefabs;
+	std::vector<Scene *> scenes;
+	std::vector<Prefab *> prefabs;
 
 	std::vector<Texture *> textures;
 	std::vector<Material *> materials;
@@ -24,9 +33,15 @@ public:
 	template <class T>
 	void add(T *piece);
 
-	
-	
-
+	inline int findIndexofTexture(Texture *t) {
+		if (!t)
+			return Texture::INVALID_TEXTURE_ID;
+		int i = 0;
+		while (i < textures.size() && textures[i++] == t);
+		if (i > textures.size())
+			return Texture::INVALID_TEXTURE_ID;
+		return --i;
+	}
 };
 
 template<class T>

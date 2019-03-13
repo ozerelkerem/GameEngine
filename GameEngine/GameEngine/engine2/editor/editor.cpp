@@ -6,10 +6,12 @@ Editor::Editor(GLFWwindow *window)
 {
 	this->window = window;
 	Scene *scene = new Scene("Taso");
-	projectManager = new ProjectManager();
+	projectManager = new ProjectManager("Kero Game 1", "C:/GameEngine");
 	projectManager->add(scene);
 	gameBase = new GameBase(scene);
 	sceneRenderer = new SceneRenderer(gameBase);
+	
+	Serializable::Save(projectManager, "C:/seko");
 }
 
 void Editor::ShowComponentList()

@@ -9,7 +9,6 @@ Mesh::Mesh(unsigned int nov, unsigned int noi, float * vert, float * norm, unsig
 	normals = norm;
 	indices = ind;
 	this->textureCoords = textureCoords;
-
 	
 }
 

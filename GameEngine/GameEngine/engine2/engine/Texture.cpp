@@ -1,8 +1,13 @@
 #include "Texture.h"
 
-Texture::Texture(std::string path) : m_path(path)
+Texture::Texture(std::string path) : m_path(path), Namable({
+	path.substr(path.find_last_of("/"),path.find_last_of(".")- path.find_last_of("/"))})
 {
-	loadTexture();
+	
+}
+
+Texture::Texture(std::string n, std::string path) : Namable(n), m_path(path)
+{
 }
 
 
