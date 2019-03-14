@@ -18,6 +18,7 @@ public:
 	static ProjectManager *Load(const char *);
 
 	static void SaveModel(ProjectManager *, Model *);
+	static void ReadModel(Model *m);
 
 private:
 	static void SaveProjectFile(ProjectManager *, const char *);
@@ -31,6 +32,11 @@ public:
 	inline static void writefile(ofstream& file, T val, size_t size = 1)
 	{
 		file.write(reinterpret_cast<char *>(&val), sizeof(T) * size);
+	}
+	template<typename T>
+	inline static void writefile(ofstream& file, T *val, size_t size = 1)
+	{
+		file.write(reinterpret_cast<char *>(val), sizeof(T) * size);
 	}
 	
 	inline static void writefile(ofstream& file, std::string val)

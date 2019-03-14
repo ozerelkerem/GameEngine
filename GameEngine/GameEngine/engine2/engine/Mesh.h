@@ -27,6 +27,7 @@ public:
 	void bind();
 	void unbind();
 	void render();
+	void freeMesh();
 
 private:
 

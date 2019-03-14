@@ -16,7 +16,6 @@ public:
 	Model(std::string);
 	~Model();
 
-	std::string name;
 	std::string path;
 
 	unsigned int numOfMeshes;
@@ -24,6 +23,6 @@ public:
 
 	void addMesh(Mesh * m);
 
-	void loadModelToGPU(ProjectManager *);
+	void loadModelToGPU(ProjectManager *pm=NULL);
 };
 

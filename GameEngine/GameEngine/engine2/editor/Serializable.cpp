@@ -8,7 +8,7 @@ void Serializable::Save(ProjectManager *pm, const char *path)
 void Serializable::SaveProjectFile(ProjectManager *pm, const char *path)
 {
 	ofstream out;
-	out.open(std::string(path) + pm->name, ios::out | ios::binary);
+	out.open(std::string(path) + pm->name + ".project", ios::out | ios::binary);
 	if (!out)
 		throw std::exception("File error when saving.");
 	else
@@ -19,6 +19,7 @@ void Serializable::SaveProjectFile(ProjectManager *pm, const char *path)
 		WriteMaterials(out, pm);
 		WriteModels(out, pm);
 	}
+	out.close();
 }
 
 void Serializable::WriteMaterials(ofstream & file, ProjectManager * pm)
@@ -55,8 +56,7 @@ void Serializable::WriteModels(ofstream & file, ProjectManager * pm)
 void Serializable::SaveModel(ProjectManager *pm, Model *m)
 {
 	ofstream file;
-	_mkdir((pm->path + "/models/" + m->name + ".model").c_str());
-	file.open(pm->path + "/models/" + m->name + ".model", ios::binary | ios::out);
+	file.open(pm->path + "models\\" + m->name + ".model", ios::binary | ios::out);
 	if (!file)
 		throw std::exception("File error when saving a model.");
 	Serializable::writefile(file, m->numOfMeshes);
@@ -70,5 +70,38 @@ void Serializable::SaveModel(ProjectManager *pm, Model *m)
 		writefile(file, mesh->numberOfIndices);
 		writefile(file, mesh->indices, mesh->numberOfIndices * 3);
 	}
+	file.close();
+}
+void Serializable::ReadModel(Model *m)
+{
+	ifstream file;
+	file.open(m->path, ios::binary | ios::in);
+	if (!file)
+		throw std::exception("File error when saving a model.");
+	unsigned int meshcount;
+
+	unsigned int numberOfVertices;
+	unsigned int numberOfIndices;
+	
+
+	Serializable::readfile(file, &meshcount);
+	m->numOfMeshes = 0;
+	for (int i = 0; i < meshcount; i++)
+	{
+		
+		Serializable::readfile(file, &numberOfVertices);
+		float *vertices = (float *)malloc(numberOfVertices * 3 * sizeof(float));
+		float *normals = (float *)malloc(numberOfVertices * 3 * sizeof(float));
+		float *textureCoords = (float *)malloc(numberOfVertices * 2 * sizeof(float));
+		Serializable::readfile(file, vertices, numberOfVertices * 3);
+		Serializable::readfile(file, normals, numberOfVertices * 3);
+		Serializable::readfile(file, textureCoords, numberOfVertices * 2);
+		Serializable::readfile(file, &numberOfIndices);
+		unsigned int *indices = (unsigned int *)malloc(numberOfIndices * 3 * sizeof(unsigned int));
+		Serializable::readfile(file, indices,numberOfIndices * 3);
+		m->addMesh(new Mesh(numberOfVertices, numberOfIndices, vertices,normals, indices, textureCoords));
+	}
+	
+	file.close();
 }
 

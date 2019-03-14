@@ -15,12 +15,13 @@ class Scene
 {
 public:
 
-	Scene(std::string);
+	Scene(std::string,ProjectManager*);
 	~Scene();
 
 	std::string name;
 
 	ComponentSystem *componentSystem;
+	ProjectManager *projectManager;
 
 	Actor *rootActor;
 	int actorCounter;

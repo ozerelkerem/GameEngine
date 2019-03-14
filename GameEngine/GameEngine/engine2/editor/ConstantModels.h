@@ -6,20 +6,26 @@ namespace ConstantModels
 {
 	static Model *CreateTranslateTool()
 	{
-		Prefab *prefab = ModelLoader::loadPrefab("ConstantModels/translate.fbx");
-		return prefab->models[0];
+		Model *model = new Model("translate");
+		model->path = "ConstantModels/translate.model";
+		model->loadModelToGPU();
+		return model;
 	}
 
 	static Model *CreateScaleTool()
 	{
-		Prefab *prefab = ModelLoader::loadPrefab("ConstantModels/scale.fbx");
-		return prefab->models[0];
+		Model *model = new Model("scale");
+		model->path = "ConstantModels/scale.model";
+		model->loadModelToGPU();
+		return model;
 	}
 
 	static Model *CreateRotateTool()
 	{
-		Prefab *prefab = ModelLoader::loadPrefab("ConstantModels/rotate.fbx");
-		return prefab->models[0];
+		Model *model = new Model("rotate");
+		model->path = "ConstantModels/rotate.model";
+		model->loadModelToGPU();
+		return model;
 	}
 
 	

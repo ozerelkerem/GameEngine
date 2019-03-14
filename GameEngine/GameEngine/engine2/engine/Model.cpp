@@ -21,22 +21,16 @@ void Model::addMesh(Mesh * m)
 
 void Model::loadModelToGPU(ProjectManager *pm)
 {
-	std::ifstream file;
-	file.open(pm->path + "\\models\\" + name + ".model");
-	if (!file)
-		throw std::exception("Model cannot open");
-	
-	Serializable::readfile(file,&numOfMeshes);
+	if (pm != NULL)
+		path = pm->path + "models\\" + name + ".model";
+	for (int i = 0; i < numOfMeshes; i++)
+		free(meshes[i]);
+	free(meshes);
+	meshes = (Mesh**)calloc(1, sizeof(Mesh*));
+	Serializable::ReadModel(this);
 	for (int i = 0; i < numOfMeshes; i++)
 	{
-		Mesh *m = meshes[i];
-		Serializable::readfile(file, &m->numberOfVertices);
-		Serializable::readfile(file, &m->vertices, m->numberOfVertices*3);
-		Serializable::readfile(file, &m->normals, m->numberOfVertices * 3);
-		Serializable::readfile(file, &m->textureCoords, m->numberOfVertices * 2);
-		Serializable::readfile(file, &m->numberOfIndices);
-		Serializable::readfile(file, &m->indices, m->numberOfIndices * 3);
-		m->loadMesh();
-		m->~Mesh();
+		meshes[i]->loadMesh();
+	//	meshes[i]->freeMesh();
 	}
 }

@@ -31,7 +31,7 @@ namespace ModelLoader
 	static void processNode(Mesh **meshes, Prefab *prefab, PrefabNode *prefabNode, aiNode *node, const aiScene *scene);
 
 
-	static Prefab *loadPrefab(const char *path, ProjectManager *project = NULL)
+	static Prefab *loadPrefab(const char *path, ProjectManager *project)
 	{
 		Assimp::Importer importer;
 		const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace );
@@ -45,7 +45,7 @@ namespace ModelLoader
 		return processScene(scene, name, project);
 	}
 
-	static Prefab *processScene(const aiScene *scene, std::string name, ProjectManager *project = NULL)
+	static Prefab *processScene(const aiScene *scene, std::string name, ProjectManager *project)
 	{
 		Prefab * prefab = new Prefab(name);
 		
@@ -79,9 +79,9 @@ namespace ModelLoader
 			if (project)
 				project->add(prefab->models[i]);
 			Serializable::SaveModel(project, prefab->models[i]);
-			for (int j = 0; j < prefab->models[j]->numOfMeshes; j++)
+			for (int j = 0; j < prefab->models[i]->numOfMeshes; j++)
 			{
-				prefab->models[i]->meshes[j]->~Mesh();
+				prefab->models[i]->meshes[j]->freeMesh();
 			}
 			
 		}

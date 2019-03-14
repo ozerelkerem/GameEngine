@@ -14,7 +14,7 @@ class Scene;
 class ProjectManager
 {
 public:
-	ProjectManager(std::string, std::string);
+	ProjectManager(std::string name, std::string path);
 	~ProjectManager();
 
 	std::string name;
