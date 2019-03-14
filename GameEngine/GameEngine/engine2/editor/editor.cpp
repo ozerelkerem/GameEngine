@@ -13,8 +13,18 @@ Editor::Editor(GLFWwindow *window)
 	sceneRenderer = new SceneRenderer(gameBase);
 	
 	Serializable::Save(projectManager, projectManager->path.c_str());
-}
 
+	loadIcons();
+
+
+}
+void Editor::loadIcons()
+{
+	Texture *t = new Texture("ConstantIcons\\scene.png");
+	t->loadTexture();
+	sceneIcon = (void *)t->textureID;
+	delete t;
+}
 void Editor::ShowComponentList()
 {
 	for (auto components : this->sceneRenderer->selectedActor->componentObject->componentlist)
@@ -199,7 +209,7 @@ void Editor::Render()
 	static ImGuiDockNodeFlags opt_flags = ImGuiDockNodeFlags_None;
 	bool opt_fullscreen = opt_fullscreen_persistant;
 
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking ;
 	if (opt_fullscreen)
 	{
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -445,8 +455,7 @@ void Editor::Render()
 	
 
 
-	ImGui::Begin("Project Explorer", NULL);
-	ImGui::End();
+	DrawProjectExplorer();
 
 	ImGui::Begin("Hierarchy", NULL);
 	{
@@ -551,6 +560,64 @@ void Editor::handle_dropped_file(const char * path)
 
 		a = 5;
 	}
+}
+
+void Editor::DrawProjectExplorer()
+{
+	ImGui::Begin("Project Explorer", NULL);
+	{
+		int count = 0;
+		int i = 0;
+		count += projectManager->scenes.size();
+		count += projectManager->models.size();
+		for (auto scene : projectManager->scenes)
+		{
+			DrawSingleProjectItem(sceneIcon, scene->name, i++, count);
+		}
+		for (auto model : projectManager->models)
+		{
+		
+			DrawSingleProjectItem((void *)sceneRenderer->GetTextureColorBuffer(), model->name, i++, count);
+		}
+		
+
+
+		
+	}
+	ImGui::End();
+}
+
+void Editor::DrawSingleProjectItem(void * image, std::string name, int n, int buttons_count)
+{
+	ImGuiStyle& style = ImGui::GetStyle();
+	
+	float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+	
+	ImGui::PushID(n);
+	{
+		ImGui::BeginGroup();
+		{
+
+			ImVec2 cursorBegin = ImGui::GetCursorPos();
+			ImGui::Button("", button_sz);
+
+			ImVec2 cursorEnd = ImGui::GetCursorPos();
+			ImGui::SetCursorPos(cursorBegin);
+			ImGui::ImageButton(image, ImVec2(button_sz.x - 4, button_sz.y * 6 / 8), { 0,0 }, { 1,1 }, 2);
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 2);
+			ImGui::Text(std::string(name).substr(0, 10).c_str());
+			if (ImGui::IsItemClicked())
+			{
+
+			}
+		}
+		ImGui::EndGroup();
+	}
+	float last_button_x2 = ImGui::GetItemRectMax().x;
+	float next_button_x2 = last_button_x2 + style.ItemSpacing.x + button_sz.x;
+	if (n + 1 < buttons_count && next_button_x2 < window_visible_x2)
+		ImGui::SameLine();
+	ImGui::PopID();
 }
 
 

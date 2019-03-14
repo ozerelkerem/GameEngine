@@ -40,7 +40,15 @@ public:
 
 
 	void handle_dropped_file(const char *path);
+
+	/*Project Explorer*/
+	void DrawProjectExplorer();
+	void DrawSingleProjectItem(void *image, std::string name, int n, int buttons_count);
+
 	
+private:
+	ImVec2 button_sz = { 120, 120 };
 
-
+	void * sceneIcon;
+	void loadIcons();
 };

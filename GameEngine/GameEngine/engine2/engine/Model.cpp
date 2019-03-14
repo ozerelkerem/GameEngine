@@ -31,6 +31,6 @@ void Model::loadModelToGPU(ProjectManager *pm)
 	for (int i = 0; i < numOfMeshes; i++)
 	{
 		meshes[i]->loadMesh();
-	//	meshes[i]->freeMesh();
+		meshes[i]->freeMesh();
 	}
 }
