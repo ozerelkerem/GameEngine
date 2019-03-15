@@ -275,6 +275,11 @@ void Editor::Render()
 			sceneRenderer->selectedActor = NULL;
 		}
 
+		if (ImGui::IsKeyPressed(GLFW_KEY_F) && sceneRenderer->selectedActor)
+		{
+			sceneRenderer->focusActor(sceneRenderer->selectedActor);
+		}
+
 		//toolmode
 		{
 			if (ImGui::IsKeyDown(GLFW_KEY_S) && !travelMode)
@@ -570,15 +575,45 @@ void Editor::DrawProjectExplorer()
 		int i = 0;
 		count += projectManager->scenes.size();
 		count += projectManager->models.size();
+		count += projectManager->textures.size();
+		count += projectManager->prefabs.size();
+		count += projectManager->materials.size();
 		for (auto scene : projectManager->scenes)
 		{
-			DrawSingleProjectItem(sceneIcon, scene->name, i++, count);
+			if (DrawSingleProjectItem(sceneIcon, scene->name, i++, count))
+			{
+				ImGui::SetTooltip("Scene");
+			}
 		}
 		for (auto model : projectManager->models)
 		{
-		
-			DrawSingleProjectItem((void *)sceneRenderer->GetTextureColorBuffer(), model->name, i++, count);
+			if(DrawSingleProjectItem((void *)sceneRenderer->GetTextureColorBuffer(), model->name, i++, count))
+			{
+				ImGui::SetTooltip("Model");
+			}
 		}
+		for (auto texture : projectManager->textures)
+		{
+			if (DrawSingleProjectItem((void *)sceneRenderer->GetTextureColorBuffer(), texture->name, i++, count))
+			{
+				ImGui::SetTooltip("Texture");
+			}
+		}
+		for (auto prefab : projectManager->prefabs)
+		{
+			if (DrawSingleProjectItem((void *)sceneRenderer->GetTextureColorBuffer(), prefab->name, i++, count))
+			{
+				ImGui::SetTooltip("Prefab");
+			}
+		}
+		for (auto material : projectManager->materials)
+		{
+			if (DrawSingleProjectItem((void *)sceneRenderer->GetTextureColorBuffer(), material->name, i++, count))
+			{
+				ImGui::SetTooltip("Material");
+			}
+		}
+
 		
 
 
@@ -587,8 +622,9 @@ void Editor::DrawProjectExplorer()
 	ImGui::End();
 }
 
-void Editor::DrawSingleProjectItem(void * image, std::string name, int n, int buttons_count)
+bool Editor::DrawSingleProjectItem(void * image, std::string name, int n, int buttons_count)
 {
+	bool isHovered = false;
 	ImGuiStyle& style = ImGui::GetStyle();
 	
 	float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
@@ -606,18 +642,18 @@ void Editor::DrawSingleProjectItem(void * image, std::string name, int n, int bu
 			ImGui::ImageButton(image, ImVec2(button_sz.x - 4, button_sz.y * 6 / 8), { 0,0 }, { 1,1 }, 2);
 			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 2);
 			ImGui::Text(std::string(name).substr(0, 10).c_str());
-			if (ImGui::IsItemClicked())
-			{
-
-			}
+			
 		}
 		ImGui::EndGroup();
+		isHovered = ImGui::IsItemHovered();
 	}
 	float last_button_x2 = ImGui::GetItemRectMax().x;
 	float next_button_x2 = last_button_x2 + style.ItemSpacing.x + button_sz.x;
 	if (n + 1 < buttons_count && next_button_x2 < window_visible_x2)
 		ImGui::SameLine();
 	ImGui::PopID();
+
+	return isHovered;
 }
 
 

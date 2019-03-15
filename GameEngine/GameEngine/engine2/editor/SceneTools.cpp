@@ -12,9 +12,7 @@ SceneTools::SceneTools(SceneRenderer *sr)
 	translateTool = ConstantModels::CreateTranslateTool();
 	scaleTool = ConstantModels::CreateScaleTool();
 
-	rotateTool->meshes[0]->loadMesh();
-	translateTool->meshes[0]->loadMesh();
-	scaleTool->meshes[0]->loadMesh();
+
 }
 
 

@@ -43,7 +43,7 @@ public:
 
 	/*Project Explorer*/
 	void DrawProjectExplorer();
-	void DrawSingleProjectItem(void *image, std::string name, int n, int buttons_count);
+	bool DrawSingleProjectItem(void *image, std::string name, int n, int buttons_count);
 
 	
 private:

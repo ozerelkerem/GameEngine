@@ -151,6 +151,11 @@ namespace ModelLoader
 
 	static Mesh * generateMesh(const aiMesh *mesh)
 	{
+		float minx, miny, minz;
+		minx = miny = minz = std::numeric_limits<float>::max();
+		float maxx, maxy, maxz;
+		maxx = maxy = maxz = std::numeric_limits<float>::min();
+
 		unsigned int *indices = (unsigned int *)calloc(mesh->mNumFaces * mesh->mFaces[0].mNumIndices, sizeof(unsigned int));
 		for (int i = 0; i < mesh->mNumFaces; i++)
 			for(int j = 0; j < mesh->mFaces[i].mNumIndices; j++)
@@ -158,8 +163,21 @@ namespace ModelLoader
 
 		float *vertices = (float *)calloc(mesh->mNumVertices * 3, sizeof(float));
 		for (int i = 0; i < mesh->mNumVertices; i++)
-			for (int j = 0; j < 3; j++)
-				vertices[i * 3 + j] = mesh->mVertices[i][j];
+		{
+			vertices[i * 3 + 0] = mesh->mVertices[i][0];
+			vertices[i * 3 + 1] = mesh->mVertices[i][1];
+			vertices[i * 3 + 2] = mesh->mVertices[i][2];
+
+			minx = min(minx, mesh->mVertices[i][0]);
+			miny = min(miny, mesh->mVertices[i][1]);
+			minz = min(minz, mesh->mVertices[i][2]);
+
+			maxx = max(maxx, mesh->mVertices[i][0]);
+			maxy = max(maxy, mesh->mVertices[i][1]);
+			maxz = max(maxz, mesh->mVertices[i][2]);
+		}
+			
+				
 
 		float *normals = (float *)calloc(mesh->mNumVertices * 3, sizeof(float));
 		for (int i = 0; i < mesh->mNumVertices; i++)
@@ -184,7 +202,7 @@ namespace ModelLoader
 		}
 		
 		Mesh *tmpMesh = new Mesh(mesh->mNumVertices, mesh->mNumFaces, vertices, normals, indices, textureCoords);
-
+		tmpMesh->bounds = { minx, miny,minz, maxx,maxy,maxz };
 		return tmpMesh;
 	}
 	

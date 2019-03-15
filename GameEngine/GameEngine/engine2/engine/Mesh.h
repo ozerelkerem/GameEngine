@@ -21,7 +21,11 @@ public:
 	unsigned int numberOfIndices;
 	unsigned int *indices;
 
-	
+	struct bounds
+	{
+		float minx, miny, minz;
+		float maxx, maxy, maxz;
+	}bounds;
 
 	void loadMesh();
 	void bind();

@@ -172,4 +172,36 @@ bool SceneRenderer::RenderForObjectTools(GLint x, GLint y)
 	return sceneTool->processTool(test, selectedActor->transformation);
 }
 
+void SceneRenderer::focusActor(Actor *actor)
+{
+	//@TODO CALC MÝN MAX FOR EACH MESH AND CHECK MAYBE THERE IS NO MODEL
+	if (!actor->componentObject->hasComponent(ComponentType::ModelComp))
+		return;
+
+	ModelComponent *mcmp= (ModelComponent *)actor->componentObject->getComponentByComponentType(ModelComp);
+	auto x = mcmp->model->meshes[0]->bounds;
+
+	glm::vec4 minxyz(x.minx, x.miny, x.minz, 1.0);
+	glm::vec4 maxxyz(x.maxx, x.maxy, x.maxz, 1.0);
+
+  	minxyz =   actor->transformation->realMatrix * minxyz;
+	maxxyz =  actor->transformation->realMatrix *maxxyz;
+	
+	minxyz = minxyz * (float)(1.0 / minxyz.w);
+	maxxyz = maxxyz * (float)(1.0 / maxxyz.w);
+
+	float dis = glm::distance(minxyz, maxxyz);
+
+
+	sceneCamera->pitch = -25;
+	sceneCamera->yaw = 145;
+	glm::vec3 look(1, -1, 1);
+	glm::normalize(look);
+	look *=  dis;
+
+	sceneCamera->position = actor->transformation->position + look;
+	sceneCamera->UpdateCameraVectors();
+	
+}
+
 

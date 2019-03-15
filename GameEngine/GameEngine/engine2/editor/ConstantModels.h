@@ -6,6 +6,11 @@ namespace ConstantModels
 {
 	static Model *CreateTranslateTool()
 	{
+		/*
+		ModelLoader::loadPrefab("ConstantModels/translate.fbx", new ProjectManager("Kero Game 1", "C:\\GameEngine\\"));
+		ModelLoader::loadPrefab("ConstantModels/scale.fbx", new ProjectManager("Kero Game 1", "C:\\GameEngine\\"));
+		ModelLoader::loadPrefab("ConstantModels/rotate.fbx", new ProjectManager("Kero Game 1", "C:\\GameEngine\\"));
+		*/
 		Model *model = new Model("translate");
 		model->path = "ConstantModels/translate.model";
 		model->loadModelToGPU();

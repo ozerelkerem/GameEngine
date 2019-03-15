@@ -69,6 +69,7 @@ void Serializable::SaveModel(ProjectManager *pm, Model *m)
 		writefile(file, mesh->textureCoords, mesh->numberOfVertices * 2);
 		writefile(file, mesh->numberOfIndices);
 		writefile(file, mesh->indices, mesh->numberOfIndices * 3);
+		writefile(file, mesh->bounds);
 	}
 	file.close();
 }
@@ -99,7 +100,10 @@ void Serializable::ReadModel(Model *m)
 		Serializable::readfile(file, &numberOfIndices);
 		unsigned int *indices = (unsigned int *)malloc(numberOfIndices * 3 * sizeof(unsigned int));
 		Serializable::readfile(file, indices,numberOfIndices * 3);
-		m->addMesh(new Mesh(numberOfVertices, numberOfIndices, vertices,normals, indices, textureCoords));
+	
+		Mesh *mesh = new Mesh(numberOfVertices, numberOfIndices, vertices, normals, indices, textureCoords);
+		Serializable::readfile(file, &mesh->bounds);
+		m->addMesh(mesh);
 	}
 	
 	file.close();

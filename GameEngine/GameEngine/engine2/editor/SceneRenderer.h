@@ -42,5 +42,7 @@ public:
 
 	inline unsigned int GetTextureColorBuffer() { return textureColorbuffer; }
 
+	void focusActor(Actor *);
+
 };
 
