@@ -1,6 +1,8 @@
 #pragma once
 #include "Scene.h"
 #include <iostream>
+#include<engine/Actor.h>
+
 Scene::Scene(std::string name, ProjectManager *pm) : projectManager(pm)
 {
 	this->name = name;
@@ -37,9 +39,12 @@ void Scene::recursionPrefab(PrefabNode *node, glm::mat4 parent, Actor *actorNode
 	Actor *a = new Actor(node->object->name, this);
 	for (auto t : node->object->componentObject->componentlist)
 		for (auto c : t.second)
-		{
-			a->componentObject->addComponent(c->copy());
-			if (c->getType() == ComponentType::ModelComp)
+		{	
+			ComponentTypeID ctid;
+			
+			IComponent * ic = c->getnew(&ctid);
+			a->componentObject->addComponent(ctid,ic);
+			if (ctid == ModelComponent::STATIC_COMPONENT_TYPE_ID)
 			{
 				((ModelComponent *)c)->model->loadModelToGPU(projectManager);
 			}

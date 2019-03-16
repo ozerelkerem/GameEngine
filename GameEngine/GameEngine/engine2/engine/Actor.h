@@ -3,10 +3,12 @@
 #include <string>
 
 #include <engine/Transform.h>
-#include <engine/Scene.h>
-#include <engine/ComponentObject.h>
 
+
+class IComponent;
+class ComponentObject;
 class Scene;
+class ComponentSystem;
 
 
 class Actor
@@ -34,9 +36,24 @@ public:
 	bool AddParent(Actor * newParent);
 	bool RemoveParent();
 
-	void AddComponent(Component *r);
+	template<class T>
+	inline void AddComponent(IComponent *component);
 
 	void processTransformation();
 	void RecalculateRealMatrix();
 };
+#include <engine/Scene.h>
 
+
+template<class T>
+inline void Actor::AddComponent(IComponent *component)
+{
+	componentObject->addComponent<T>(reinterpret_cast<T*>(component));
+	scene->componentSystem->AddComponent<T>(this, reinterpret_cast<T*>(component));
+}
+
+
+
+
+
+#include <engine/ComponentObject.h>

@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include <engine/Component.h>
+#include <engine/components/Component.h>
 #include <engine/Transform.h>
 #include <engine/Shader.h>
 
@@ -10,8 +10,7 @@ enum LightType { Point, Directional, Spotlight };
 
 static const char * LightTypeNames[] = {"Point", "Directional" , "Spotlight"};
 
-class LightComponent :
-	public Component
+class LightComponent : public Component <LightComponent>
 {
 public:
 
@@ -32,7 +31,10 @@ public:
 
 	void passShader(Shader *s, Transform *, int);
 
-	ComponentType getType() { return ComponentType::Light; }
-	Component * copy() { return new LightComponent(*this); }
+	
+	inline virtual IComponent * getnew(ComponentTypeID *id) override {
+		*id = STATIC_COMPONENT_TYPE_ID;
+		return ((IComponent*) new LightComponent(*this));
+	}
 };
 

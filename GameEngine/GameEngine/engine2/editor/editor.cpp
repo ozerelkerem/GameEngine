@@ -27,88 +27,82 @@ void Editor::loadIcons()
 }
 void Editor::ShowComponentList()
 {
-	for (auto components : this->sceneRenderer->selectedActor->componentObject->componentlist)
-	{
-		for (auto component : components.second)
-		{
-			ImGui::Separator();
-			if (ImGui::CollapsingHeader(ComponentNames[component->getType()], ImGuiTreeNodeFlags_DefaultOpen))
-			{
-				switch (component->getType())
-				{
-					case ComponentType::Light:
-					{
-						LightComponent *lightcomp = (LightComponent *)component;
+	
 		
-						if (ImGui::BeginCombo("##lighttype", LightTypeNames[lightcomp->lightType])) // The second parameter is the label previewed before opening the combo.
-						{
-							for (int n = 0; n < IM_ARRAYSIZE(LightTypeNames); n++)
-							{
-								if (ImGui::Selectable(LightTypeNames[n]))
-									lightcomp->lightType = (LightType)n;
-							}
-							ImGui::EndCombo();
-						}
+	auto cob = sceneRenderer->selectedActor->componentObject;
 
-						ImGui::ColorEdit4("Light Color##LightComponent", (float*)&lightcomp->color, ImGuiColorEditFlags_NoInputs);
-						ImGui::DragFloat("Intensity##LightComponent", &lightcomp->intensity, 0.1f, 0.f);
-
-						if(lightcomp->lightType == LightType::Spotlight)
-							ImGui::DragFloat("Angle##LightComponent", &lightcomp->angle, 0.1f, 0.f);
-
-						if (!(lightcomp->lightType == LightType::Directional))
-						{
-							ImGui::DragFloat("Constant##LightComponent", &lightcomp->constant, 0.1f, 0.f);
-							ImGui::DragFloat("Linear##LightComponent", &lightcomp->linear, 0.1f, 0.f);
-							ImGui::DragFloat("Quadratic##LightComponent", &lightcomp->quadratic, 0.1f, 0.f);
-							ImGui::DragFloat("Distance##LightComponent", &lightcomp->distance, 0.1f, 0.f);
-						}
-
-					}break;
-
-					case ComponentType::ModelComp:
-					{
-						ModelComponent *modelcomp = (ModelComponent *)component;
-						if (ImGui::BeginCombo(("Select Model##selectmodel"), modelcomp->model->name.c_str())) // The second parameter is the label previewed before opening the combo.
-						{
-							for (auto model : projectManager->models)
-							{
-								if (ImGui::Selectable(model->name.c_str()))
-								{
-									gameBase->currentScene->componentSystem->changeModel(sceneRenderer->selectedActor, model);
-									modelcomp->model = model;
-								}
-							}
-							ImGui::EndCombo();
-						}
-						if (ImGui::InputInt("Number of Materials##numberofmaterials", &modelcomp->numberOfMaterials))
-							modelcomp->materials.resize(modelcomp->numberOfMaterials);
-						
-						for (int i = 0; i < modelcomp->numberOfMaterials; i++)
-						{ //meshleri dön
-
-							const char *name = "No Material";
-							if (modelcomp->materials[i])
-								name = modelcomp->materials[i]->name.c_str();
-
-							if (ImGui::BeginCombo(("Material" + std::to_string(i) + "##choicematerial").c_str(), name)) // The second parameter is the label previewed before opening the combo.
-							{
-								for (auto material : projectManager->materials)
-								{//projedeki bütün materialyerlleri göster
-									if (ImGui::Selectable(material->name.c_str()))
-										modelcomp->materials.insert(modelcomp->materials.begin(), 1, material);
-								}
-								ImGui::EndCombo();
-							}
-						
-						}
-
-					}break;
-				
+	if (LightComponent *lightcomp = cob->getComponent<LightComponent>())
+	{
+		if (ImGui::CollapsingHeader("Light Component", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (ImGui::BeginCombo("##lighttype", LightTypeNames[lightcomp->lightType])) // The second parameter is the label previewed before opening the combo.
+			{
+				for (int n = 0; n < IM_ARRAYSIZE(LightTypeNames); n++)
+				{
+					if (ImGui::Selectable(LightTypeNames[n]))
+						lightcomp->lightType = (LightType)n;
 				}
+				ImGui::EndCombo();
+			}
+
+			ImGui::ColorEdit4("Light Color##LightComponent", (float*)&lightcomp->color, ImGuiColorEditFlags_NoInputs);
+			ImGui::DragFloat("Intensity##LightComponent", &lightcomp->intensity, 0.1f, 0.f);
+
+			if (lightcomp->lightType == LightType::Spotlight)
+				ImGui::DragFloat("Angle##LightComponent", &lightcomp->angle, 0.1f, 0.f);
+
+			if (!(lightcomp->lightType == LightType::Directional))
+			{
+				ImGui::DragFloat("Constant##LightComponent", &lightcomp->constant, 0.1f, 0.f);
+				ImGui::DragFloat("Linear##LightComponent", &lightcomp->linear, 0.1f, 0.f);
+				ImGui::DragFloat("Quadratic##LightComponent", &lightcomp->quadratic, 0.1f, 0.f);
+				ImGui::DragFloat("Distance##LightComponent", &lightcomp->distance, 0.1f, 0.f);
 			}
 		}
 	}
+
+	if (ModelComponent *modelcomp = cob->getComponent<ModelComponent>())
+	{
+		if (ImGui::CollapsingHeader("Model Component", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+
+			if (ImGui::BeginCombo(("Select Model##selectmodel"), modelcomp->model->name.c_str())) // The second parameter is the label previewed before opening the combo.
+			{
+				for (auto model : projectManager->models)
+				{
+					if (ImGui::Selectable(model->name.c_str()))
+					{
+						gameBase->currentScene->componentSystem->changeModel(sceneRenderer->selectedActor, model);
+						modelcomp->model = model;
+					}
+				}
+				ImGui::EndCombo();
+			}
+			if (ImGui::InputInt("Number of Materials##numberofmaterials", &modelcomp->numberOfMaterials))
+				modelcomp->materials.resize(modelcomp->numberOfMaterials);
+
+			for (int i = 0; i < modelcomp->numberOfMaterials; i++)
+			{ //meshleri dön
+
+				const char *name = "No Material";
+				if (modelcomp->materials[i])
+					name = modelcomp->materials[i]->name.c_str();
+
+				if (ImGui::BeginCombo(("Material" + std::to_string(i) + "##choicematerial").c_str(), name)) // The second parameter is the label previewed before opening the combo.
+				{
+					for (auto material : projectManager->materials)
+					{//projedeki bütün materialyerlleri göster
+						if (ImGui::Selectable(material->name.c_str()))
+							modelcomp->materials.insert(modelcomp->materials.begin(), 1, material);
+					}
+					ImGui::EndCombo();
+				}
+
+			}
+		}
+
+	}
+		
 }
 
 void Editor::ObjectProperties()
@@ -156,7 +150,8 @@ void Editor::ObjectProperties()
 							{
 							case 0://light component
 							{
-								this->sceneRenderer->selectedActor->AddComponent(new LightComponent());
+								IComponent *ic = (IComponent*)new LightComponent();
+								this->sceneRenderer->selectedActor->AddComponent<LightComponent>(ic);
 							}break;
 
 							default:
@@ -177,7 +172,7 @@ void Editor::ObjectPropertiesMaterials()
 	if (sceneRenderer->selectedActor)
 	{
 		bool flag = false;
-		ModelComponent *mcmp = (ModelComponent*)sceneRenderer->selectedActor->componentObject->getComponentByComponentType(ComponentType::ModelComp);
+		ModelComponent *mcmp = sceneRenderer->selectedActor->componentObject->getComponent<ModelComponent>();
 		if (mcmp)
 		{
 			for (int i = 0; i < mcmp->numberOfMaterials; i++)

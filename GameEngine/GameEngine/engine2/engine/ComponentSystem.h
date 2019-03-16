@@ -6,11 +6,12 @@
 #include <unordered_map>
 #include <forward_list>
 
-class Component;
-class LightComponent;
-class ModelComponent;
+class IComponent;
+
 class Model;
 class Actor;
+#include <engine/components/ModelComponent.h>
+#include <engine/components/LightComponent.h>
 
 
 class ComponentSystem
@@ -22,31 +23,38 @@ public:
 	std::unordered_map<Model *, std::forward_list<Actor *>> actorsWhichContainsModelComponent;
 	std::unordered_map<Actor *, LightComponent *> actorsWhichContainsLightComponent;
 
+	template<class T>
+	inline void AddComponent(Actor *actor, T *component)
+	{
+		
+	}
 
-	void AddComponent(Actor *actor, Component *);
+	template<>
+	inline void AddComponent<ModelComponent>(Actor *actor, ModelComponent *component)
+	{
+		bool tf = actorsWhichContainsModelComponent[component->model].empty();
+		actorsWhichContainsModelComponent[component->model].push_front(actor);
+		/*if (tf)
+			component->model->loadModelToGPU();*/
+
+	}
+	template<>
+	inline void AddComponent<LightComponent>(Actor *actor, LightComponent *component)
+	{
+		actorsWhichContainsLightComponent[actor] = component;
+	}
+
+
 	void addActor(Actor *);
-
 	void changeModel(Actor *, Model *);
 
-	 inline void addLightComponent(Actor *actor, Component *comp);
-	 inline void addModelComponent(Actor *actor, Component *comp);
+	
 };
 
 #include <engine/Model.h>
-#include <engine/Actor.h>
-#include <engine/ModelComponent.h>
-#include <engine/components/LightComponent.h>
 
 
-inline void ComponentSystem::addLightComponent(Actor *actor, Component *comp) {
-	actorsWhichContainsLightComponent[actor] = (LightComponent *)comp;
-}
-inline void ComponentSystem::addModelComponent(Actor *actor, Component *comp) {
-	bool tf = actorsWhichContainsModelComponent[static_cast<ModelComponent *>(comp)->model].empty();
-	actorsWhichContainsModelComponent[static_cast<ModelComponent *>(comp)->model].push_front(actor);
-	auto model = static_cast<ModelComponent *>(comp)->model;
-	/*if (tf);
-	for (int i = 0; i < model->numOfMeshes; i++)
-		model->meshes[i]->loadMesh();*/
-}
+
+
+
 

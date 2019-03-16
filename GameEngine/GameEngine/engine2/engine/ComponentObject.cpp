@@ -13,7 +13,7 @@ ComponentObject::~ComponentObject()
 			delete l;
 }
 
-bool ComponentObject::addComponent(Component * c)
+/*bool ComponentObject::addComponent(Component * c)
 {
 	if (c->getType() < 100)
 		if (!componentlist[c->getType()].empty())
@@ -62,4 +62,4 @@ Component * ComponentObject::getComponentByComponentType(ComponentType ct)
 		return componentlist[ct].front();
 	else
 		return NULL;
-}
+}**/

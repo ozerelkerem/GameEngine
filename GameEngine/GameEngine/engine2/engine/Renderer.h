@@ -4,6 +4,9 @@
 
 extern Shader *normalShader;
 extern Shader *colorShader;
+
+class Actor;
+
 class Renderer
 {
 public:

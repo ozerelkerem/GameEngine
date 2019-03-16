@@ -2,14 +2,14 @@
 
 #include <string>
 
-#include <engine/Actor.h>
+
 #include <engine/Prefab.h>
 #include <engine/ComponentSystem.h>
 
-class Actor;
-class ComponentSystem;
+
 class Prefab;
 class PrefabNode;
+class Actor;
 
 class Scene
 {
@@ -34,4 +34,3 @@ public:
 	void addActor(Prefab *, glm::vec3);
 	void recursionPrefab(PrefabNode *, glm::mat4 , Actor *);
 };
-

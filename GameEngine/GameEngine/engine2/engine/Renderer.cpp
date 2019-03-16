@@ -1,5 +1,5 @@
 #include "Renderer.h"
-
+#include<engine/Actor.h>
 
 
 Renderer::Renderer(GameBase *gb)
@@ -29,7 +29,7 @@ void Renderer::RenderAnActor(Model *model)
 
 void Renderer::RenderAnActor(Actor *actor)
 {
-	ModelComponent *m = static_cast<ModelComponent *>(actor->componentObject->getComponentByComponentType(ComponentType::ModelComp));
+	ModelComponent *m = actor->componentObject->getComponent<ModelComponent>();
 	
 	if (m)
 	{
@@ -52,7 +52,7 @@ void Renderer::renderModels()
 
 			for (auto actor : modelmap.second)
 			{
-				ModelComponent *mcmp = (ModelComponent*)actor->componentObject->getComponentByComponentType(ComponentType::ModelComp);
+				ModelComponent *mcmp = actor->componentObject->getComponent<ModelComponent>();
 				if (mcmp->numberOfMaterials > i && mcmp->materials[i])
 					mcmp->materials[i]->active();
 				else

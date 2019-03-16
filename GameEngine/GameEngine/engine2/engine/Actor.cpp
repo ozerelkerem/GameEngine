@@ -16,6 +16,9 @@ Actor::Actor(std::string name, Scene *scene)
 	componentObject = new ComponentObject();
 }
 
+
+
+
 bool Actor::AddChild(Actor *newChild)
 {
 	children[numberOfChildren] = newChild;
@@ -95,11 +98,8 @@ bool Actor::RemoveParent()
 	return true;
 }
 
-void Actor::AddComponent(Component *r)
-{
-	componentObject->addComponent(r);
-	scene->componentSystem->AddComponent(this,r);
-}
+
+
 
 void Actor::processTransformation()
 {

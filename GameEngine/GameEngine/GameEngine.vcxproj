@@ -78,6 +78,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(ProjectDir)ogl\libs\glew32.lib;$(ProjectDir)ogl\libs\glfw3.lib;opengl32.lib;$(ProjectDir)assimp\assimp\assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -133,8 +134,8 @@
     <ClCompile Include="engine2\editor\SceneRenderer.cpp" />
     <ClCompile Include="engine2\editor\SceneTools.cpp" />
     <ClCompile Include="engine2\engine\Actor.cpp" />
-    <ClCompile Include="engine2\engine\CameraComponent.cpp" />
-    <ClCompile Include="engine2\engine\Component.cpp" />
+    <ClCompile Include="engine2\engine\components\CameraComponent.cpp" />
+    <ClCompile Include="engine2\engine\components\Component.cpp" />
     <ClCompile Include="engine2\engine\ComponentObject.cpp" />
     <ClCompile Include="engine2\engine\ComponentSystem.cpp" />
     <ClCompile Include="engine2\engine\GameBase.cpp" />
@@ -142,7 +143,7 @@
     <ClCompile Include="engine2\engine\Material.cpp" />
     <ClCompile Include="engine2\engine\Mesh.cpp" />
     <ClCompile Include="engine2\engine\Model.cpp" />
-    <ClCompile Include="engine2\engine\ModelComponent.cpp" />
+    <ClCompile Include="engine2\engine\components\ModelComponent.cpp" />
     <ClCompile Include="engine2\engine\Object.cpp" />
     <ClCompile Include="engine2\engine\Prefab.cpp" />
     <ClCompile Include="engine2\engine\PrefabNode.cpp" />
@@ -150,6 +151,8 @@
     <ClCompile Include="engine2\engine\Scene.cpp" />
     <ClCompile Include="engine2\engine\Shader.cpp" />
     <ClCompile Include="engine2\engine\Transform.cpp" />
+    <ClCompile Include="engine2\util\FamilyTypeID.cpp" />
+    <ClCompile Include="engine2\engine\components\IComponent.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -172,8 +175,8 @@
     <ClInclude Include="engine2\editor\SceneRenderer.h" />
     <ClInclude Include="engine2\editor\SceneTools.h" />
     <ClInclude Include="engine2\engine\Actor.h" />
-    <ClInclude Include="engine2\engine\CameraComponent.h" />
-    <ClInclude Include="engine2\engine\Component.h" />
+    <ClInclude Include="engine2\engine\components\CameraComponent.h" />
+    <ClInclude Include="engine2\engine\components\Component.h" />
     <ClInclude Include="engine2\engine\ComponentObject.h" />
     <ClInclude Include="engine2\engine\ComponentSystem.h" />
     <ClInclude Include="engine2\engine\GameBase.h" />
@@ -182,7 +185,7 @@
     <ClInclude Include="engine2\engine\Material.h" />
     <ClInclude Include="engine2\engine\Mesh.h" />
     <ClInclude Include="engine2\engine\Model.h" />
-    <ClInclude Include="engine2\engine\ModelComponent.h" />
+    <ClInclude Include="engine2\engine\components\ModelComponent.h" />
     <ClInclude Include="engine2\engine\ModelLoader.h" />
     <ClInclude Include="engine2\engine\Object.h" />
     <ClInclude Include="engine2\engine\Prefab.h" />
@@ -191,6 +194,8 @@
     <ClInclude Include="engine2\engine\Scene.h" />
     <ClInclude Include="engine2\engine\Shader.h" />
     <ClInclude Include="engine2\engine\Transform.h" />
+    <ClInclude Include="engine2\util\FamilyTypeID.h" />
+    <ClInclude Include="engine2\engine\components\IComponent.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_glfw.h" />

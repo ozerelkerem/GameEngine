@@ -175,10 +175,10 @@ bool SceneRenderer::RenderForObjectTools(GLint x, GLint y)
 void SceneRenderer::focusActor(Actor *actor)
 {
 	//@TODO CALC MÝN MAX FOR EACH MESH AND CHECK MAYBE THERE IS NO MODEL
-	if (!actor->componentObject->hasComponent(ComponentType::ModelComp))
+	if (!actor->componentObject->hasComponent<ModelComponent>())
 		return;
 
-	ModelComponent *mcmp= (ModelComponent *)actor->componentObject->getComponentByComponentType(ModelComp);
+	ModelComponent *mcmp = actor->componentObject->getComponent<ModelComponent>();
 	auto x = mcmp->model->meshes[0]->bounds;
 
 	glm::vec4 minxyz(x.minx, x.miny, x.minz, 1.0);

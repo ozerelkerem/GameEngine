@@ -6,9 +6,9 @@
 #include<string.h>
 
 #include <engine/Prefab.h>
-#include <engine/CameraComponent.h>
+#include <engine/components/CameraComponent.h>
 #include <engine/components/LightComponent.h>
-#include <engine/ModelComponent.h>
+#include <engine/components/ModelComponent.h>
 #include <editor/ProjectManager.h>
 #include <editor/Serializable.h>
 #include <assimp/Importer.hpp>
