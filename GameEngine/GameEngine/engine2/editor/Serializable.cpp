@@ -60,6 +60,7 @@ void Serializable::SaveModel(ProjectManager *pm, Model *m)
 	if (!file)
 		throw std::exception("File error when saving a model.");
 	Serializable::writefile(file, m->numOfMeshes);
+	Serializable::writefile(file, m->getType());
 	for (int i = 0; i < m->numOfMeshes; i++)
 	{
 		Mesh *mesh = m->meshes[i];
@@ -70,6 +71,13 @@ void Serializable::SaveModel(ProjectManager *pm, Model *m)
 		writefile(file, mesh->numberOfIndices);
 		writefile(file, mesh->indices, mesh->numberOfIndices * 3);
 		writefile(file, mesh->bounds);
+		if (m->getType() == ModelType::Skinned)
+		{
+			SkinnedMesh * mesh2 = (SkinnedMesh *)mesh;
+			writefile(file, &mesh2->weights.data()[0],SKINNED_MESH_MAX_WEIGHT_PER_VERTICES* mesh->numberOfVertices);
+			
+		}
+
 	}
 	file.close();
 }
@@ -84,8 +92,10 @@ void Serializable::ReadModel(Model *m)
 	unsigned int numberOfVertices;
 	unsigned int numberOfIndices;
 	
+	ModelType t;
 
 	Serializable::readfile(file, &meshcount);
+	Serializable::readfile(file, &t);
 	m->numOfMeshes = 0;
 	for (int i = 0; i < meshcount; i++)
 	{
@@ -100,9 +110,18 @@ void Serializable::ReadModel(Model *m)
 		Serializable::readfile(file, &numberOfIndices);
 		unsigned int *indices = (unsigned int *)malloc(numberOfIndices * 3 * sizeof(unsigned int));
 		Serializable::readfile(file, indices,numberOfIndices * 3);
-	
-		Mesh *mesh = new Mesh(numberOfVertices, numberOfIndices, vertices, normals, indices, textureCoords);
-		Serializable::readfile(file, &mesh->bounds);
+		Mesh *mesh;
+		
+		Mesh::boundstype b;
+		Serializable::readfile(file, &b);
+		std::vector<float> weights(numberOfVertices * SKINNED_MESH_MAX_WEIGHT_PER_VERTICES);
+		weights.resize(SKINNED_MESH_MAX_WEIGHT_PER_VERTICES * numberOfVertices);
+		Serializable::readfile(file, &weights.data()[0], SKINNED_MESH_MAX_WEIGHT_PER_VERTICES * numberOfVertices);
+		
+		if(t == ModelType::Skinned)
+			mesh = (Mesh *)new SkinnedMesh(numberOfVertices, numberOfIndices, vertices, normals, indices, textureCoords,weights);
+		else
+			mesh = new Mesh(numberOfVertices, numberOfIndices, vertices, normals, indices, textureCoords);
 		m->addMesh(mesh);
 	}
 	

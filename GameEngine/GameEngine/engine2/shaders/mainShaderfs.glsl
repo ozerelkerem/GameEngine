@@ -43,11 +43,21 @@ in vec2 v_textureCoords;
 void main()
 {
 	vec3 diffuse;
+	vec3 ambient;
 	vec3 diffuseLight = vec3(0,0,0);
 	if(material.hasTexture > 0)
+	{
+		
 		diffuse = vec3(texture(material.ambientTexture, v_textureCoords));
+		ambient = diffuse;
+	}
 	else
+	{
 		diffuse = material.ambientColor;
+		ambient = diffuse;
+	}
+	
+	ambient *= 0.1;
 	vec3 specular = vec3(0, 0, 0);
 
 	
@@ -108,7 +118,9 @@ void main()
 	else
 		FragColor = vec4(0, 0, 1, 1);*/
 
-	FragColor = vec4(diffuse * diffuseLight, 1.0f);
+	vec3 difl = (diffuse * diffuseLight);
+
+	FragColor = vec4(ambient + max(vec3(0,0,0),difl), 1.0f);
 
 
 }

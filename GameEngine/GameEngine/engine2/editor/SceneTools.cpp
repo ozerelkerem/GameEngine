@@ -8,8 +8,8 @@ SceneTools::SceneTools(SceneRenderer *sr)
 
 	mode = SceneToolModes::ROTATE;
 	modedirection = 0;
-	rotateTool = ConstantModels::CreateRotateTool();
 	translateTool = ConstantModels::CreateTranslateTool();
+	rotateTool = ConstantModels::CreateRotateTool();
 	scaleTool = ConstantModels::CreateScaleTool();
 
 

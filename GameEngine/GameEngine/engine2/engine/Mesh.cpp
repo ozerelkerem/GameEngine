@@ -22,14 +22,7 @@ Mesh::~Mesh()
 		free(textureCoords);
 }
 
-void Mesh::freeMesh()
-{
-	free(vertices);
-	free(normals);
-	free(indices);
-	if (textureCoords)
-		free(textureCoords);
-}
+
 
 void Mesh::loadMesh()
 {
@@ -44,21 +37,7 @@ void Mesh::loadMesh()
 
 }
 
-void Mesh::bind()
-{
-	glBindVertexArray(vao);
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-}
 
-void Mesh::unbind()
-{
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
-	glBindVertexArray(0);
-}
 
 void Mesh::render()
 {

@@ -164,6 +164,7 @@
     <ClCompile Include="engine2\engine\Texture.cpp" />
     <ClCompile Include="engine2\editor\Serializable.cpp" />
     <ClCompile Include="engine2\engine\Namable.cpp" />
+    <ClCompile Include="engine2\engine\SkinnedMesh.cpp" />
     <ClCompile Include="stb\stb_image.c" />
   </ItemGroup>
   <ItemGroup>
@@ -208,6 +209,7 @@
     <ClInclude Include="engine2\engine\Texture.h" />
     <ClInclude Include="engine2\editor\Serializable.h" />
     <ClInclude Include="engine2\engine\Namable.h" />
+    <ClInclude Include="engine2\engine\SkinnedMesh.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

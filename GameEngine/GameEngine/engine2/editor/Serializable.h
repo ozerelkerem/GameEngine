@@ -5,7 +5,7 @@
 #include <direct.h>
 
 #include <editor/ProjectManager.h>
-
+#include<engine/SkinnedMesh.h>
 class ProjectManager;
 
 

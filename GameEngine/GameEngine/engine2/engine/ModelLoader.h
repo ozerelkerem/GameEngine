@@ -15,6 +15,9 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include<assimp/types.h>
+#include <numeric>
+#include<Api.h>
+#include<engine/SkinnedMesh.h>
 
 #define aicolortovec3(x) glm::vec3(x.r, x.g, x.b)
 
@@ -40,6 +43,8 @@ namespace ModelLoader
 			std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
 			return NULL;
 		}
+
+
 		std::string name = path;
 		name = name.substr(name.find_last_of('\\') + 1, name.find_last_of('.') - name.find_last_of('\\') - 1);
 		return processScene(scene, name, project);
@@ -104,6 +109,7 @@ namespace ModelLoader
 		Object *o = NULL;
 		if (node->mNumMeshes > 0) // it is a model
 		{
+			
 			Model *m = new Model(node->mName.C_Str());
 			ModelComponent *mc = new ModelComponent(m);
 			for (int i = 0; i < node->mNumMeshes; i++)
@@ -200,8 +206,46 @@ namespace ModelLoader
 			}
 		
 		}
+
+
+		Mesh *tmpMesh;
+
+		if (mesh->HasBones())
+		{
+			std::vector<std::vector<float>> weights(mesh->mNumVertices);
+			for (int i = 0; i < mesh->mNumBones; i++)
+			{
+				auto bone = mesh->mBones[i];
+
+				for (int j = 0; j < bone->mNumWeights; j++)
+				{
+					weights[bone->mWeights[j].mVertexId].push_back(bone->mWeights[j].mWeight);
+				}
+			}
+
+			for (int i = 0; i < mesh->mNumVertices; i++)
+			{
+				std::sort(weights[i].begin(), weights[i].end(), greater<float>());
+				weights[i].resize(SKINNED_MESH_MAX_WEIGHT_PER_VERTICES,0);
+				float sum = std::accumulate(weights[i].begin(), weights[i].end(), 0);
+				std::transform(weights[i].begin(), weights[i].end(), weights[i].begin(), [&](const float &x) {return x / sum;  });
+			}
+
+			auto bar = std::accumulate(weights.begin(), weights.end(), decltype(weights)::value_type{},
+				[](auto& dest, auto& src) {
+				dest.insert(dest.end(), src.begin(), src.end());
+				return dest;
+			});
+
+			tmpMesh = (Mesh *)new SkinnedMesh(mesh->mNumVertices, mesh->mNumFaces, vertices, normals, indices, textureCoords,bar);
+		}
+		else
+			tmpMesh = new Mesh(mesh->mNumVertices, mesh->mNumFaces, vertices, normals, indices, textureCoords);
+			
+
+
 		
-		Mesh *tmpMesh = new Mesh(mesh->mNumVertices, mesh->mNumFaces, vertices, normals, indices, textureCoords);
+		
 		tmpMesh->bounds = { minx, miny,minz, maxx,maxy,maxz };
 		return tmpMesh;
 	}

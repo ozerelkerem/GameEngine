@@ -1,11 +1,13 @@
 #pragma once
 
 #include <engine/Namable.h>
-#include <engine/Mesh.h>
+#include <engine/SkinnedMesh.h>
 
 
 #include<fstream>
 
+
+enum ModelType { Normal, Skinned };
 
 class ProjectManager;
 class ComponentSystem;
@@ -24,5 +26,12 @@ public:
 	void addMesh(Mesh * m);
 
 	void loadModelToGPU(ProjectManager *pm=NULL);
+
+	inline ModelType getType() {
+		if (dynamic_cast<SkinnedMesh *>(meshes[0]))
+			return Skinned;
+		else
+			return Normal;
+	}
 };
 

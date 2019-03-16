@@ -21,26 +21,41 @@ public:
 	unsigned int numberOfIndices;
 	unsigned int *indices;
 
-	struct bounds
+	struct boundstype
 	{
 		float minx, miny, minz;
 		float maxx, maxy, maxz;
 	}bounds;
 
-	void loadMesh();
-	void bind();
-	void unbind();
+	virtual void loadMesh();
 	void render();
-	void freeMesh();
 
-private:
 
+	virtual inline void bind() {
+		glBindVertexArray(vao);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
+		normalShader->setInt("isSkinned", 0);
+	};
+	virtual inline void unbind() {
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(2);
+		glBindVertexArray(0);
+	};
+
+	virtual inline  void freeMesh() {
+		free(vertices);
+		free(normals);
+		free(indices);
+		free(textureCoords);
+	};
+
+protected:
 
 	void createVAO();
 	void storeData(int attribID, int num, GLenum target, GLenum type, void * buffer, int size, bool isIndices = false);
 	
 
-
-
 };
-
