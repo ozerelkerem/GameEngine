@@ -11,8 +11,12 @@ Editor::Editor(GLFWwindow *window)
 	projectManager->add(scene);
 	gameBase = new GameBase(scene);
 	sceneRenderer = new SceneRenderer(gameBase);
-	
+	auto as = new AnimationSystem(gameBase);
+	sm = new SystemManager(as);
 	Serializable::Save(projectManager, projectManager->path.c_str());
+
+	
+
 
 	loadIcons();
 
@@ -72,7 +76,7 @@ void Editor::ShowComponentList()
 				{
 					if (ImGui::Selectable(model->name.c_str()))
 					{
-						gameBase->currentScene->componentSystem->changeModel(sceneRenderer->selectedActor, model);
+						gameBase->currentScene->componentSystem->changeModel<ModelComponent>(sceneRenderer->selectedActor, model);
 						modelcomp->model = model;
 					}
 				}
@@ -102,6 +106,58 @@ void Editor::ShowComponentList()
 		}
 
 	}
+
+	if (SkinnedModelComponent *modelcomp = cob->getComponent<SkinnedModelComponent>())
+	{
+		if (ImGui::CollapsingHeader("Skinned Model Component", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (ImGui::BeginCombo(("Select Model##selectmodel"), modelcomp->model->name.c_str())) // The second parameter is the label previewed before opening the combo.
+			{
+				for (auto model : projectManager->models)
+				{
+					if (ImGui::Selectable(model->name.c_str()))
+					{
+						gameBase->currentScene->componentSystem->changeModel<SkinnedModelComponent>(sceneRenderer->selectedActor, model);
+						modelcomp->model = model;
+					}
+				}
+				ImGui::EndCombo();
+			}
+			if (ImGui::InputInt("Number of Materials##numberofmaterials", &modelcomp->numberOfMaterials))
+				modelcomp->materials.resize(modelcomp->numberOfMaterials);
+
+			for (int i = 0; i < modelcomp->numberOfMaterials; i++)
+			{ //meshleri dön
+
+				const char *name = "No Material";
+				if (modelcomp->materials[i])
+					name = modelcomp->materials[i]->name.c_str();
+
+				if (ImGui::BeginCombo(("Material" + std::to_string(i) + "##choicematerial").c_str(), name)) // The second parameter is the label previewed before opening the combo.
+				{
+					for (auto material : projectManager->materials)
+					{//projedeki bütün materialyerlleri göster
+						if (ImGui::Selectable(material->name.c_str()))
+							modelcomp->materials.insert(modelcomp->materials.begin(), 1, material);
+					}
+					ImGui::EndCombo();
+				}
+
+			}
+		}
+
+	}
+
+	if (AnimatorComponent *animator = cob->getComponent<AnimatorComponent>())
+	{
+		if (ImGui::CollapsingHeader("Animator Component", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+
+		}
+
+	}
+
+
 		
 }
 
@@ -140,7 +196,7 @@ void Editor::ObjectProperties()
 				
 				ObjectPropertiesMaterials();
 				
-				const char *items[] = {"Light Component", "Kokore"};
+				const char *items[] = {"Light Component", "Animator Component"};
 				if (ImGui::BeginCombo("##addcomponent", "Add Component", ImGuiComboFlags_NoArrowButton)) // The second parameter is the label previewed before opening the combo.
 				{
 					for (int n = 0; n < IM_ARRAYSIZE(items); n++)
@@ -152,6 +208,13 @@ void Editor::ObjectProperties()
 							{
 								IComponent *ic = (IComponent*)new LightComponent();
 								this->sceneRenderer->selectedActor->AddComponent<LightComponent>(ic);
+							}break;
+
+							case 1:
+							{
+								IComponent *ic = (IComponent*)new AnimatorComponent();
+								this->sceneRenderer->selectedActor->AddComponent<AnimatorComponent>(ic);
+
 							}break;
 
 							default:
@@ -200,6 +263,9 @@ Editor::~Editor()
 
 void Editor::Render()
 {
+	sm->work();
+
+
 	static bool opt_fullscreen_persistant = true;
 	static ImGuiDockNodeFlags opt_flags = ImGuiDockNodeFlags_None;
 	bool opt_fullscreen = opt_fullscreen_persistant;

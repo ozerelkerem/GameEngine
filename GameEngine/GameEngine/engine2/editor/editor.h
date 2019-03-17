@@ -12,7 +12,9 @@
 #include <editor/SceneRenderer.h>
 #include <editor/ProjectManager.h>
 #include <editor/Serializable.h>
-
+#include<engine/components/SkinnedModelComponent.h>
+#include<engine/components/AnimatorComponent.h>
+#include <engine/systems/SystemManager.h>
 class Editor
 {
 public:
@@ -30,6 +32,8 @@ public:
 	ProjectManager *projectManager;
 
 	GameBase *gameBase;
+	SystemManager *sm;
+
 
 	void Render();
 	void DrawHierarchy(Actor *);

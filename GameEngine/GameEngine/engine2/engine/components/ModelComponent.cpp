@@ -2,10 +2,9 @@
 
 
 
-ModelComponent::ModelComponent(Model *m) : Component()
+ModelComponent::ModelComponent(Model *m) : IModelComponent(m) ,Component()
 {
-	model = m;
-	numberOfMaterials = m->numOfMeshes;
+	
 }
 
 

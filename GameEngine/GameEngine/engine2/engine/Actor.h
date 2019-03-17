@@ -56,4 +56,4 @@ inline void Actor::AddComponent(IComponent *component)
 
 
 
-#include <engine/ComponentObject.h>
+#include <engine/components/ComponentObject.h>

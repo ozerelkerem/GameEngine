@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <engine/ComponentObject.h>
+#include <engine/components/ComponentObject.h>
 
 class Object
 {

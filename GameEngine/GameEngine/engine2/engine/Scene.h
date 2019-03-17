@@ -4,7 +4,7 @@
 
 
 #include <engine/Prefab.h>
-#include <engine/ComponentSystem.h>
+#include <engine/components/ComponentSystem.h>
 
 
 class Prefab;

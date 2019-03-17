@@ -52,7 +52,9 @@ void Renderer::renderModels()
 
 			for (auto actor : modelmap.second)
 			{
-				ModelComponent *mcmp = actor->componentObject->getComponent<ModelComponent>();
+				IModelComponent *mcmp = actor->componentObject->getComponent<ModelComponent>();
+				if(!mcmp)
+					mcmp = actor->componentObject->getComponent<SkinnedModelComponent>();
 				if (mcmp->numberOfMaterials > i && mcmp->materials[i])
 					mcmp->materials[i]->active();
 				else
