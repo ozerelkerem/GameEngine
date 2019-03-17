@@ -18,9 +18,11 @@
 #include <numeric>
 #include<Api.h>
 #include<engine/SkinnedMesh.h>
+#include<engine/Animation.h>
 
 #define aicolortovec3(x) glm::vec3(x.r, x.g, x.b)
-
+#define aivec3tovec3(a) glm::vec3(a.x, a.y, a.z)
+#define aiquattoquat(a) glm::quat(a.x, a.y, a.z, a.w)
 namespace ModelLoader
 {
 	static Prefab *loadPrefab(const char *path, ProjectManager *project);
@@ -29,6 +31,8 @@ namespace ModelLoader
 	static Material *generateMaterial(const aiMaterial *material, std::string);
 	static Object * generateCamera(const aiCamera *camera);
 	static Object * generateLight(const aiLight *light);
+	static Animation * generateAnimation(const aiAnimation *anim);
+
 
 	static void startingNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene);
 	static void processNode(Mesh **meshes, Prefab *prefab, PrefabNode *prefabNode, aiNode *node, const aiScene *scene);
@@ -60,7 +64,14 @@ namespace ModelLoader
 		for (int i = 0; i < scene->mNumCameras; i++)
 			prefab->addCamera(generateCamera(scene->mCameras[i]));
 
-		
+		for (int i = 0; i < scene->mNumAnimations; i++)
+		{
+			Animation *a = generateAnimation(scene->mAnimations[i]);
+			if (project)
+				project->add(a);
+		}
+		//;prefab->addAnimation(generateAnimation(scene->mAnimations[i]));
+
 		for (int i = 0; i < scene->mNumMaterials; i++)
 		{
 			Material *m = generateMaterial(scene->mMaterials[i], prefab->name + " Material " + std::to_string(i));
@@ -263,6 +274,25 @@ namespace ModelLoader
 		Object *c = new Object(camera->mName.C_Str());
 		c->componentObject->addComponent(new CameraComponent(camera->mHorizontalFOV, camera->mAspect, camera->mClipPlaneNear, camera->mClipPlaneFar));
 		return c;
+	}
+
+	static Animation * generateAnimation(const aiAnimation *anim)
+	{
+		AnimationNodeMap map;
+		for (int i = 0; i < anim->mNumChannels; i++)
+		{
+			auto channel = anim->mChannels[i];
+			KeyFrameHolder<glm::vec3> pos(channel->mNumPositionKeys), scale(channel->mNumScalingKeys);
+			KeyFrameHolder<glm::quat> rot(channel->mNumRotationKeys);
+			for (int j = 0; j < channel->mNumPositionKeys; j++)
+				pos.push_back(std::make_pair(static_cast<AnimationTimeType>(channel->mPositionKeys[j].mTime), aivec3tovec3(channel->mPositionKeys[i].mValue)));
+			for (int j = 0; j < channel->mNumScalingKeys; j++)
+				scale.push_back(std::make_pair(static_cast<AnimationTimeType>(channel->mScalingKeys[j].mTime), aivec3tovec3(channel->mScalingKeys[j].mValue)));
+			for (int j = 0; j < channel->mNumRotationKeys; j++)
+				rot.push_back(std::make_pair(static_cast<AnimationTimeType>(channel->mRotationKeys[j].mTime), aiquattoquat(channel->mRotationKeys[j].mValue)));
+			map[channel->mNodeName.C_Str()] = new AnimationNode(channel->mNodeName.C_Str(), pos, scale, rot);
+		}
+		return new Animation(anim->mName.C_Str(), map, static_cast<AnimationTimeType>(anim->mDuration), static_cast<AnimationTimeType>(anim->mTicksPerSecond));
 	}
 };
 

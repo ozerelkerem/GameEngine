@@ -7,6 +7,7 @@
 #include <engine/Scene.h>
 #include <engine/Prefab.h>
 
+class Animation;
 class Model;
 class Prefab;
 class Scene;
@@ -24,7 +25,7 @@ public:
 	
 	std::vector<Scene *> scenes;
 	std::vector<Prefab *> prefabs;
-
+	std::vector<Animation *> animations;
 	std::vector<Texture *> textures;
 	std::vector<Material *> materials;
 
@@ -47,17 +48,13 @@ public:
 template<class T>
 inline void ProjectManager::add(T *piece)
 {
-	
-	if (typeid(T) == typeid(Scene))
-		scenes.push_back((Scene *)piece);
-	else if (typeid(T) == typeid(Model))
-		models.push_back((Model *) piece);
-	else if (typeid(T) == typeid(Material))
-		materials.push_back((Material *)piece);
-	else if (typeid(T) == typeid(Prefab))
-		prefabs.push_back((Prefab *)piece);
-	else if (typeid(T) == typeid(Texture))
-		textures.push_back((Texture *)piece);
 };
+template<> inline void ProjectManager::add<Scene>(Scene *piece) { scenes.push_back(piece); };
+template<> inline void ProjectManager::add<Model>(Model *piece) { models.push_back(piece); };
+template<> inline void ProjectManager::add<Material>(Material *piece) { materials.push_back(piece); };
+template<> inline void ProjectManager::add<Prefab>(Prefab *piece) { prefabs.push_back(piece); };
+template<> inline void ProjectManager::add<Texture>(Texture *piece) { textures.push_back(piece); };
+template<> inline void ProjectManager::add<Animation>(Animation *piece) { animations.push_back(piece); };
+
 
 

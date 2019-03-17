@@ -573,6 +573,7 @@ void Editor::DrawProjectExplorer()
 		count += projectManager->textures.size();
 		count += projectManager->prefabs.size();
 		count += projectManager->materials.size();
+		count += projectManager->animations.size();
 		for (auto scene : projectManager->scenes)
 		{
 			if (DrawSingleProjectItem(sceneIcon, scene->name, i++, count))
@@ -606,6 +607,13 @@ void Editor::DrawProjectExplorer()
 			if (DrawSingleProjectItem((void *)sceneRenderer->GetTextureColorBuffer(), material->name, i++, count))
 			{
 				ImGui::SetTooltip("Material");
+			}
+		}
+		for (auto animation : projectManager->animations)
+		{
+			if (DrawSingleProjectItem((void *)sceneRenderer->GetTextureColorBuffer(), animation->name, i++, count))
+			{
+				ImGui::SetTooltip("Animation");
 			}
 		}
 
