@@ -16,7 +16,7 @@ Editor::Editor(GLFWwindow *window)
 	Serializable::Save(projectManager, projectManager->path.c_str());
 
 	
-
+	
 
 	loadIcons();
 
@@ -491,6 +491,126 @@ void Editor::Render()
 
 	ImGui::Begin("Game", NULL);
 	{
+		std::vector<bool> isopen;
+		float test=0;
+		{
+			
+			if (!projectManager->animations.empty())
+				isopen.resize(projectManager->animations[0]->animationNodeMap.size()*3,false);
+			
+			ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysHorizontalScrollbar;
+			ImGui::BeginChild("Child1", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.2f, ImGui::GetWindowContentRegionMax().y-30), false, window_flags);
+			{
+				if (!projectManager->animations.empty())
+				{
+					int counter = 0;
+					ImGui::SetCursorPosY(15);
+					for (auto node : projectManager->animations[0]->animationNodeMap)
+					{
+						if (ImGui::TreeNodeEx((void *)&node.second->positionKeys, ImGuiTreeNodeFlags_OpenOnArrow, (node.first + ": Position").c_str()))
+						{
+							isopen[counter * 3] = true;
+							ImGui::Text((std::to_string(node.second->positionKeys[0].second.x).c_str()));
+							ImGui::Text((std::to_string(node.second->positionKeys[0].second.y).c_str()));
+							ImGui::Text((std::to_string(node.second->positionKeys[0].second.z).c_str()));
+							ImGui::TreePop();
+						}
+						if (ImGui::TreeNodeEx((void *)&node.second->rotationKeys, 0, (node.first + ": Rotation").c_str()))
+						{
+							isopen[counter * 3 + 1] = true;
+							ImGui::Text((std::to_string(node.second->rotationKeys[0].second.x).c_str()));
+							ImGui::Text((std::to_string(node.second->rotationKeys[0].second.y).c_str()));
+							ImGui::Text((std::to_string(node.second->rotationKeys[0].second.z).c_str()));
+							ImGui::Text((std::to_string(node.second->rotationKeys[0].second.w).c_str()));
+							ImGui::TreePop();
+						}
+						if (ImGui::TreeNodeEx((void *)&node.second->scaleKeys, 0, (node.first + ": Scale").c_str()))
+						{
+							isopen[counter * 3 + 2] = true;
+							ImGui::Text((std::to_string(node.second->scaleKeys[0].second.x).c_str()));
+							ImGui::Text((std::to_string(node.second->scaleKeys[0].second.y).c_str()));
+							ImGui::Text((std::to_string(node.second->scaleKeys[0].second.z).c_str()));
+							ImGui::TreePop();
+						}
+
+						counter++;
+
+					}
+				}
+				test = ImGui::GetScrollY();
+				
+			}
+			ImGui::EndChild();
+		}
+
+		ImGui::SameLine();
+
+		// Child 2: rounded border
+		{
+			static float width = 5000;
+			ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoScrollbar;
+			ImGui::BeginChild("Channels", ImVec2(0, ImGui::GetWindowContentRegionMax().y-30), false, window_flags);
+			{			
+				ImGui::SetNextWindowContentSizeX(width);
+				if (ImGui::BeginTimeline("asdasd##asdasd", 10000))
+				{
+					ImGui::LINE_COUNT = width / 50;
+					if (ImGui::IsMouseHoveringWindow() && io.MouseWheel != 0)
+						width += io.MouseWheel * 200;
+					if (width < ImGui::GetWindowSize().x / 2)
+						width = ImGui::GetWindowSize().x / 2;
+
+					ImGui::SetScrollY(test);
+
+					if (!projectManager->animations.empty()) {
+						unsigned int i = 0;
+						int counter = 0;
+					
+						i = 1;
+
+						for (auto node : projectManager->animations[0]->animationNodeMap)
+						{
+							for (auto pos : node.second->positionKeys)
+							{
+								ImGui::TimelineEvent(node.first.c_str(), &pos.first, i);
+							}
+							if (isopen[counter*3])
+								i += 3;
+							i++;
+
+							for (auto pos : node.second->rotationKeys)
+							{
+								ImGui::TimelineEvent(node.first.c_str(), &pos.first, i);
+							}
+							if (isopen[counter * 3 + 1])
+								i += 4;
+							i++;
+
+							for (auto pos : node.second->scaleKeys)
+							{
+								ImGui::TimelineEvent(node.first.c_str(), &pos.first, i);
+							}
+							if (isopen[counter*3+2])
+								i += 3;
+							i++;
+						
+
+							counter++;
+						}
+
+					}
+				}
+				ImGui::EndTimeline();
+			}
+			ImGui::EndChild();
+		//	ImGui::PopStyleVar();
+		}
+
+
+			
+		
+		
+		
 	}
 	ImGui::End();
 

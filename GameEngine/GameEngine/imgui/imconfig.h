@@ -104,4 +104,5 @@ namespace ImGui
 #define ImGuiMouse_Left_ 0
 #endif 
 
+#define ImDrawIdx unsigned int
 

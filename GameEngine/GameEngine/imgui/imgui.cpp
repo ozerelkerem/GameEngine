@@ -6710,6 +6710,13 @@ void ImGui::SetNextWindowContentSize(const ImVec2& size)
     g.NextWindowData.ContentSizeCond = ImGuiCond_Always;
 }
 
+void ImGui::SetNextWindowContentSizeX(const float& a)
+{
+	ImGuiContext& g = *GImGui;
+	g.NextWindowData.ContentSizeVal.x = a;  // In Begin() we will add the size of window decorations (title bar, menu etc.) to that to form a SizeContents value.
+	g.NextWindowData.ContentSizeCond = ImGuiCond_Always;
+}
+
 void ImGui::SetNextWindowCollapsed(bool collapsed, ImGuiCond cond)
 {
     ImGuiContext& g = *GImGui;

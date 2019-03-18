@@ -282,8 +282,13 @@ namespace ModelLoader
 		for (int i = 0; i < anim->mNumChannels; i++)
 		{
 			auto channel = anim->mChannels[i];
-			KeyFrameHolder<glm::vec3> pos(channel->mNumPositionKeys), scale(channel->mNumScalingKeys);
-			KeyFrameHolder<glm::quat> rot(channel->mNumRotationKeys);
+			KeyFrameHolder<glm::vec3> pos, scale;
+			KeyFrameHolder<glm::quat> rot;
+			
+			pos.reserve(channel->mNumPositionKeys);
+			scale.reserve(channel->mNumScalingKeys);
+			rot.reserve(channel->mNumRotationKeys);
+
 			for (int j = 0; j < channel->mNumPositionKeys; j++)
 				pos.push_back(std::make_pair(static_cast<AnimationTimeType>(channel->mPositionKeys[j].mTime), aivec3tovec3(channel->mPositionKeys[i].mValue)));
 			for (int j = 0; j < channel->mNumScalingKeys; j++)

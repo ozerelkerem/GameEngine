@@ -311,5 +311,8 @@
     <ClInclude Include="engine2\engine\systems\AnimationSystem.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
+    <ClInclude Include="imgui\imgui_user.h">
+      <Filter>Üst Bilgi Dosyaları</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
