@@ -3,13 +3,15 @@
 
 
 using BoneWeightVector = std::vector<std::vector<float>>;
+using BonesList = std::vector<std::pair<std::string, glm::mat4>>;
 class SkinnedMesh : public Mesh
 {
 public:
 
 	std::vector<float> weights;
+	BonesList bones;
 
-	SkinnedMesh(unsigned int, unsigned int, float *, float *, unsigned int *, float *, std::vector<float> );
+	SkinnedMesh(unsigned int, unsigned int, float *, float *, unsigned int *, float *, std::vector<float>, BonesList);
 	~SkinnedMesh();
 
 	virtual void loadMesh();

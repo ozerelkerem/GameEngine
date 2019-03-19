@@ -55,7 +55,8 @@ public:
 	{
 		size_t stringsize;
 		Serializable::readfile(file,&stringsize);;
-		Serializable::readfile(file, val,stringsize);
+		val->resize(stringsize);
+		Serializable::readfile(file, val->data(),stringsize);
 	}
 
 };

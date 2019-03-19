@@ -5,8 +5,8 @@
 
 
 
-SkinnedMesh::SkinnedMesh(unsigned int nov, unsigned int noi, float * vert, float * norm, unsigned int * ind, float *textureCoords, std::vector<float> weigth) 
-	: Mesh(nov, noi, vert, norm, ind, textureCoords), weights(weigth)
+SkinnedMesh::SkinnedMesh(unsigned int nov, unsigned int noi, float * vert, float * norm, unsigned int * ind, float *textureCoords, std::vector<float> weigth, BonesList bonelist)
+	: Mesh(nov, noi, vert, norm, ind, textureCoords), weights(weigth), bones(bonelist)
 {
 }
 

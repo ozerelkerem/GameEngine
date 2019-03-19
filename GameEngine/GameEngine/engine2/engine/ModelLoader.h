@@ -23,6 +23,7 @@
 #define aicolortovec3(x) glm::vec3(x.r, x.g, x.b)
 #define aivec3tovec3(a) glm::vec3(a.x, a.y, a.z)
 #define aiquattoquat(a) glm::quat(a.x, a.y, a.z, a.w)
+#define aiamat4tomat4(a) glm::mat4((float)a.a1, a.a2, a.a3, a.a4, a.b1, a.b2, a.b3, a.b4, a.c1,a.c2,a.c3,a.c4,a.d1,a.d2,a.d3,a.d3)
 namespace ModelLoader
 {
 	static Prefab *loadPrefab(const char *path, ProjectManager *project);
@@ -223,6 +224,7 @@ namespace ModelLoader
 
 		if (mesh->HasBones())
 		{
+			BonesList bones;
 			std::vector<std::vector<float>> weights(mesh->mNumVertices);
 			for (int i = 0; i < mesh->mNumBones; i++)
 			{
@@ -232,6 +234,7 @@ namespace ModelLoader
 				{
 					weights[bone->mWeights[j].mVertexId].push_back(bone->mWeights[j].mWeight);
 				}
+				bones.push_back(std::make_pair(bone->mName.C_Str(),glm::mat4(aiamat4tomat4(bone->mOffsetMatrix)) ));
 			}
 
 			for (int i = 0; i < mesh->mNumVertices; i++)
@@ -248,7 +251,7 @@ namespace ModelLoader
 				return dest;
 			});
 
-			tmpMesh = (Mesh *)new SkinnedMesh(mesh->mNumVertices, mesh->mNumFaces, vertices, normals, indices, textureCoords,bar);
+			tmpMesh = (Mesh *)new SkinnedMesh(mesh->mNumVertices, mesh->mNumFaces, vertices, normals, indices, textureCoords,bar, bones);
 		}
 		else
 			tmpMesh = new Mesh(mesh->mNumVertices, mesh->mNumFaces, vertices, normals, indices, textureCoords);
