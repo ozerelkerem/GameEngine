@@ -16,7 +16,7 @@ public:
 	virtual void Update() override;
 	virtual void PostUpdate() override;
 
-	void loopHierarchy(Actor *a);
+	void loopHierarchy(ActorID);
 
 	GameBase *gamebase;
 

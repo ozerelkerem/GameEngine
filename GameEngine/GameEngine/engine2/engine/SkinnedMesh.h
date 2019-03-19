@@ -1,6 +1,8 @@
 #pragma once
 #include <engine/Mesh.h>
 
+#include <engine/Shader.h>
+
 
 using BoneWeightVector = std::vector<std::vector<float>>;
 using BonesList = std::vector<std::pair<std::string, glm::mat4>>;

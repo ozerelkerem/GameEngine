@@ -32,8 +32,6 @@ public:
 class Animation : public Namable
 {
 
-
-
 public:
 	Animation(std::string name, AnimationNodeMap, AnimationTimeType duration, AnimationTimeType tickpersecond);
 	~Animation();

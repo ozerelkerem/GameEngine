@@ -1,9 +1,9 @@
 #pragma once
+#include<Api.h>
 #include <engine/Shader.h>
 #include <engine/GameBase.h>
 
-extern Shader *normalShader;
-extern Shader *colorShader;
+
 
 class Actor;
 

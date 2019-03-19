@@ -1,14 +1,15 @@
 #pragma once
 
-#include <string>
+#include <Api.h>
 
 #include <engine/Transform.h>
-
+#include<util/Handle.h>
 
 class IComponent;
 class ComponentObject;
 class Scene;
 class ComponentSystem;
+
 
 
 class Actor
@@ -19,21 +20,23 @@ public:
 
 	ComponentObject *componentObject;
 
+	ActorID actorID;
+
 	std::string name;
 	unsigned int id;
 	Scene *scene;
 
 	Transform *transformation;
-	Actor *parent;
+	ActorID parent;
 
 	unsigned int numberOfChildren;
-	Actor *(*children);
+	ActorID *(children);
 
-	bool AddChild(Actor * newChild);
+	bool AddChild(ActorID newChild);
 	void RemoveActor();
-	bool RemoveChild(Actor * removeChild);
-	bool isParent(Actor * root);
-	bool AddParent(Actor * newParent);
+	bool RemoveChild(ActorID removeChild);
+	bool isParent(ActorID root);
+	bool AddParent(ActorID newParent);
 	bool RemoveParent();
 
 	template<class T>

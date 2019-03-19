@@ -5,6 +5,8 @@
 
 #include <GL/glew.h>
 
+#include <engine/Shader.h>
+
 class Mesh
 {
 public:

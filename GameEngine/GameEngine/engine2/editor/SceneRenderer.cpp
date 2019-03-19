@@ -149,7 +149,7 @@ Actor * SceneRenderer::RenderForObjectPicker(GLint x, GLint y)
 	if (test[0] == 0)
 		return NULL;
 	else
-		return gamebase->currentScene->getActorByID((int)(test[0] * 255));
+		return GE_Engine->actorManager->GetActor((ActorID)(test[0] * 255));
 }
 
 bool SceneRenderer::RenderForObjectTools(GLint x, GLint y)

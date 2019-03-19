@@ -1,6 +1,9 @@
 #pragma once
+#include<Api.h>
+
 #include <engine/Renderer.h>
 #include <engine/Actor.h>
+#include <engine/ActorManager.h>
 
 #include <editor/SceneCamera.h>
 #include <editor/Grid.h>

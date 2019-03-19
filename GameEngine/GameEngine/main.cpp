@@ -1,16 +1,11 @@
 #define _HAS_STD_BYTE 0
 
-#include <stdio.h>
-#include <iostream>
-#include <map>
-#include <set>
-#include <unordered_map>
-#include <unordered_set>
-#include <forward_list>
 
 
 
-#include <editor/Editor.h>
+#include<Api.h>
+
+#include <editor/editor.h>
 
 #include "ogl/GL/glew.h" 
 #include "ogl/GLFW/glfw3.h"
@@ -31,8 +26,7 @@ ImVec2 viewportSize = { 1280,720 };
 
 Editor *editor;
 
-Shader *normalShader;
-Shader *colorShader;
+
 
 
 void drop_callback(GLFWwindow* window, int count, const char** paths)
@@ -115,9 +109,9 @@ int main(int, char**)
 
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-	normalShader = new Shader("engine2/shaders/mainShadervs.glsl", "engine2/shaders/mainShaderfs.glsl");
-	colorShader = new Shader("engine2/shaders/colorShadervs.glsl", "engine2/shaders/colorShaderfs.glsl");
 
+	
+	Initialize();
 	editor = new Editor(window);
 
 	

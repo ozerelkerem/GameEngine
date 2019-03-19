@@ -1,5 +1,5 @@
-#include "Editor.h"
-
+#include "editor.h"
+#include<engine/ActorManager.h>
 #define stringify( name ) # name
 
 Editor::Editor(GLFWwindow *window)
@@ -654,11 +654,12 @@ void Editor::Render()
 
 }
 
-void Editor::DrawHierarchy(Actor *root)
+void Editor::DrawHierarchy(ActorID rootid)
 
 {
 	int n;
 	ImGuiTreeNodeFlags src_flags = 0;
+	Actor *root = GE_Engine->actorManager->GetActor(rootid);
 	if (root->numberOfChildren == 0)
 		src_flags = ImGuiTreeNodeFlags_Leaf;
 	else
@@ -709,14 +710,14 @@ void Editor::DrawHierarchy(Actor *root)
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_NAME"))
 				{
 					if (sceneRenderer->hoveredActor)
-						sceneRenderer->hoveredActor->AddParent(root);
+						sceneRenderer->hoveredActor->AddParent(rootid);
 					sceneRenderer->hoveredActor = NULL;
 				}
 				ImGui::EndDragDropTarget();
 			}
 		}
 
-		if (ImGui::IsItemClicked() && sceneRenderer->gamebase->currentScene->rootActor != root)
+		if (ImGui::IsItemClicked() && sceneRenderer->gamebase->currentScene->rootActor != rootid)
 		{
 			sceneRenderer->selectedActor = root;
 		}

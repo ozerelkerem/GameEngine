@@ -1,15 +1,17 @@
 #include "Actor.h"
+#include <Engine.h>
+#include <engine/ActorManager.h>
 
 Actor::Actor(std::string name, Scene *scene)
 {
 	this->name = name;
 	this->scene = scene;
-	id = scene->actorCounter++;
+	parent = actorID.INVALID_HANDLE;
 
 	transformation = new Transform();
 
 	numberOfChildren = 0;
-	children = (Actor**)calloc((numberOfChildren + 1), sizeof(Actor*));
+	children = (ActorID*)calloc((numberOfChildren + 1), sizeof(ActorID));
 	if (name != scene->name)
 		AddParent(scene->rootActor);
 
@@ -19,13 +21,13 @@ Actor::Actor(std::string name, Scene *scene)
 
 
 
-bool Actor::AddChild(Actor *newChild)
+bool Actor::AddChild(ActorID newChild)
 {
 	children[numberOfChildren] = newChild;
 
 	numberOfChildren++;
 
-	children = (Actor**)realloc(children, sizeof(Actor*) * (numberOfChildren + 1));
+	children = (ActorID*)realloc(children, sizeof(ActorID) * (numberOfChildren + 1));
 	if (children)
 		return true;
 	else
@@ -34,65 +36,66 @@ bool Actor::AddChild(Actor *newChild)
 
 void Actor::RemoveActor()
 {
-	parent->RemoveChild(this);
+	
+	GE_Engine->actorManager->GetActor(parent)->RemoveChild(this->actorID);
 
 	for (int i = 0; i < numberOfChildren; i++)
-		children[i]->RemoveParent();
+		GE_Engine->actorManager->GetActor(children[i])->RemoveParent();
 
 	delete this;
 }
 
-bool Actor::RemoveChild(Actor * removeChild)
+bool Actor::RemoveChild(ActorID removeChild)
 {
 	int i = 0;
-	while (i < numberOfChildren && children[i]->id != removeChild->id) {
+	while (i < numberOfChildren && children[i] != removeChild) {
 		i++;
 	}
 	if (i < numberOfChildren)
 	{
 		children[i] = children[--numberOfChildren];
-		children = (Actor**)realloc(children, sizeof(Actor *) * (numberOfChildren + 1));
-		removeChild->parent = NULL;
+		children = (ActorID*)realloc(children, sizeof(ActorID ) * (numberOfChildren + 1));
+		GE_Engine->actorManager->GetActor(removeChild)->parent = actorID.INVALID_HANDLE;
 		return true;
 	}
 	else
 		return false;
 }
 
-bool Actor::isParent(Actor *root)
+bool Actor::isParent(ActorID root)
 {
-	Actor *node = root;
-	while (root->name != scene->name && root->id != this->id)
+	Actor *node = GE_Engine->actorManager->GetActor(root);
+	while (node->name != scene->name && node->id != this->id)
 	{
-		root = root->parent;
+		root = node->parent;
 	}
-	if (root->name == scene->name)
+	if (node->name == scene->name)
 		return false;
 	else
 		return true;
 }
 
-bool Actor::AddParent(Actor * newParent)
+bool Actor::AddParent(ActorID newParent)
 {
 	if (this->isParent(newParent))
 	{
-		newParent->AddParent(this->parent);
+		GE_Engine->actorManager->GetActor(newParent)->AddParent(this->parent);
 	}
 
-	if (parent != NULL)
+	if (parent != actorID.INVALID_HANDLE)
 	{
-		parent->RemoveChild(this);
+		GE_Engine->actorManager->GetActor(parent)->RemoveChild(this->actorID);
 	}
 
 	parent = newParent;
-	parent->AddChild(this);
+	GE_Engine->actorManager->GetActor(parent)->AddChild(this->actorID);
 
 	return true;
 }
 
 bool Actor::RemoveParent()
 {
-	parent->RemoveChild(this);
+	GE_Engine->actorManager->GetActor(parent)->RemoveChild(this->actorID);
 	this->AddParent(scene->rootActor);
 
 	return true;
@@ -107,14 +110,14 @@ void Actor::processTransformation()
 	
 	for (int i = 0; i < numberOfChildren; i++)
 	{
-		children[i]->processTransformation();
+		GE_Engine->actorManager->GetActor(children[i])->processTransformation();
 	}
 }
 
 void Actor::RecalculateRealMatrix()
 {
 	transformation->relativeMatrix = glm::scale(glm::translate(glm::mat4(1), transformation->position) * (glm::toMat4(transformation->qRotation)), transformation->scale);
-	transformation->realMatrix = parent->transformation->realMatrix * transformation->relativeMatrix;
+	transformation->realMatrix = GE_Engine->actorManager->GetActor(parent)->transformation->realMatrix * transformation->relativeMatrix;
 }
 
 Actor::~Actor()

@@ -17,7 +17,11 @@ void AnimationSystem::Update()
 	auto animators = gamebase->currentScene->componentSystem->GetComponents<AnimatorComponent>();
 	for (auto animator : animators)
 	{
-		loopHierarchy(animator.first);
+		if (animator.second->currentAnimation)
+		{
+			//loopHierarchy(animator.first);
+		}
+		
 	}
 }
 
@@ -26,12 +30,13 @@ void AnimationSystem::PostUpdate()
 
 }
 
-void AnimationSystem::loopHierarchy(Actor *a)
+void AnimationSystem::loopHierarchy(ActorID aid)
 {
+	/*Actor *a = GE_Engine->actorManager.
 	a->transformation->position.x += 1;
 	a->RecalculateRealMatrix();
 	for (int i = 0; i < a->numberOfChildren; i++)
 	{
 		loopHierarchy(a->children[i]);
-	}
+	}*/
 }

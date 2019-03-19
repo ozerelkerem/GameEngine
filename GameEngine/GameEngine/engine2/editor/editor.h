@@ -39,7 +39,7 @@ public:
 
 
 	void Render();
-	void DrawHierarchy(Actor *);
+	void DrawHierarchy(ActorID);
 
 	void ShowComponentList();
 	void ObjectProperties();

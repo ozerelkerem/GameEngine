@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include<Api.h>
+#include<Engine.h>
 
 #include <engine/Prefab.h>
 #include <engine/components/ComponentSystem.h>
@@ -23,14 +25,14 @@ public:
 	ComponentSystem *componentSystem;
 	ProjectManager *projectManager;
 
-	Actor *rootActor;
+	ActorID rootActor;
 	int actorCounter;
 
-	Actor *getActorByID(int);
+
 
 	/*Find the actor by given id and root if it is exist*/
 	Actor *findActor(Actor*, int);
 	
 	void addActor(Prefab *, glm::vec3);
-	void recursionPrefab(PrefabNode *, glm::mat4 , Actor *);
+	void recursionPrefab(PrefabNode *, glm::mat4 , ActorID);
 };

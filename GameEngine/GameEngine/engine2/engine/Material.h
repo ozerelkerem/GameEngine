@@ -8,6 +8,8 @@
 #include <Api.h>
 #include <engine/Namable.h>
 
+#include <engine/Shader.h>
+
 using MaterialID = uint16_t;
 
 
