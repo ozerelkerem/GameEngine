@@ -33,8 +33,9 @@ void Scene::addActor(Prefab *prefab, glm::vec3 pos)
 
 void Scene::recursionPrefab(PrefabNode *node, glm::mat4 parent, ActorID actorNode)
 {
-	Actor *a = new Actor(node->object->name, this);
-
+	//Actor *a = new Actor(node->object->name, this);
+	ActorID actorid = GE_Engine->actorManager->CreateActor(node->object->name, this);
+	Actor *a = GE_Engine->actorManager->GetActor(actorid);
 	for (auto t : node->object->componentObject->componentlist)
 		for (auto c : t.second)
 		{	
@@ -48,14 +49,14 @@ void Scene::recursionPrefab(PrefabNode *node, glm::mat4 parent, ActorID actorNod
 			}
 		}
 
-	ActorID actorid = GE_Engine->actorManager->CreateActor(a);
+	
 	
 	a->transformation->relativeMatrix = glm::transpose(node->transformation);
 	glm::mat4 temp = parent *a->transformation->relativeMatrix ;
 	a->transformation->realMatrix = temp;
 	a->transformation->divideRealMatrix();
 	a->AddParent(actorNode);
-	componentSystem->addActor(a);
+	componentSystem->addActor(actorid);
 	for (int i = 0; i < node->numofChildren; i++)
 	{
 		recursionPrefab(node->children[i], temp, actorid);

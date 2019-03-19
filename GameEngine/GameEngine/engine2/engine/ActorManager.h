@@ -32,12 +32,13 @@ public:
 	ActorID CreateActor(ARGS&&... args)
 	{
 		// aqcuire memory for new entity object of type T
-		//void* pObjectMemory = GetEntityContainer<T>()->CreateObject();
-		Actor* actor = new Actor(std::forward<ARGS>(args)...);
+		void* pObjectMemory = malloc(sizeof(Actor));
+		ActorID actorid = this->AqcuireActorID((Actor*)pObjectMemory);
+		Actor* actor = new (pObjectMemory)Actor(std::forward<ARGS>(args)...,actorid);
 
-		ActorID actorid = this->AqcuireActorID(actor);
+	
 
-		actor->actorID = actorid;
+//		actor->actorID = actorid;
 		//((T*)pObjectMemory)->m_ComponentManagerInstance = this->m_ComponentManagerInstance;
 
 		// create entity inplace
@@ -47,22 +48,7 @@ public:
 	}
 
 	
-	ActorID CreateActor(Actor *actor)
-	{
-		// aqcuire memory for new entity object of type T
-		//void* pObjectMemory = GetEntityContainer<T>()->CreateObject();
-		
 
-		ActorID actorid = this->AqcuireActorID(actor);
-
-		actor->actorID = actorid;
-		//((T*)pObjectMemory)->m_ComponentManagerInstance = this->m_ComponentManagerInstance;
-
-		// create entity inplace
-
-
-		return actorid;
-	}
 
 
 };

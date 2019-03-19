@@ -2,16 +2,17 @@
 #include <Engine.h>
 #include <engine/ActorManager.h>
 
-Actor::Actor(std::string name, Scene *scene)
+Actor::Actor(std::string name, Scene *scene, ActorID aid) : actorID(aid)
 {
 	this->name = name;
 	this->scene = scene;
-	parent = actorID.INVALID_HANDLE;
+	parent = ActorID::INVALID_HANDLE;
 
 	transformation = new Transform();
 
 	numberOfChildren = 0;
 	children = (ActorID*)calloc((numberOfChildren + 1), sizeof(ActorID));
+
 	if (name != scene->name)
 		AddParent(scene->rootActor);
 
@@ -55,7 +56,7 @@ bool Actor::RemoveChild(ActorID removeChild)
 	{
 		children[i] = children[--numberOfChildren];
 		children = (ActorID*)realloc(children, sizeof(ActorID ) * (numberOfChildren + 1));
-		GE_Engine->actorManager->GetActor(removeChild)->parent = actorID.INVALID_HANDLE;
+		GE_Engine->actorManager->GetActor(removeChild)->parent = ActorID::INVALID_HANDLE;
 		return true;
 	}
 	else
@@ -65,6 +66,8 @@ bool Actor::RemoveChild(ActorID removeChild)
 bool Actor::isParent(ActorID root)
 {
 	Actor *node = GE_Engine->actorManager->GetActor(root);
+	if (!node)
+		return false;
 	while (node->name != scene->name && node->id != this->id)
 	{
 		root = node->parent;
@@ -82,7 +85,7 @@ bool Actor::AddParent(ActorID newParent)
 		GE_Engine->actorManager->GetActor(newParent)->AddParent(this->parent);
 	}
 
-	if (parent != actorID.INVALID_HANDLE)
+	if (parent != ActorID::INVALID_HANDLE)
 	{
 		GE_Engine->actorManager->GetActor(parent)->RemoveChild(this->actorID);
 	}

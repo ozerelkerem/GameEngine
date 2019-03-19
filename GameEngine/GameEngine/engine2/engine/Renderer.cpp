@@ -1,6 +1,6 @@
 #include "Renderer.h"
 #include<engine/Actor.h>
-
+#include<engine/ActorManager.h>
 
 Renderer::Renderer(GameBase *gb)
 {
@@ -50,8 +50,9 @@ void Renderer::renderModels()
 		{
 			modelmap.first->meshes[i]->bind();
 
-			for (auto actor : modelmap.second)
+			for (auto actorid : modelmap.second)
 			{
+				Actor *actor = GE_Engine->actorManager->GetActor(actorid);
 				IModelComponent *mcmp = actor->componentObject->getComponent<ModelComponent>();
 				if(!mcmp)
 					mcmp = actor->componentObject->getComponent<SkinnedModelComponent>();
@@ -76,7 +77,7 @@ void Renderer::prepareLights()
 	int maxlight = 7;
 	for (auto lightactor : this->gamebase->currentScene->componentSystem->actorsWhichContainsLightComponent)
 	{
-		lightactor.second->passShader(normalShader, lightactor.first->transformation, maxlight);
+		lightactor.second->passShader(normalShader, GE_Engine->actorManager->GetActor(lightactor.first)->transformation, maxlight);
 		if (maxlight-- < 0)
 			break;
 	} 

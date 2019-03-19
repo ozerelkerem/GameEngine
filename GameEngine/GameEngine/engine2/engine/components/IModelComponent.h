@@ -2,7 +2,7 @@
 
 #include<engine/Model.h>
 #include<engine/Material.h>
-#include<vector>;
+#include<vector>
 
 class IModelComponent
 {

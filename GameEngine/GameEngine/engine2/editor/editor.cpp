@@ -1,4 +1,5 @@
 #include "editor.h"
+#include<Api.h>
 #include<engine/ActorManager.h>
 #define stringify( name ) # name
 
@@ -32,8 +33,8 @@ void Editor::loadIcons()
 void Editor::ShowComponentList()
 {
 	
-		
-	auto cob = sceneRenderer->selectedActor->componentObject;
+			
+	auto cob = GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor)->componentObject;
 
 	if (LightComponent *lightcomp = cob->getComponent<LightComponent>())
 	{
@@ -165,29 +166,30 @@ void Editor::ObjectProperties()
 {
 	ImGui::Begin("Object Properties", NULL);
 	{
-		if (!sceneRenderer->selectedActor)
+		Actor * selectedActor = GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor);
+		if (!selectedActor)
 			ImGui::Text("Please Select a Actor");
 		else
 		{
-			ImGui::Text(sceneRenderer->selectedActor->name.c_str());
+			ImGui::Text(selectedActor->name.c_str());
 			if (ImGui::CollapsingHeader("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				if (ImGui::DragFloat3("Position", &sceneRenderer->selectedActor->transformation->position[0], 0.1f, -30000.f, 30000.f))
-					sceneRenderer->selectedActor->processTransformation();
-				if (ImGui::DragFloat3("Rotation Eular", &sceneRenderer->selectedActor->transformation->eRotation[0], 1.f, -359.99999f, 359.99999f))
+				if (ImGui::DragFloat3("Position", &selectedActor->transformation->position[0], 0.1f, -30000.f, 30000.f))
+					selectedActor->processTransformation();
+				if (ImGui::DragFloat3("Rotation Eular", &selectedActor->transformation->eRotation[0], 1.f, -359.99999f, 359.99999f))
 				{
-					sceneRenderer->selectedActor->transformation->calcQuatFromEuler();
-					sceneRenderer->selectedActor->processTransformation();
+					selectedActor->transformation->calcQuatFromEuler();
+					selectedActor->processTransformation();
 				}
 
-				if (ImGui::DragFloat4("Rotation Quat", &sceneRenderer->selectedActor->transformation->qRotation[0], 1.f, -30000.f, 30000.f))
+				if (ImGui::DragFloat4("Rotation Quat", &selectedActor->transformation->qRotation[0], 1.f, -30000.f, 30000.f))
 				{
-					sceneRenderer->selectedActor->transformation->calcEulerFromQuat();
-					sceneRenderer->selectedActor->processTransformation();
+					selectedActor->transformation->calcEulerFromQuat();
+					selectedActor->processTransformation();
 				}
-				if (ImGui::DragFloat3("Scale", &sceneRenderer->selectedActor->transformation->scale[0], 1.f, -30000.f, 30000.f))
+				if (ImGui::DragFloat3("Scale", &selectedActor->transformation->scale[0], 1.f, -30000.f, 30000.f))
 				{
-					sceneRenderer->selectedActor->processTransformation();
+					selectedActor->processTransformation();
 				}
 
 				ShowComponentList();
@@ -207,13 +209,13 @@ void Editor::ObjectProperties()
 							case 0://light component
 							{
 								IComponent *ic = (IComponent*)new LightComponent();
-								this->sceneRenderer->selectedActor->AddComponent<LightComponent>(ic);
+								selectedActor->AddComponent<LightComponent>(ic);
 							}break;
 
 							case 1:
 							{
 								IComponent *ic = (IComponent*)new AnimatorComponent();
-								this->sceneRenderer->selectedActor->AddComponent<AnimatorComponent>(ic);
+								selectedActor->AddComponent<AnimatorComponent>(ic);
 
 							}break;
 
@@ -235,7 +237,8 @@ void Editor::ObjectPropertiesMaterials()
 	if (sceneRenderer->selectedActor)
 	{
 		bool flag = false;
-		ModelComponent *mcmp = sceneRenderer->selectedActor->componentObject->getComponent<ModelComponent>();
+
+		ModelComponent *mcmp = GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor)->componentObject->getComponent<ModelComponent>();
 		if (mcmp)
 		{
 			for (int i = 0; i < mcmp->numberOfMaterials; i++)
@@ -333,7 +336,7 @@ void Editor::Render()
 		if (ImGui::IsKeyPressed(GLFW_KEY_ESCAPE))
 		{
 			toolMode = travelMode = travelMode2 = false;
-			sceneRenderer->selectedActor = NULL;
+			sceneRenderer->selectedActor = ActorID::INVALID_HANDLE;
 		}
 
 		if (ImGui::IsKeyPressed(GLFW_KEY_F) && sceneRenderer->selectedActor)
@@ -362,15 +365,16 @@ void Editor::Render()
 
 			if (toolMode)
 			{
+				Actor * selectedActor  = GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor);
 				glm::vec3 normal(0, 0, 1);
 				if ((sceneRenderer->sceneTool->modedirection & TOOLZ))
 					normal = { 0,1,0 };
 				glm::vec2 size; size.x = viewportSize.x; size.y = viewportSize.y;
 
-				sceneRenderer->sceneTool->transObjects(sceneRenderer->selectedActor->transformation, x, y, io.MouseDelta.x, io.MouseDelta.y,
+				sceneRenderer->sceneTool->transObjects(selectedActor->transformation, x, y, io.MouseDelta.x, io.MouseDelta.y,
 					sceneRenderer->sceneCamera->position, sceneRenderer->sceneCamera->screenToWorld(x, y, normal, size));
 
-				sceneRenderer->selectedActor->processTransformation();
+				selectedActor->processTransformation();
 			}
 
 			if (toolMode && ImGui::IsMouseReleased(ImGuiMouse_Left_))
@@ -664,7 +668,7 @@ void Editor::DrawHierarchy(ActorID rootid)
 		src_flags = ImGuiTreeNodeFlags_Leaf;
 	else
 		src_flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_OpenOnArrow;
-	if (sceneRenderer->selectedActor == root)
+	if (sceneRenderer->selectedActor == rootid)
 		src_flags |= ImGuiTreeNodeFlags_Selected;
 
 	bool node_open = ImGui::TreeNodeEx((void *)root, src_flags, root->name.c_str());
@@ -698,7 +702,7 @@ void Editor::DrawHierarchy(ActorID rootid)
 				if (!(src_flags & ImGuiDragDropFlags_SourceNoPreviewTooltip))
 				{
 					ImGui::Text("%s", root->name.c_str());
-					sceneRenderer->hoveredActor = root;
+					sceneRenderer->hoveredActor = rootid;
 				}
 
 				ImGui::SetDragDropPayload("DND_DEMO_NAME", &n, sizeof(int));
@@ -709,9 +713,10 @@ void Editor::DrawHierarchy(ActorID rootid)
 			{
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_NAME"))
 				{
-					if (sceneRenderer->hoveredActor)
-						sceneRenderer->hoveredActor->AddParent(rootid);
-					sceneRenderer->hoveredActor = NULL;
+					Actor *hoveredActor = GE_Engine->actorManager->GetActor(sceneRenderer->hoveredActor);
+					if (hoveredActor)
+						hoveredActor->AddParent(rootid);
+					sceneRenderer->hoveredActor = ActorID::INVALID_HANDLE;
 				}
 				ImGui::EndDragDropTarget();
 			}
@@ -719,7 +724,7 @@ void Editor::DrawHierarchy(ActorID rootid)
 
 		if (ImGui::IsItemClicked() && sceneRenderer->gamebase->currentScene->rootActor != rootid)
 		{
-			sceneRenderer->selectedActor = root;
+			sceneRenderer->selectedActor = rootid;
 		}
 
 		if (node_open)

@@ -11,8 +11,8 @@ SceneRenderer::SceneRenderer(GameBase *b) : Renderer(b)
 
 	sceneTool = new SceneTools(this);
 
-	selectedActor = NULL;
-	hoveredActor = NULL;
+	selectedActor = ActorID::INVALID_HANDLE;
+	hoveredActor = ActorID::INVALID_HANDLE;
 
 	grid = new Grid(16, 1, colorShader->getProgramID());
 }
@@ -24,6 +24,7 @@ SceneRenderer::~SceneRenderer()
 
 void SceneRenderer::render()
 {
+	Actor *selectedactor = GE_Engine->actorManager->GetActor(selectedActor);
 	glEnable(GL_DEPTH_TEST);
 
 	glViewport(0, 0, sceneSize.x, sceneSize.y);
@@ -40,8 +41,8 @@ void SceneRenderer::render()
 	colorShader->setMat4("projectionMatrix", sceneCamera->projectionMatrix);
 	colorShader->setMat4("modelMatrix", glm::mat4(1));
 	grid->Draw();
-	if (selectedActor)
-		RenderOutlined(selectedActor);
+	if (selectedactor)
+		RenderOutlined(selectedactor);
 
 	normalShader->Use();
 	normalShader->setMat4("viewMatrix", sceneCamera->viewMatrix);
@@ -53,11 +54,11 @@ void SceneRenderer::render()
 	renderModels();
 	
 	colorShader->Use();
-	if (selectedActor)
+	if (selectedactor)
 	{
 		glDisable(GL_DEPTH_TEST);
 
-		sceneTool->Render(selectedActor->transformation, glm::distance(sceneCamera->position, selectedActor->transformation->position) / 10, sceneCamera->position);
+		sceneTool->Render(selectedactor->transformation, glm::distance(sceneCamera->position, selectedactor->transformation->position) / 10, sceneCamera->position);
 
 		glEnable(GL_DEPTH_TEST);
 	}
@@ -115,7 +116,7 @@ inline void SceneRenderer::RenderOutlined(Actor * o)
 	glDisable(GL_STENCIL_TEST);
 }
 
-Actor * SceneRenderer::RenderForObjectPicker(GLint x, GLint y)
+ActorID SceneRenderer::RenderForObjectPicker(GLint x, GLint y)
 {
 	colorShader->Use();
 	glViewport(0, 0, sceneSize.x, sceneSize.y);
@@ -133,8 +134,12 @@ Actor * SceneRenderer::RenderForObjectPicker(GLint x, GLint y)
 
 			for (auto actor : modelmap.second)
 			{
-				colorShader->setVec3("color", glm::vec3(actor->id / 255.f, 0, 0));
-				colorShader->setMat4("modelMatrix", actor->transformation->realMatrix);
+				ActorID test = actor;
+				float r = (test.index & 0x000000FF) >> 0;
+				float g = (test.index & 0x0000FF00) >> 8;
+				float b = (test.index & 0x00FF0000) >> 16;
+				colorShader->setVec3("color",glm::vec3(r/255.0f, g/ 255.0f, b/ 255.0f));
+				colorShader->setMat4("modelMatrix", GE_Engine->actorManager->GetActor(actor)->transformation->realMatrix);
 				modelmap.first->meshes[i]->render();
 			}
 
@@ -142,19 +147,20 @@ Actor * SceneRenderer::RenderForObjectPicker(GLint x, GLint y)
 		}
 	}
 
-	GLfloat test[4];
-	glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, &test);
+	unsigned char test[4];
+	glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &test);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	if (test[0] == 0)
-		return NULL;
+	if (test[0] == 0 && test[1] == 0 && test[2] == 0)
+		return ActorID::INVALID_HANDLE;
 	else
-		return GE_Engine->actorManager->GetActor((ActorID)(test[0] * 255));
+		return GE_Engine->actorManager->GetActorID(test[0] + test[1] * 256 + test[2] * 256 * 256);
 }
 
 bool SceneRenderer::RenderForObjectTools(GLint x, GLint y)
 {
-	if (!selectedActor)
+	Actor * selectedactor = GE_Engine->actorManager->GetActor(selectedActor);
+	if (!selectedactor)
 		return false;
 	colorShader->Use();
 	glViewport(0, 0, sceneSize.x, sceneSize.y);
@@ -163,18 +169,19 @@ bool SceneRenderer::RenderForObjectTools(GLint x, GLint y)
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	sceneTool->Render(selectedActor->transformation, glm::distance(sceneCamera->position, selectedActor->transformation->position) / 10, sceneCamera->position);
+	sceneTool->Render(selectedactor->transformation, glm::distance(sceneCamera->position, selectedactor->transformation->position) / 10, sceneCamera->position);
 
 	GLfloat test[4];
 	glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, &test);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	return sceneTool->processTool(test, selectedActor->transformation);
+	return sceneTool->processTool(test, selectedactor->transformation);
 }
 
-void SceneRenderer::focusActor(Actor *actor)
+void SceneRenderer::focusActor(ActorID actorid)
 {
 	//@TODO CALC MİN MAX FOR EACH MESH AND CHECK MAYBE THERE IS NO MODEL
+	Actor * actor = GE_Engine->actorManager->GetActor(actorid);
 	if (!actor->componentObject->hasComponent<ModelComponent>())
 		return;
 

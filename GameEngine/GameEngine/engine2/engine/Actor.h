@@ -15,7 +15,7 @@ class ComponentSystem;
 class Actor
 {
 public:
-	Actor(std::string, Scene *);
+	Actor(std::string, Scene *, ActorID);
 	~Actor();
 
 	ComponentObject *componentObject;
@@ -52,7 +52,7 @@ template<class T>
 inline void Actor::AddComponent(IComponent *component)
 {
 	componentObject->addComponent<T>(reinterpret_cast<T*>(component));
-	scene->componentSystem->AddComponent<T>(this, reinterpret_cast<T*>(component));
+	scene->componentSystem->AddComponent<T>(this->actorID, reinterpret_cast<T*>(component));
 }
 
 

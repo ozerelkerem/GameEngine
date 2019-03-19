@@ -2,7 +2,7 @@
 
 
 
-
+#include<Api.h>
 #include <unordered_map>
 #include <forward_list>
 
@@ -16,7 +16,7 @@ class Actor;
 #include<engine/components/AnimatorComponent.h>
 
 template<class T>
-using ActorComponentMap = std::unordered_map<Actor *, T *>;
+using ActorComponentMap = std::unordered_map<ActorID::value_type , T *>;
 
 class ComponentSystem
 {
@@ -24,9 +24,9 @@ public:
 	ComponentSystem();
 	~ComponentSystem();
 
-	std::unordered_map<Model *, std::forward_list<Actor *>> actorsWhichContainsModelComponent;
-	std::unordered_map<Actor *, LightComponent *> actorsWhichContainsLightComponent;
-	std::unordered_map<Actor *, AnimatorComponent *> actorsWhichContainsAnimatorComponent;
+	std::unordered_map<Model *, std::forward_list<ActorID::value_type>> actorsWhichContainsModelComponent;
+	ActorComponentMap<LightComponent> actorsWhichContainsLightComponent;
+	ActorComponentMap<AnimatorComponent> actorsWhichContainsAnimatorComponent;
 
 	template<class T>
 	inline ActorComponentMap<T> GetComponents()
@@ -38,13 +38,13 @@ public:
 	inline ActorComponentMap<AnimatorComponent> GetComponents() { return actorsWhichContainsAnimatorComponent; };
 
 	template<class T>
-	inline void AddComponent(Actor *actor, T *component)
+	inline void AddComponent(ActorID actor, T *component)
 	{
 		
 	}
 
 	template<>
-	inline void AddComponent<ModelComponent>(Actor *actor, ModelComponent *component)
+	inline void AddComponent<ModelComponent>(ActorID actor, ModelComponent *component)
 	{
 		bool tf = actorsWhichContainsModelComponent[component->model].empty();
 		actorsWhichContainsModelComponent[component->model].push_front(actor);
@@ -53,7 +53,7 @@ public:
 
 	}
 	template<>
-	inline void AddComponent<SkinnedModelComponent>(Actor *actor, SkinnedModelComponent *component)
+	inline void AddComponent<SkinnedModelComponent>(ActorID actor, SkinnedModelComponent *component)
 	{
 		bool tf = actorsWhichContainsModelComponent[component->model].empty();
 		actorsWhichContainsModelComponent[component->model].push_front(actor);
@@ -62,21 +62,21 @@ public:
 
 	}
 	template<>
-	inline void AddComponent<LightComponent>(Actor *actor, LightComponent *component)
+	inline void AddComponent<LightComponent>(ActorID actor, LightComponent *component)
 	{
 		actorsWhichContainsLightComponent[actor] = component;
 	}
 	template<>
-	inline void AddComponent<AnimatorComponent>(Actor *actor, AnimatorComponent *component)
+	inline void AddComponent<AnimatorComponent>(ActorID actor, AnimatorComponent *component)
 	{
 		actorsWhichContainsAnimatorComponent[actor] = component;
 	}
 
 	
-	void addActor(Actor *);
+	void addActor(ActorID);
 
 	template<class T>
-	void changeModel(Actor *, Model *);
+	void changeModel(ActorID, Model *);
 
 	
 };

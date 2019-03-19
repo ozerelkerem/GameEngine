@@ -34,18 +34,18 @@ public:
 
 	SceneTools *sceneTool;
 
-	Actor *selectedActor;
-	Actor *hoveredActor;
+	ActorID selectedActor;
+	ActorID hoveredActor;
 
 	void render();
 
 	void RenderOutlined(Actor * o);
-	Actor * RenderForObjectPicker(GLint x, GLint y);
+	ActorID RenderForObjectPicker(GLint x, GLint y);
 	bool RenderForObjectTools(GLint x, GLint y);
 
 	inline unsigned int GetTextureColorBuffer() { return textureColorbuffer; }
 
-	void focusActor(Actor *);
+	void focusActor(ActorID);
 
 };
 

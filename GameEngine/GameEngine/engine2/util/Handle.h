@@ -157,10 +157,14 @@ using Handle32 = GameEngine::Util::Handle<uint32_t, 12, 20>;
 			return Handle(index, this->m_Table[index].first);
 		}
 
+
+	
 		
 
 		inline T* operator[](Handle handle)
-		{
+		{	
+			if (handle.INVALID_HANDLE == handle)
+				return nullptr;
 			assert((handle.index < this->m_Table.size() && handle.version == this->m_Table[handle.index].first) && "Invalid handle!");
 			return (this->m_Table[handle.index].first == handle.version ? this->m_Table[handle.index].second : nullptr);
 		}

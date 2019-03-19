@@ -1,5 +1,6 @@
 #include "ComponentSystem.h"
 #include<engine/Actor.h>
+#include<engine/ActorManager.h>
 ComponentSystem::ComponentSystem()
 {
 }
@@ -10,43 +11,46 @@ ComponentSystem::~ComponentSystem()
 
 
 //@TODO ADD LIGHT COMPONENT
-void ComponentSystem::addActor(Actor *a)
+void ComponentSystem::addActor(ActorID aid)
 {
+	Actor *a = GE_Engine->actorManager->GetActor(aid);
 	if (a->componentObject->hasComponent<ModelComponent>())
 	{
 		auto comp = a->componentObject->getComponent<ModelComponent>();
-		AddComponent(a, comp);
+		AddComponent(aid, comp);
 	}
 	if (a->componentObject->hasComponent<LightComponent>())
 	{
 		auto comp = a->componentObject->getComponent<LightComponent>();
-		AddComponent(a, comp);
+		AddComponent(aid, comp);
 	}
 	if (a->componentObject->hasComponent<SkinnedModelComponent>())
 	{
 		auto comp = a->componentObject->getComponent<SkinnedModelComponent>();
-		AddComponent(a, comp);
+		AddComponent(aid, comp);
 	}
 	if (a->componentObject->hasComponent<AnimatorComponent>())
 	{
 		auto comp = a->componentObject->getComponent<AnimatorComponent>();
-		AddComponent(a, comp);
+		AddComponent(aid, comp);
 	}
 
 	
 }
 
 template<>
-void ComponentSystem::changeModel<ModelComponent>(Actor *actor, Model *newmodel)
+void ComponentSystem::changeModel<ModelComponent>(ActorID aid, Model *newmodel)
 {
-	actorsWhichContainsModelComponent[actor->componentObject->getComponent<ModelComponent>()->model].remove(actor);
-	actorsWhichContainsModelComponent[newmodel].push_front(actor);
+	Actor *actor = GE_Engine->actorManager->GetActor(aid);
+	actorsWhichContainsModelComponent[actor->componentObject->getComponent<ModelComponent>()->model].remove(aid);
+	actorsWhichContainsModelComponent[newmodel].push_front(aid);
 }
 template<>
-void ComponentSystem::changeModel<SkinnedModelComponent>(Actor *actor, Model *newmodel)
+void ComponentSystem::changeModel<SkinnedModelComponent>(ActorID aid, Model *newmodel)
 {
-	actorsWhichContainsModelComponent[actor->componentObject->getComponent<SkinnedModelComponent>()->model].remove(actor);
-	actorsWhichContainsModelComponent[newmodel].push_front(actor);
+	Actor *actor = GE_Engine->actorManager->GetActor(aid);
+	actorsWhichContainsModelComponent[actor->componentObject->getComponent<SkinnedModelComponent>()->model].remove(aid);
+	actorsWhichContainsModelComponent[newmodel].push_front(aid);
 }
 
 
