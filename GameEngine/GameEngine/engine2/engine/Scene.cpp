@@ -1,6 +1,5 @@
 #pragma once
 #include "Scene.h"
-#include <iostream>
 #include<engine/Actor.h>
 #include<engine/ActorManager.h>
 Scene::Scene(std::string name, ProjectManager *pm) : projectManager(pm)
@@ -12,19 +11,6 @@ Scene::Scene(std::string name, ProjectManager *pm) : projectManager(pm)
 	componentSystem = new ComponentSystem();
 }
 
-
-
-Actor *Scene::findActor(Actor *root, int target)
-{
-	/*if (root->id == target)
-		return root;
-	for (int i = 0; i < root->numberOfChildren; i++) {
-		Actor *t;
-		if (t = findActor(root->children[i], target))
-			return t;
-	}*/
-	return NULL;
-}
 
 void Scene::addActor(Prefab *prefab, glm::vec3 pos)
 {
@@ -41,7 +27,7 @@ void Scene::recursionPrefab(PrefabNode *node, glm::mat4 parent, ActorID actorNod
 		{	
 			ComponentTypeID ctid;
 			
-			IComponent * ic = c->getnew(&ctid);
+			IComponent * ic = c->getnew(actorid,&ctid);
 			a->componentObject->addComponent(ctid,ic);
 			if (ctid == ModelComponent::STATIC_COMPONENT_TYPE_ID)
 			{

@@ -8,7 +8,7 @@ template <class T>
 class Component : public IComponent
 {
 public:
-	Component(){}
+	Component(ActorID own) : IComponent(own) {}
 	~Component(){}
 
 	static const ComponentTypeID STATIC_COMPONENT_TYPE_ID;

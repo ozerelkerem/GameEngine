@@ -4,24 +4,32 @@
 #include <engine/components/Component.h>
 #include <engine/Animation.h>
 
+
+
+class Animation;
+
 class AnimatorComponent :public Component<AnimatorComponent>
 {
 private:
 	time_t startTime;
 
 public:
-	AnimatorComponent();
+	AnimatorComponent(ActorID);
 	~AnimatorComponent();
 
-	inline void PlayLoop() {};
-	inline void PlayOnce() {};
+	void PlayLoop(Animation * anim);
+	void PlayOnce(Animation *) {};
 
 	Animation *currentAnimation;
-//	std::unordered_map<std::string, Actor **> effectlist;
+	std::unordered_map<std::string, ActorID::value_type> effectlist;
 
-	inline virtual IComponent * getnew(ComponentTypeID *id) override {
+	inline virtual IComponent * getnew(ActorID own, ComponentTypeID *id) override {
 		*id = STATIC_COMPONENT_TYPE_ID;
-		return ((IComponent*) new AnimatorComponent(*this));
+		auto x = ((IComponent*) new AnimatorComponent(*this));
+		x->owner = own;
+		return x;
 	}
+
+	void matchAnimation();
 };
 

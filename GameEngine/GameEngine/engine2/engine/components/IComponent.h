@@ -9,9 +9,11 @@ class IComponent
 {
 public:
 
-	IComponent();
+	IComponent(ActorID);
 	~IComponent();
 
-	virtual IComponent * getnew(ComponentTypeID *) = 0;
+	ActorID owner;
+
+	virtual IComponent * getnew(ActorID, ComponentTypeID *) = 0;
 };
 

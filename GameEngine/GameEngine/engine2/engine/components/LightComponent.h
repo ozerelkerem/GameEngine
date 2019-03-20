@@ -14,7 +14,7 @@ class LightComponent : public Component <LightComponent>
 {
 public:
 
-	LightComponent();
+	LightComponent(ActorID);
 	~LightComponent();
 
 	LightType lightType;
@@ -32,9 +32,11 @@ public:
 	void passShader(Shader *s, Transform *, int);
 
 	
-	inline virtual IComponent * getnew(ComponentTypeID *id) override {
+	inline virtual IComponent * getnew(ActorID own, ComponentTypeID *id) override {
 		*id = STATIC_COMPONENT_TYPE_ID;
-		return ((IComponent*) new LightComponent(*this));
+		auto x = ((IComponent*) new LightComponent(*this));
+		x->owner = own;
+		return x;
 	}
 };
 

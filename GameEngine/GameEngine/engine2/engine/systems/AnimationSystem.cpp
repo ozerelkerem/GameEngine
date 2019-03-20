@@ -1,6 +1,6 @@
 #include "System.h"
 #include "AnimationSystem.h"
-
+#include <engine/ActorManager.h>
 AnimationSystem::AnimationSystem(GameBase *gb) : gamebase(gb) {}
 
 AnimationSystem::~AnimationSystem()
@@ -19,7 +19,12 @@ void AnimationSystem::Update()
 	{
 		if (animator.second->currentAnimation)
 		{
-			//loopHierarchy(animator.first);
+			for (auto effect : animator.second->effectlist)
+			{
+				/*TODO CALC interpolated frame*/
+				GE_Engine->actorManager->GetActor((ActorID)effect.second)->transformation->position = animator.second->currentAnimation->animationNodeMap[effect.first]->positionKeys.front().second;
+			}
+			
 		}
 		
 	}

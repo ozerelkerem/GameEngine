@@ -123,7 +123,7 @@ namespace ModelLoader
 		{
 			
 			Model *m = new Model(node->mName.C_Str());
-			ModelComponent *mc = new ModelComponent(m);
+			ModelComponent *mc = new ModelComponent(ActorID::INVALID_HANDLE,m);
 			for (int i = 0; i < node->mNumMeshes; i++)
 			{
 				m->addMesh(meshes[node->mMeshes[i]]);
@@ -268,14 +268,14 @@ namespace ModelLoader
 	{
 		Object *c = new Object(light->mName.C_Str());
 		//	c->componentObject->addComponent(new LightComponent((LightType)light->mType, aicolortovec3(light->mColorDiffuse), aicolortovec3(light->mColorAmbient), aicolortovec3(light->mColorSpecular)));
-		c->componentObject->addComponent(new LightComponent());
+		c->componentObject->addComponent(new LightComponent(ActorID::INVALID_HANDLE));
 		return c;
 	}
 
 	static Object * generateCamera(const aiCamera *camera)
 	{
 		Object *c = new Object(camera->mName.C_Str());
-		c->componentObject->addComponent(new CameraComponent(camera->mHorizontalFOV, camera->mAspect, camera->mClipPlaneNear, camera->mClipPlaneFar));
+		c->componentObject->addComponent(new CameraComponent(ActorID::INVALID_HANDLE,camera->mHorizontalFOV, camera->mAspect, camera->mClipPlaneNear, camera->mClipPlaneFar));
 		return c;
 	}
 

@@ -4,7 +4,7 @@
 class CameraComponent :public Component<CameraComponent>
 {
 public:
-	CameraComponent(float fov, float aspect, float near, float far);
+	CameraComponent(ActorID own, float fov, float aspect, float near, float far);
 	~CameraComponent();
 
 	float fov;
@@ -14,9 +14,11 @@ public:
 	float far;
 
 
-	inline virtual IComponent * getnew(ComponentTypeID *id) override {
+	inline virtual IComponent * getnew(ActorID own, ComponentTypeID *id) override {
 		*id = STATIC_COMPONENT_TYPE_ID;
-		return ((IComponent*) new CameraComponent(*this));
+		auto x = ((IComponent*) new CameraComponent(*this));
+		x->owner = own;
+		return x;
 	}
 };
 

@@ -2,7 +2,7 @@
 
 
 
-IComponent::IComponent()
+IComponent::IComponent(ActorID own) : owner(own)
 {
 }
 

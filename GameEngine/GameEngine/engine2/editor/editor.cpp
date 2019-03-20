@@ -153,7 +153,10 @@ void Editor::ShowComponentList()
 	{
 		if (ImGui::CollapsingHeader("Animator Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-
+			if (ImGui::Button("play animation"))
+			{
+				animator->PlayLoop(projectManager->animations[0]);
+			}
 		}
 
 	}
@@ -208,13 +211,13 @@ void Editor::ObjectProperties()
 							{
 							case 0://light component
 							{
-								IComponent *ic = (IComponent*)new LightComponent();
+								IComponent *ic = (IComponent*)new LightComponent(sceneRenderer->selectedActor);
 								selectedActor->AddComponent<LightComponent>(ic);
 							}break;
 
 							case 1:
 							{
-								IComponent *ic = (IComponent*)new AnimatorComponent();
+								IComponent *ic = (IComponent*)new AnimatorComponent(sceneRenderer->selectedActor);
 								selectedActor->AddComponent<AnimatorComponent>(ic);
 
 							}break;

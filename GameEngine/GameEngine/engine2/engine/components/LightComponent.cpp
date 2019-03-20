@@ -2,7 +2,7 @@
 
 
 
-LightComponent::LightComponent() : Component()
+LightComponent::LightComponent(ActorID own) : Component(own)
 {
 	this->lightType = LightType::Point;
 	this->color = { 1,1,1 };

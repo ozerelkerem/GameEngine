@@ -9,12 +9,14 @@ class ComponentSystem;
 class ModelComponent : public IModelComponent, public Component<ModelComponent>
 {
 public:
-	ModelComponent(Model *m);
+	ModelComponent(ActorID, Model *m);
 	~ModelComponent();
 
-	inline virtual IComponent * getnew(ComponentTypeID *id) override {
+	inline virtual IComponent * getnew(ActorID own, ComponentTypeID *id) override {
 		*id = STATIC_COMPONENT_TYPE_ID;
-		return ((IComponent*) new ModelComponent(*this));
+		auto x = ((IComponent*) new ModelComponent(*this));
+		x->owner = own;
+		return x;
 	}
 };
 

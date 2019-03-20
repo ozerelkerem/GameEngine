@@ -2,7 +2,7 @@
 
 
 
-SkinnedModelComponent::SkinnedModelComponent(Model *m) : IModelComponent(m), Component()
+SkinnedModelComponent::SkinnedModelComponent(ActorID own, Model *m) : IModelComponent(m), Component(own)
 {
 }
 

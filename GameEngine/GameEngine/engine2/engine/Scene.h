@@ -11,7 +11,6 @@
 
 class Prefab;
 class PrefabNode;
-class Actor;
 
 class Scene
 {
@@ -30,8 +29,8 @@ public:
 
 
 
-	/*Find the actor by given id and root if it is exist*/
-	Actor *findActor(Actor*, int);
+
+
 	
 	void addActor(Prefab *, glm::vec3);
 	void recursionPrefab(PrefabNode *, glm::mat4 , ActorID);

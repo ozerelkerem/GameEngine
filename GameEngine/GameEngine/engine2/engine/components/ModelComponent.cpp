@@ -2,7 +2,7 @@
 
 
 
-ModelComponent::ModelComponent(Model *m) : IModelComponent(m) ,Component()
+ModelComponent::ModelComponent(ActorID own, Model *m) : IModelComponent(m) ,Component(own)
 {
 	
 }
