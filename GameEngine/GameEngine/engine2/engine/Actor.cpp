@@ -68,9 +68,9 @@ bool Actor::isParent(ActorID root)
 	Actor *node = GE_Engine->actorManager->GetActor(root);
 	if (!node)
 		return false;
-	while (node->name != scene->name && node->id != this->id)
+	while (node->name != scene->name && node->actorID != this->actorID)
 	{
-		root = node->parent;
+		node = GE_Engine->actorManager->GetActor(node->parent);
 	}
 	if (node->name == scene->name)
 		return false;
