@@ -1,6 +1,7 @@
 #include "editor.h"
 #include<Api.h>
 #include<engine/ActorManager.h>
+#include<stack>
 #define stringify( name ) # name
 
 Editor::Editor(GLFWwindow *window)
@@ -112,6 +113,31 @@ void Editor::ShowComponentList()
 	{
 		if (ImGui::CollapsingHeader("Skinned Model Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			Actor *root = GE_Engine->actorManager->GetActor(modelcomp->rootBone);
+			if (ImGui::BeginCombo(("Select RootBone##selectbone"), root ? root->name.c_str() : "Select RootBone")) // The second parameter is the label previewed before opening the combo.
+			{
+				std::stack<Actor*> stack;
+
+
+				stack.push(GE_Engine->actorManager->GetActor(gameBase->currentScene->rootActor));
+				Actor *s;
+				while (!stack.empty())
+				{
+					
+					s = stack.top();
+					stack.pop();
+		
+					if (ImGui::Selectable((s->name + "##selectbonee").c_str()))
+					{
+						modelcomp->rootBone = s->actorID;
+						modelcomp->matchBones();
+					}
+
+					for(int i = 0 ; i< s->numberOfChildren; i++)
+							stack.push(GE_Engine->actorManager->GetActor(s->children[i]));
+				}
+				ImGui::EndCombo();
+			}
 			if (ImGui::BeginCombo(("Select Model##selectmodel"), modelcomp->model->name.c_str())) // The second parameter is the label previewed before opening the combo.
 			{
 				for (auto model : projectManager->models)
@@ -153,9 +179,32 @@ void Editor::ShowComponentList()
 	{
 		if (ImGui::CollapsingHeader("Animator Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			if (ImGui::Button("play animation"))
+			if (ImGui::BeginCombo(("Select Animation##selectanimation"), !animator->currentAnimation ? "" : animator->currentAnimation->name.c_str())) // The second parameter is the label previewed before opening the combo.
 			{
-				animator->PlayLoop(projectManager->animations[0]);
+				for (auto anim : projectManager->animations)
+				{
+					if (ImGui::Selectable(anim->name.c_str()))
+					{
+						animator->currentAnimation = anim;
+					}
+				}
+				ImGui::EndCombo();
+			}
+			if (ImGui::Button("play animation loop"))
+			{
+				if(animator->currentAnimation)
+					animator->PlayLoop(animator->currentAnimation);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("play animation once"))
+			{
+				if (animator->currentAnimation)
+					animator->PlayOnce(animator->currentAnimation);
+			}
+			if (ImGui::Button("stop animation"))
+			{
+				if (animator->currentAnimation)
+					animator->state = false;
 			}
 		}
 
@@ -270,6 +319,9 @@ Editor::~Editor()
 void Editor::Render()
 {
 	sm->work();
+	Actor *root = GE_Engine->actorManager->GetActor(gameBase->currentScene->rootActor);
+	for (int i = 0; i < root->numberOfChildren; i++)
+		GE_Engine->actorManager->GetActor(root->children[i])->processTransformation();
 
 
 	static bool opt_fullscreen_persistant = true;
@@ -377,7 +429,8 @@ void Editor::Render()
 				sceneRenderer->sceneTool->transObjects(selectedActor->transformation, x, y, io.MouseDelta.x, io.MouseDelta.y,
 					sceneRenderer->sceneCamera->position, sceneRenderer->sceneCamera->screenToWorld(x, y, normal, size));
 
-				selectedActor->processTransformation();
+				//selectedActor->processTransformation();
+				
 			}
 
 			if (toolMode && ImGui::IsMouseReleased(ImGuiMouse_Left_))

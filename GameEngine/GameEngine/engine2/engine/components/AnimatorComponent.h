@@ -4,21 +4,20 @@
 #include <engine/components/Component.h>
 #include <engine/Animation.h>
 
-
-
 class Animation;
 
 class AnimatorComponent :public Component<AnimatorComponent>
 {
-private:
-	time_t startTime;
-
 public:
+	std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
+	bool state;
+	bool isLoop;
+
 	AnimatorComponent(ActorID);
 	~AnimatorComponent();
 
 	void PlayLoop(Animation * anim);
-	void PlayOnce(Animation *) {};
+	void PlayOnce(Animation *);
 
 	Animation *currentAnimation;
 	std::unordered_map<std::string, ActorID::value_type> effectlist;

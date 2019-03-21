@@ -129,6 +129,7 @@ int main(int, char**)
 
 		
 		/////
+		GE_Engine->Update();
 		editor->Render();
 
 		// Rendering

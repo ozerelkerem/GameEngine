@@ -4,6 +4,7 @@
 
 AnimatorComponent::AnimatorComponent(ActorID own) : Component(own)
 {
+	state = false;
 }
 
 
@@ -13,7 +14,18 @@ AnimatorComponent::~AnimatorComponent()
 
 void AnimatorComponent::PlayLoop(Animation * anim)
 {
+	state = true;
+	isLoop = true;
 	currentAnimation = anim;
+	startTime = GE_Engine->getTime();
+	matchAnimation();
+}
+void AnimatorComponent::PlayOnce(Animation * anim)
+{
+	state = true;
+	isLoop = false;
+	currentAnimation = anim;
+	startTime = GE_Engine->getTime();
 	matchAnimation();
 }
 

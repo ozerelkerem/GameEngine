@@ -25,6 +25,7 @@ public:
 	~ComponentSystem();
 
 	std::unordered_map<Model *, std::forward_list<ActorID::value_type>> actorsWhichContainsModelComponent;
+	std::unordered_map<Model *, std::forward_list<ActorID::value_type>> actorsWhichContainsSkinnedModelComponent;
 	ActorComponentMap<LightComponent> actorsWhichContainsLightComponent;
 	ActorComponentMap<AnimatorComponent> actorsWhichContainsAnimatorComponent;
 
@@ -55,8 +56,8 @@ public:
 	template<>
 	inline void AddComponent<SkinnedModelComponent>(ActorID actor, SkinnedModelComponent *component)
 	{
-		bool tf = actorsWhichContainsModelComponent[component->model].empty();
-		actorsWhichContainsModelComponent[component->model].push_front(actor);
+		bool tf = actorsWhichContainsSkinnedModelComponent[component->model].empty();
+		actorsWhichContainsSkinnedModelComponent[component->model].push_front(actor);
 		/*if (tf)
 			component->model->loadModelToGPU();*/
 

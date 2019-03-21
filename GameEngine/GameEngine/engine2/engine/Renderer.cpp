@@ -44,6 +44,7 @@ void Renderer::RenderAnActor(Actor *actor)
 
 void Renderer::renderModels()
 {
+	normalShader->setInt("hasBones", 0);
 	for (auto modelmap : this->gamebase->currentScene->componentSystem->actorsWhichContainsModelComponent)
 	{
 		for (int i = 0; i < modelmap.first->numOfMeshes; i++)
@@ -53,16 +54,53 @@ void Renderer::renderModels()
 			for (auto actorid : modelmap.second)
 			{
 				Actor *actor = GE_Engine->actorManager->GetActor(actorid);
-				IModelComponent *mcmp = actor->componentObject->getComponent<ModelComponent>();
-				if(!mcmp)
-					mcmp = actor->componentObject->getComponent<SkinnedModelComponent>();
+				ModelComponent *mcmp = actor->componentObject->getComponent<ModelComponent>();
+				
 				if (mcmp->numberOfMaterials > i && mcmp->materials[i])
 					mcmp->materials[i]->active();
 				else
 					Material::noMaterial();
+				
 				normalShader->setMat4("modelMatrix", actor->transformation->realMatrix);
 				modelmap.first->meshes[i]->render();
 				
+				glActiveTexture(GL_TEXTURE0);
+			}
+
+			modelmap.first->meshes[i]->unbind();
+		}
+	}
+
+	normalShader->setInt("hasBones", 1);
+	for (auto modelmap : this->gamebase->currentScene->componentSystem->actorsWhichContainsSkinnedModelComponent)
+	{
+		for (int i = 0; i < modelmap.first->numOfMeshes; i++)
+		{
+			modelmap.first->meshes[i]->bind();
+
+			for (auto actorid : modelmap.second)
+			{
+				Actor *actor = GE_Engine->actorManager->GetActor(actorid);
+				SkinnedModelComponent *mcmp = actor->componentObject->getComponent<SkinnedModelComponent>();
+				
+				if (mcmp->rootBone != ActorID::INVALID_HANDLE)
+				{
+					if (mcmp->numberOfMaterials > i && mcmp->materials[i])
+						mcmp->materials[i]->active();
+					else
+						Material::noMaterial();
+
+					std::vector<glm::mat4> matrixBuffer;
+					for (auto x : mcmp->effectlist[i])
+					{
+						matrixBuffer.emplace_back(GE_Engine->actorManager->GetActor(x)->transformation->realMatrix);
+					}
+					normalShader->setMat4Array("bones", matrixBuffer.size(), matrixBuffer.data()[0]);
+
+					normalShader->setMat4("modelMatrix", actor->transformation->realMatrix);
+					modelmap.first->meshes[i]->render();
+				}
+
 				glActiveTexture(GL_TEXTURE0);
 			}
 

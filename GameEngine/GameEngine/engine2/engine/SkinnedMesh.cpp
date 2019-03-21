@@ -5,8 +5,8 @@
 
 
 
-SkinnedMesh::SkinnedMesh(unsigned int nov, unsigned int noi, float * vert, float * norm, unsigned int * ind, float *textureCoords, std::vector<float> weigth, BonesList bonelist)
-	: Mesh(nov, noi, vert, norm, ind, textureCoords), weights(weigth), bones(bonelist)
+SkinnedMesh::SkinnedMesh(unsigned int nov, unsigned int noi, float * vert, float * norm, unsigned int * ind, float *textureCoords, std::vector<float> weigth, std::vector<uint8_t> ids, BonesList bonelist)
+	: Mesh(nov, noi, vert, norm, ind, textureCoords), weights(weigth), bones(bonelist) , boneids(ids)
 {
 }
 
@@ -24,5 +24,6 @@ void SkinnedMesh::loadMesh()
 	if (textureCoords)
 		storeData(2, numberOfVertices * 2, GL_ARRAY_BUFFER, GL_FLOAT, textureCoords, 2);
 	storeData(3, numberOfVertices * 4, GL_ARRAY_BUFFER, GL_FLOAT, &weights.data()[0], 4);
+	storeData(4, numberOfVertices * 4, GL_ARRAY_BUFFER, GL_UNSIGNED_BYTE, &boneids.data()[0], 4);
 	glBindVertexArray(0);
 }

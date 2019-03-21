@@ -1,6 +1,7 @@
 #include "System.h"
 #include "AnimationSystem.h"
 #include <engine/ActorManager.h>
+#include <iostream>
 AnimationSystem::AnimationSystem(GameBase *gb) : gamebase(gb) {}
 
 AnimationSystem::~AnimationSystem()
@@ -17,12 +18,25 @@ void AnimationSystem::Update()
 	auto animators = gamebase->currentScene->componentSystem->GetComponents<AnimatorComponent>();
 	for (auto animator : animators)
 	{
-		if (animator.second->currentAnimation)
+		if (animator.second->currentAnimation && animator.second->state)
 		{
+			Animation *a = animator.second->currentAnimation;
+			auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(GE_Engine->getTime() - animator.second->startTime).count();
+			if (!animator.second->isLoop && elapsed >( a->duration * (1000.f / (float)a->ticksPerSecond)))
+			{
+				animator.second->state = 0;
+				continue;
+			}
+			
+			auto  frame = fmod((elapsed / (1000.f / (float)a->ticksPerSecond)), a->duration);
+
 			for (auto effect : animator.second->effectlist)
 			{
-				/*TODO CALC interpolated frame*/
-				GE_Engine->actorManager->GetActor((ActorID)effect.second)->transformation->position = animator.second->currentAnimation->animationNodeMap[effect.first]->positionKeys.front().second;
+				Actor *actor = GE_Engine->actorManager->GetActor(effect.second);
+				a->animationNodeMap[effect.first]->calcInterpolationPosition(frame, actor->transformation->position);
+				a->animationNodeMap[effect.first]->calcInterpolationRotation(frame, actor->transformation->qRotation);
+				actor->transformation->calcEulerFromQuat();
+				a->animationNodeMap[effect.first]->calcInterpolationScale(frame, actor->transformation->scale);
 			}
 			
 		}

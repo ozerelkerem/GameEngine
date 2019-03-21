@@ -49,8 +49,8 @@ template<>
 void ComponentSystem::changeModel<SkinnedModelComponent>(ActorID aid, Model *newmodel)
 {
 	Actor *actor = GE_Engine->actorManager->GetActor(aid);
-	actorsWhichContainsModelComponent[actor->componentObject->getComponent<SkinnedModelComponent>()->model].remove(aid);
-	actorsWhichContainsModelComponent[newmodel].push_front(aid);
+	actorsWhichContainsSkinnedModelComponent[actor->componentObject->getComponent<SkinnedModelComponent>()->model].remove(aid);
+	actorsWhichContainsSkinnedModelComponent[newmodel].push_front(aid);
 }
 
 

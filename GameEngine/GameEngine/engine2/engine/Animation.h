@@ -14,6 +14,8 @@ using KeyFrameHolder = std::vector<std::pair<AnimationTimeType, T>>;
 class AnimationNode;
 using AnimationNodeMap = std::unordered_map<std::string, AnimationNode *>; // maybe we can change unordered to normal map
 
+typedef std::pair<AnimationTimeType, glm::vec3> animPairVec3;
+typedef std::pair<AnimationTimeType, glm::quat> animPairQuat;
 
 class AnimationNode : public Namable
 {
@@ -21,10 +23,13 @@ public:
 	AnimationNode(std::string name, KeyFrameHolder<glm::vec3>, KeyFrameHolder<glm::vec3>, KeyFrameHolder<glm::quat>);
 	~AnimationNode();
 
-	KeyFrameHolder<glm::vec3> positionKeys;
-	KeyFrameHolder<glm::vec3> scaleKeys;
-	KeyFrameHolder<glm::quat> rotationKeys;
+	std::vector<animPairVec3> positionKeys;
+	std::vector<animPairVec3> scaleKeys;
+	std::vector<animPairQuat> rotationKeys;
 
+	void calcInterpolationPosition(float frame, glm::vec3&);
+	void calcInterpolationScale(float frame, glm::vec3&);
+	void calcInterpolationRotation(float frame, glm::quat&);
 
 };
 
@@ -37,10 +42,11 @@ public:
 	~Animation();
 
 	AnimationNodeMap animationNodeMap;
-	AnimationTimeType duration;
-	AnimationTimeType ticksPerSecond;
+	const AnimationTimeType duration;
+	const AnimationTimeType ticksPerSecond;
 
 
-	
 };
+
+
 

@@ -11,3 +11,8 @@ Engine::Engine()
 Engine::~Engine()
 {
 }
+
+void Engine::Update()
+{
+	time = std::chrono::high_resolution_clock::now();
+}

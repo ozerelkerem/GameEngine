@@ -121,19 +121,30 @@ namespace ModelLoader
 		Object *o = NULL;
 		if (node->mNumMeshes > 0) // it is a model
 		{
-			
+			o = new Object(node->mName.C_Str());
 			Model *m = new Model(node->mName.C_Str());
-			ModelComponent *mc = new ModelComponent(ActorID::INVALID_HANDLE,m);
+			IModelComponent *mc;
+			if (dynamic_cast<SkinnedMesh*>(meshes[node->mMeshes[0]]))
+			{
+				mc = new SkinnedModelComponent(ActorID::INVALID_HANDLE, m);
+				o->componentObject->addComponent<SkinnedModelComponent>((SkinnedModelComponent *)mc);
+
+			}
+			else
+			{
+				mc = new ModelComponent(ActorID::INVALID_HANDLE, m);
+				o->componentObject->addComponent<ModelComponent>((ModelComponent *)mc);
+			}
 			for (int i = 0; i < node->mNumMeshes; i++)
 			{
 				m->addMesh(meshes[node->mMeshes[i]]);
 				mc->materials.insert(mc->materials.begin(), 1, prefab->materials[scene->mMeshes[node->mMeshes[i]]->mMaterialIndex]);
 			}
 			prefab->addModel(m);
-			o = new Object(node->mName.C_Str());
+			
 	
 			
-			o->componentObject->addComponent(mc);
+		
 		}
 		else
 		{
@@ -219,13 +230,13 @@ namespace ModelLoader
 		
 		}
 
-
 		Mesh *tmpMesh;
 
 		if (mesh->HasBones())
 		{
 			BonesList bones;
 			std::vector<std::vector<float>> weights(mesh->mNumVertices);
+			std::vector<std::vector<uint8_t>> boneids(mesh->mNumVertices);
 			for (int i = 0; i < mesh->mNumBones; i++)
 			{
 				auto bone = mesh->mBones[i];
@@ -233,16 +244,22 @@ namespace ModelLoader
 				for (int j = 0; j < bone->mNumWeights; j++)
 				{
 					weights[bone->mWeights[j].mVertexId].push_back(bone->mWeights[j].mWeight);
+					boneids[bone->mWeights[j].mVertexId].push_back(i);
 				}
-				bones.push_back(std::make_pair(bone->mName.C_Str(),glm::mat4(aiamat4tomat4(bone->mOffsetMatrix)) ));
+				bones.push_back(std::make_pair(bone->mName.C_Str(),glm::mat4(aiamat4tomat4(bone->mOffsetMatrix))));
 			}
 
 			for (int i = 0; i < mesh->mNumVertices; i++)
 			{
-				std::sort(weights[i].begin(), weights[i].end(), greater<float>());
-				weights[i].resize(SKINNED_MESH_MAX_WEIGHT_PER_VERTICES,0);
-				float sum = std::accumulate(weights[i].begin(), weights[i].end(), 0);
-				std::transform(weights[i].begin(), weights[i].end(), weights[i].begin(), [&](const float &x) {return x / sum;  });
+				auto wei = weights[i];
+				std::sort(boneids[i].begin(), boneids[i].end(), [wei](size_t a, size_t b)
+				{
+					return wei[a] > wei[b]; 
+				});
+				std::sort(weights[i].begin(), weights[i].end(), std::greater<float>());
+				weights[i].resize(SKINNED_MESH_MAX_WEIGHT_PER_VERTICES, 0);
+				boneids[i].resize(SKINNED_MESH_MAX_WEIGHT_PER_VERTICES, 0);
+
 			}
 
 			auto bar = std::accumulate(weights.begin(), weights.end(), decltype(weights)::value_type{},
@@ -250,8 +267,13 @@ namespace ModelLoader
 				dest.insert(dest.end(), src.begin(), src.end());
 				return dest;
 			});
+			auto bar2 = std::accumulate(boneids.begin(), boneids.end(), decltype(boneids)::value_type{},
+				[](auto& dest, auto& src) {
+				dest.insert(dest.end(), src.begin(), src.end());
+				return dest;
+			});
 
-			tmpMesh = (Mesh *)new SkinnedMesh(mesh->mNumVertices, mesh->mNumFaces, vertices, normals, indices, textureCoords,bar, bones);
+			tmpMesh = (Mesh *)new SkinnedMesh(mesh->mNumVertices, mesh->mNumFaces, vertices, normals, indices, textureCoords,bar, bar2, bones);
 		}
 		else
 			tmpMesh = new Mesh(mesh->mNumVertices, mesh->mNumFaces, vertices, normals, indices, textureCoords);
@@ -293,7 +315,7 @@ namespace ModelLoader
 			rot.reserve(channel->mNumRotationKeys);
 
 			for (int j = 0; j < channel->mNumPositionKeys; j++)
-				pos.push_back(std::make_pair(static_cast<AnimationTimeType>(channel->mPositionKeys[j].mTime), aivec3tovec3(channel->mPositionKeys[i].mValue)));
+				pos.push_back(std::make_pair(static_cast<AnimationTimeType>(channel->mPositionKeys[j].mTime), aivec3tovec3(channel->mPositionKeys[j].mValue)));
 			for (int j = 0; j < channel->mNumScalingKeys; j++)
 				scale.push_back(std::make_pair(static_cast<AnimationTimeType>(channel->mScalingKeys[j].mTime), aivec3tovec3(channel->mScalingKeys[j].mValue)));
 			for (int j = 0; j < channel->mNumRotationKeys; j++)

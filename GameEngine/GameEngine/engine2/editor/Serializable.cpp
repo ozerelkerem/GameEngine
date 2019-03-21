@@ -75,6 +75,7 @@ void Serializable::SaveModel(ProjectManager *pm, Model *m)
 		{
 			SkinnedMesh * mesh2 = (SkinnedMesh *)mesh;
 			writefile(file, &mesh2->weights.data()[0],SKINNED_MESH_MAX_WEIGHT_PER_VERTICES* mesh->numberOfVertices);
+			writefile(file, &mesh2->boneids.data()[0], SKINNED_MESH_MAX_WEIGHT_PER_VERTICES* mesh->numberOfVertices);
 			writefile(file, mesh2->bones.size());
 			for (auto bone : mesh2->bones)
 			{
@@ -119,14 +120,16 @@ void Serializable::ReadModel(Model *m)
 		
 		Mesh::boundstype b;
 		Serializable::readfile(file, &b);
-	
+		
 	
 	
 		
 		if (t == ModelType::Skinned)
 		{
 			std::vector<float> weights(numberOfVertices * SKINNED_MESH_MAX_WEIGHT_PER_VERTICES);
+			std::vector<uint8_t> boneids(numberOfVertices * SKINNED_MESH_MAX_WEIGHT_PER_VERTICES);
 			Serializable::readfile(file, &weights.data()[0], SKINNED_MESH_MAX_WEIGHT_PER_VERTICES * numberOfVertices);
+			Serializable::readfile(file, &boneids.data()[0], SKINNED_MESH_MAX_WEIGHT_PER_VERTICES * numberOfVertices);
 			size_t bonesize;
 			Serializable::readfile(file, &bonesize);
 			BonesList bones(bonesize);
@@ -138,12 +141,13 @@ void Serializable::ReadModel(Model *m)
 				Serializable::readfile(file, &offset);
 				bones[j] = std::make_pair(bonename, offset);
 			}
-			mesh = (Mesh *)new SkinnedMesh(numberOfVertices, numberOfIndices, vertices, normals, indices, textureCoords,weights,bones);
+			mesh = (Mesh *)new SkinnedMesh(numberOfVertices, numberOfIndices, vertices, normals, indices, textureCoords,weights, boneids,bones);
 		}
 			
 		else
 			mesh = new Mesh(numberOfVertices, numberOfIndices, vertices, normals, indices, textureCoords);
 		m->addMesh(mesh);
+		mesh->bounds = b;
 	}
 	
 	file.close();

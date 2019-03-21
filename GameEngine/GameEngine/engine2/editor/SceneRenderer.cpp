@@ -191,8 +191,8 @@ void SceneRenderer::focusActor(ActorID actorid)
 	glm::vec4 minxyz(x.minx, x.miny, x.minz, 1.0);
 	glm::vec4 maxxyz(x.maxx, x.maxy, x.maxz, 1.0);
 
-  	minxyz =   actor->transformation->realMatrix * minxyz;
-	maxxyz =  actor->transformation->realMatrix *maxxyz;
+  	minxyz = actor->transformation->realMatrix * minxyz;
+	maxxyz = actor->transformation->realMatrix *maxxyz;
 	
 	minxyz = minxyz * (float)(1.0 / minxyz.w);
 	maxxyz = maxxyz * (float)(1.0 / maxxyz.w);
