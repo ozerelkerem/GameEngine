@@ -13,7 +13,7 @@ Grid::Grid(int lineCount, float spaceLength, unsigned int programID)
 
 void Grid::Draw()
 {
-
+	
 	lineCount += lineCount % 2;
 	float limit = ((float)(spaceLength * lineCount) / 2);
 

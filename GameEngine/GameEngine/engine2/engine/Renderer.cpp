@@ -91,13 +91,17 @@ void Renderer::renderModels()
 						Material::noMaterial();
 
 					std::vector<glm::mat4> matrixBuffer;
+					int j = 0;
 					for (auto x : mcmp->effectlist[i])
 					{
-						matrixBuffer.emplace_back(GE_Engine->actorManager->GetActor(x)->transformation->realMatrix);
+						auto bb = GE_Engine->actorManager->GetActor(mcmp->rootBone)->transformation->realMatrix;
+						auto asd = glm::inverse(bb);
+						matrixBuffer.push_back( (GE_Engine->actorManager->GetActor(x)->transformation->realMatrix) * glm::transpose(((SkinnedMesh*)modelmap.first->meshes[i])->bones[j].second));
+						j++;
 					}
-					normalShader->setMat4Array("bones", matrixBuffer.size(), matrixBuffer.data()[0]);
+					normalShader->setMat4Array("bones", matrixBuffer.size() , matrixBuffer.data()[0]);
 
-					normalShader->setMat4("modelMatrix", actor->transformation->realMatrix);
+					//normalShader->setMat4("modelMatrix", actor->transformation->realMatrix);
 					modelmap.first->meshes[i]->render();
 				}
 

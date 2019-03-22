@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include<string.h>
-
+#include <type_traits>
 #include <engine/Prefab.h>
 #include <engine/components/CameraComponent.h>
 #include <engine/components/LightComponent.h>
@@ -22,8 +22,8 @@
 
 #define aicolortovec3(x) glm::vec3(x.r, x.g, x.b)
 #define aivec3tovec3(a) glm::vec3(a.x, a.y, a.z)
-#define aiquattoquat(a) glm::quat(a.x, a.y, a.z, a.w)
-#define aiamat4tomat4(a) glm::mat4((float)a.a1, a.a2, a.a3, a.a4, a.b1, a.b2, a.b3, a.b4, a.c1,a.c2,a.c3,a.c4,a.d1,a.d2,a.d3,a.d3)
+#define aiquattoquat(a) glm::quat(a.w, a.x, a.y, a.z)
+#define aiamat4tomat4(a) glm::make_mat4(a[0])
 namespace ModelLoader
 {
 	static Prefab *loadPrefab(const char *path, ProjectManager *project);
@@ -108,7 +108,7 @@ namespace ModelLoader
 	static void startingNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene)
 	{
 	
-		prefab->rootNode = new PrefabNode(new Object(prefab->name), glm::make_mat4(node->mTransformation[0]));
+		prefab->rootNode = new PrefabNode(new Object(prefab->name), glm::mat4(aiamat4tomat4(node->mTransformation)));
 
 		for (int i = 0; i < node->mNumChildren; i++)
 		{
@@ -155,7 +155,7 @@ namespace ModelLoader
 				o = new Object(node->mName.C_Str());
 			}
 		}
-
+		
 		PrefabNode *tmpprefabNode = new PrefabNode(o, glm::make_mat4(node->mTransformation[0]));
 		rootPNode->addChild(tmpprefabNode);
 
@@ -235,41 +235,43 @@ namespace ModelLoader
 		if (mesh->HasBones())
 		{
 			BonesList bones;
-			std::vector<std::vector<float>> weights(mesh->mNumVertices);
-			std::vector<std::vector<uint8_t>> boneids(mesh->mNumVertices);
+			std::vector<std::vector<std::pair<float, BoneIdType >>> weightsboneids(mesh->mNumVertices);
+
 			for (int i = 0; i < mesh->mNumBones; i++)
 			{
 				auto bone = mesh->mBones[i];
 
 				for (int j = 0; j < bone->mNumWeights; j++)
 				{
-					weights[bone->mWeights[j].mVertexId].push_back(bone->mWeights[j].mWeight);
-					boneids[bone->mWeights[j].mVertexId].push_back(i);
+					weightsboneids[bone->mWeights[j].mVertexId].push_back(std::make_pair(bone->mWeights[j].mWeight, i));
+				
 				}
 				bones.push_back(std::make_pair(bone->mName.C_Str(),glm::mat4(aiamat4tomat4(bone->mOffsetMatrix))));
 			}
 
 			for (int i = 0; i < mesh->mNumVertices; i++)
 			{
-				auto wei = weights[i];
-				std::sort(boneids[i].begin(), boneids[i].end(), [wei](size_t a, size_t b)
+			
+				std::sort(weightsboneids[i].begin(), weightsboneids[i].end(), [](auto a, auto b)
 				{
-					return wei[a] > wei[b]; 
+					return a.first < b.first;
 				});
-				std::sort(weights[i].begin(), weights[i].end(), std::greater<float>());
-				weights[i].resize(SKINNED_MESH_MAX_WEIGHT_PER_VERTICES, 0);
-				boneids[i].resize(SKINNED_MESH_MAX_WEIGHT_PER_VERTICES, 0);
+				
+				weightsboneids[i].resize(SKINNED_MESH_MAX_WEIGHT_PER_VERTICES, std::make_pair(0,0));
+				
 
 			}
 
-			auto bar = std::accumulate(weights.begin(), weights.end(), decltype(weights)::value_type{},
+			auto bar = std::accumulate(weightsboneids.begin(), weightsboneids.end(), std::vector<float>{},
 				[](auto& dest, auto& src) {
-				dest.insert(dest.end(), src.begin(), src.end());
+				for (auto a : src)
+					dest.push_back(a.first);
 				return dest;
 			});
-			auto bar2 = std::accumulate(boneids.begin(), boneids.end(), decltype(boneids)::value_type{},
+			auto bar2 = std::accumulate(weightsboneids.begin(), weightsboneids.end(), std::vector<BoneIdType>{},
 				[](auto& dest, auto& src) {
-				dest.insert(dest.end(), src.begin(), src.end());
+				for (auto a : src)
+					dest.push_back(a.second);
 				return dest;
 			});
 

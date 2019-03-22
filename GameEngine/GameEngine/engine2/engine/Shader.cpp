@@ -6,7 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-
+#include <glm/gtc/type_ptr.hpp>
 #include "../ogl/GL/glew.h"
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
@@ -100,7 +100,7 @@ void Shader::setMat4(const std::string &name, const glm::mat4 &m4)
 
 void Shader::setMat4Array(const std::string &name, size_t size, const glm::mat4 &m4)
 {
-	glUniformMatrix4fv(glGetUniformLocation(programID, name.c_str()), size, GL_FALSE, &m4[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(programID, name.c_str()), size, GL_FALSE, glm::value_ptr(m4));
 }
 
 void Shader::setInt(const std::string &name, const int &val)

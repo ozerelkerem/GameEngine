@@ -13,8 +13,9 @@ void AnimationNode::calcInterpolationPosition(float frame, glm::vec3 &dest)
 	auto asd = std::lower_bound(positionKeys.begin(), positionKeys.end(), frame, [](const animPairVec3 &left, const float &right) -> bool {
 		return left.first <= right;
 	});
-
-	dest = glm::mix((*asd).second, (*(asd - 1)).second, (int)frame - frame);
+	float DeltaTime = (*asd).first - (*(asd - 1)).first;
+	float Factor = (frame - (float)(*(asd - 1)).first) / DeltaTime;
+	dest = glm::mix((*(asd-1)).second, (*(asd )).second, Factor);
 	
 }
 
@@ -23,8 +24,9 @@ void AnimationNode::calcInterpolationScale(float frame, glm::vec3 &dest)
 	auto asd = std::lower_bound(scaleKeys.begin(), scaleKeys.end(), frame, [](const animPairVec3 &left, const float &right) -> bool {
 		return left.first <= right;
 	});
-
-	dest = glm::mix((*asd).second, (*(asd - 1)).second, (int)frame - frame);
+	float DeltaTime = (*asd).first - (*(asd - 1)).first;
+	float Factor = (frame - (float)(*(asd - 1)).first) / DeltaTime;
+	dest = glm::mix((*(asd-1)).second, (*(asd )).second, Factor);
 }
 
 void AnimationNode::calcInterpolationRotation(float frame, glm::quat &dest)
@@ -32,8 +34,10 @@ void AnimationNode::calcInterpolationRotation(float frame, glm::quat &dest)
 	auto asd = std::lower_bound(rotationKeys.begin(), rotationKeys.end(), frame, [](const animPairQuat &left, const float &right) -> bool {
 		return left.first <= right;
 	});
+	float DeltaTime = (*asd).first - (*(asd-1)).first;
+	float Factor = (frame - (float)(*(asd - 1)).first) / DeltaTime;
 
-	dest = glm::slerp((*asd).second, (*(asd - 1)).second, (int)frame - frame);
+	dest = glm::slerp((*(asd-1)).second, (*(asd)).second, Factor);
 }
 
 

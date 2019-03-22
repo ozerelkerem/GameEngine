@@ -127,7 +127,7 @@ void Serializable::ReadModel(Model *m)
 		if (t == ModelType::Skinned)
 		{
 			std::vector<float> weights(numberOfVertices * SKINNED_MESH_MAX_WEIGHT_PER_VERTICES);
-			std::vector<uint8_t> boneids(numberOfVertices * SKINNED_MESH_MAX_WEIGHT_PER_VERTICES);
+			decltype(SkinnedMesh::boneids) boneids(numberOfVertices * SKINNED_MESH_MAX_WEIGHT_PER_VERTICES);
 			Serializable::readfile(file, &weights.data()[0], SKINNED_MESH_MAX_WEIGHT_PER_VERTICES * numberOfVertices);
 			Serializable::readfile(file, &boneids.data()[0], SKINNED_MESH_MAX_WEIGHT_PER_VERTICES * numberOfVertices);
 			size_t bonesize;
