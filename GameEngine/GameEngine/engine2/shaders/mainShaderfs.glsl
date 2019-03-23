@@ -65,9 +65,12 @@ void main()
 	{		
 		if (lights[i].type == LIGHT_POINT)
 		{
+			float distance = length(lights[i].position - v_position);
+			if (distance > lights[i].distance)
+				continue;
 			vec3 lightDir = normalize(lights[i].position - v_position);
 			float diff = max(dot(lightDir, v_normal), 0.f);
-			float distance = length(lights[i].position - v_position);
+		
 			float attenuation = 1.0 / (lights[i].constant + lights[i].linear * distance + lights[i].quadratic * distance * distance);
 			diffuseLight += (lights[i].color * diff) * attenuation * lights[i].intensity;
 
@@ -79,12 +82,15 @@ void main()
 		}
 		else if(lights[i].type == LIGHT_SPOT) // SPOTLIGHT
 		{
+			float distance = length(lights[i].position - v_position);
+			if (distance > lights[i].distance)
+				continue;
 			vec3 lightDir = normalize(lights[i].position - v_position);
 			float theta = acos(dot(lightDir, normalize(-lights[i].direction)));
 			if (lights[i].angle > theta)
 			{
 				float diff = max(dot(lightDir, v_normal), 0.f);
-				float distance = length(lights[i].position - v_position);
+
 				float attenuation = 1.0 / (lights[i].constant + lights[i].linear * distance + lights[i].quadratic * distance * distance);
 				diffuseLight += (lights[i].color * diff) * attenuation * lights[i].intensity;
 			}

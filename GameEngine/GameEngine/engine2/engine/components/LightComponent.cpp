@@ -1,6 +1,6 @@
 #include "LightComponent.h"
 
-
+#include <math.h>
 
 LightComponent::LightComponent(ActorID own) : Component(own)
 {
@@ -18,6 +18,13 @@ LightComponent::LightComponent(ActorID own) : Component(own)
 
 LightComponent::~LightComponent()
 {
+}
+
+void LightComponent::calculateAttenuation()
+{
+	constant = 1 / (distance / 2);
+	linear = 1 / (distance / 4);
+	quadratic = 1 / (distance / 8);
 }
 
 void LightComponent::passShader(Shader * s, Transform *t, int lindex)

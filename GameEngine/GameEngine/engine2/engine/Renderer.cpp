@@ -154,38 +154,74 @@ void Renderer::renderLights(SceneCamera *camera)
 	for (auto light : this->gamebase->currentScene->componentSystem->actorsWhichContainsLightComponent)
 	{
 		Actor *lightActor = GE_Engine->actorManager->GetActor(light.first);
-		
-		//a = camera->position, b = lightActor->transformation->getWorldPosition()
-		//glm::vec3 worldUpVector = { 0,0,1 };
-		//rightVector = glm::normalize(glm::cross(frontVector, worldUpVector));
-		//upVector = glm::normalize(glm::cross(rightVector, frontVector));
 
-		//lightActor->transformation->getWorldPosition()
-		//camera->rightVector;
-		//camera->upVector;
+		camera->UpdateCameraVectors();
 
 		glm::vec3 lightpos = lightActor->transformation->getWorldPosition();
 		float dist = light.second->distance;
 
-		glm::vec3 startpos = lightpos + (camera->upVector * dist);
-		glm::vec3 endpos = lightpos + (camera->rightVector * dist);
-		glVertexAttrib3f(idPosition, startpos.x, startpos.y, startpos.z);
-		glVertexAttrib3f(idPosition, endpos.x, endpos.y, endpos.z);
+		const int sensivity = 36;
+		float constexpr degree = 360 / sensivity;
 
-		startpos = lightpos + (camera->upVector * dist);
-		endpos = lightpos + (-camera->rightVector * dist);
-		glVertexAttrib3f(idPosition, startpos.x, startpos.y, startpos.z);
-		glVertexAttrib3f(idPosition, endpos.x, endpos.y, endpos.z);
+		if (light.second->lightType == LightType::Point)
+		{
+			glm::vec3 startpos = lightpos + (glm::vec3(1, 0, 0) *dist);
+			glm::vec3 endpos = glm::rotate((startpos - lightpos), glm::radians(degree), glm::vec3(0, 1, 0));
+			endpos += lightpos;
 
-		startpos = lightpos + (-camera->upVector * dist);
-		endpos = lightpos + (-camera->rightVector * dist);
-		glVertexAttrib3f(idPosition, startpos.x, startpos.y, startpos.z);
-		glVertexAttrib3f(idPosition, endpos.x, endpos.y, endpos.z);
+			for (int i = 0; i < sensivity; i++)
+			{
+				glVertexAttrib3f(idPosition, startpos.x, startpos.y, startpos.z);
+				glVertexAttrib3f(idPosition, endpos.x, endpos.y, endpos.z);
 
-		startpos = lightpos + (-camera->upVector * dist);
-		endpos = lightpos + (camera->rightVector * dist);
-		glVertexAttrib3f(idPosition, startpos.x, startpos.y, startpos.z);
-		glVertexAttrib3f(idPosition, endpos.x, endpos.y, endpos.z);
+				startpos = endpos;
+				endpos = glm::rotate((endpos - lightpos), glm::radians(degree), glm::vec3(0, 1, 0));
+				endpos += lightpos;
+			}
+
+			startpos = lightpos + (glm::vec3(1, 0, 0) *dist);
+			endpos = glm::rotate((startpos - lightpos), glm::radians(degree), glm::vec3(0, 0, 1));
+			endpos += lightpos;
+
+			for (int i = 0; i < sensivity; i++)
+			{
+				glVertexAttrib3f(idPosition, startpos.x, startpos.y, startpos.z);
+				glVertexAttrib3f(idPosition, endpos.x, endpos.y, endpos.z);
+
+				startpos = endpos;
+				endpos = glm::rotate((endpos - lightpos), glm::radians(degree), glm::vec3(0, 0, 1));
+				endpos += lightpos;
+			}
+
+			startpos = lightpos + (glm::vec3(0, 1, 0) *dist);
+			endpos = glm::rotate((startpos - lightpos), glm::radians(degree), glm::vec3(1, 0, 0));
+			endpos += lightpos;
+
+			for (int i = 0; i < sensivity; i++)
+			{
+				glVertexAttrib3f(idPosition, startpos.x, startpos.y, startpos.z);
+				glVertexAttrib3f(idPosition, endpos.x, endpos.y, endpos.z);
+
+				startpos = endpos;
+				endpos = glm::rotate((endpos - lightpos), glm::radians(degree), glm::vec3(1, 0, 0));
+				endpos += lightpos;
+			}
+
+			startpos = lightpos + (camera->rightVector * dist);
+			endpos = glm::rotate((startpos - lightpos), glm::radians(degree), camera->frontVector);
+			endpos += lightpos;
+
+			for (int i = 0; i < sensivity; i++)
+			{
+				glVertexAttrib3f(idPosition, startpos.x, startpos.y, startpos.z);
+				glVertexAttrib3f(idPosition, endpos.x, endpos.y, endpos.z);
+
+				startpos = endpos;
+				endpos = glm::rotate((endpos - lightpos), glm::radians(degree), camera->frontVector);
+				endpos += lightpos;
+			}
+		}
+
 	}
 
 	glEnd();
