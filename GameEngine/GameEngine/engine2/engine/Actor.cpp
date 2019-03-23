@@ -43,7 +43,7 @@ void Actor::RemoveActor()
 	for (int i = 0; i < numberOfChildren; i++)
 		GE_Engine->actorManager->GetActor(children[i])->RemoveParent();
 
-	delete this;
+	//TODO REMOVE ACTOR FROM EVERYWHERE ActorManager, ComponenentManager vs..
 }
 
 bool Actor::RemoveChild(ActorID removeChild)

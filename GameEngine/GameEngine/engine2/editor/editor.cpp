@@ -55,7 +55,7 @@ void Editor::ShowComponentList()
 			ImGui::DragFloat("Intensity##LightComponent", &lightcomp->intensity, 0.05f, 0.05f,100.f);
 
 			if (lightcomp->lightType == LightType::Spotlight)
-				ImGui::DragFloat("Angle##LightComponent", &lightcomp->angle, 0.05f, 100.f);
+				ImGui::DragFloat("Angle##LightComponent", &lightcomp->angle, 0.05f, 0.05f, 100.f);
 
 			if (!(lightcomp->lightType == LightType::Directional))
 			{
@@ -735,7 +735,12 @@ void Editor::DrawHierarchy(ActorID rootid)
 			if (ImGui::MenuItem("Delete") && root->name != "root")
 			{
 				root->RemoveActor();
-				sceneRenderer->selectedActor = NULL;
+				sceneRenderer->selectedActor = ActorID::INVALID_HANDLE;
+				ImGui::EndPopup();
+				ImGui::PopID();
+				if(node_open)
+					ImGui::TreePop();
+				return;
 			}
 			ImGui::EndPopup();
 		}

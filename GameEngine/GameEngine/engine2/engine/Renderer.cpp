@@ -146,15 +146,17 @@ void Renderer::prepareLights()
 {
 
 	int maxlight = 7;
+	int index = 0;
 	for (auto lightactor : this->gamebase->currentScene->componentSystem->actorsWhichContainsLightComponent)
 	{
-		lightactor.second->passShader(normalShader, GE_Engine->actorManager->GetActor(lightactor.first)->transformation, maxlight);
-		if (maxlight-- < 0)
-			break;
+		
+		lightactor.second->passShader(normalShader, GE_Engine->actorManager->GetActor(lightactor.first)->transformation, index);
+		index++;
 	} 
-	while (maxlight-- > 0)
+	while (index <= maxlight)
 	{
-		normalShader->setInt("lights[" + std::to_string(maxlight) + "].type", 5);
+		normalShader->setInt("lights[" + std::to_string(index) + "].type", 5);
+		index++;
 	}
 
 }

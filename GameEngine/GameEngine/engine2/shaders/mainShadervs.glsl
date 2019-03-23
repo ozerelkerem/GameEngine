@@ -22,6 +22,7 @@ out vec2 v_textureCoords;
 void main()
 {
 	vec4 pos = vec4(position, 1.0);
+
 	if (hasBones > 0.5f)
 	{
 		mat4 boneMatrix = bones[int(boneids[0])] * weights[0];
@@ -31,15 +32,22 @@ void main()
 		pos = boneMatrix * pos;
 		//tmp = mat3(boneMatrix) * a_Normal;
 		pos = vec4(pos.xyz,1.0);
+		v_normal = normalize(mat3(transpose(inverse(boneMatrix))) * normal);
+	
 	}
 	else
+	{
+		v_normal = normalize(mat3(transpose(inverse(modelMatrix))) * normal);
 		pos = modelMatrix * pos;
 	
+	}
+		
+	
 	v_textureCoords = textureCoords;
-	vec4 tmp = modelMatrix * vec4(position, 1);
+
 	gl_Position = projectionMatrix * viewMatrix * pos;
 
-	v_normal = normalize(mat3(transpose(inverse(modelMatrix))) * normal);
-	v_position = vec3(tmp);
+	
+	v_position = vec3(pos);
 	
 }
