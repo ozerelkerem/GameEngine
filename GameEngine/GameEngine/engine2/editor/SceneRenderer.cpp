@@ -40,9 +40,10 @@ void SceneRenderer::render()
 	colorShader->setMat4("viewMatrix", sceneCamera->viewMatrix);
 	colorShader->setMat4("projectionMatrix", sceneCamera->projectionMatrix);
 	colorShader->setMat4("modelMatrix", glm::mat4(1));
-	grid->Draw();
-	if (selectedactor)
-		RenderOutlined(selectedactor);
+//	grid->Draw();
+	//renderLights(this->sceneCamera);
+/*	if (selectedactor)
+		RenderOutlined(selectedactor);*/
 
 	normalShader->Use();
 	normalShader->setMat4("viewMatrix", sceneCamera->viewMatrix);
@@ -54,11 +55,11 @@ void SceneRenderer::render()
 	renderModels();
 	
 	colorShader->Use();
-	if (selectedactor)
+ if (selectedactor)
 	{
 		glDisable(GL_DEPTH_TEST);
 
-		sceneTool->Render(selectedactor->transformation, glm::distance(sceneCamera->position, selectedactor->transformation->getWorldPosition()) / 10, sceneCamera->position);
+		//sceneTool->Render(selectedactor->transformation, glm::distance(sceneCamera->position, selectedactor->transformation->getWorldPosition()) / 10, sceneCamera->position);
 
 		glEnable(GL_DEPTH_TEST);
 	}

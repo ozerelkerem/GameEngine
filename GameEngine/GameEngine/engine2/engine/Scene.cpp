@@ -14,7 +14,10 @@ Scene::Scene(std::string name, ProjectManager *pm) : projectManager(pm)
 
 void Scene::addActor(Prefab *prefab, glm::vec3 pos)
 {
-	recursionPrefab(prefab->rootNode, glm::mat4(1), this->rootActor);
+	if (prefab)
+		recursionPrefab(prefab->rootNode, glm::mat4(1), this->rootActor);
+	else
+		assert("Prefab couldn't found.");
 }
 
 void Scene::recursionPrefab(PrefabNode *node, glm::mat4 parent, ActorID actorNode)

@@ -42,7 +42,7 @@ namespace ModelLoader
 	static Prefab *loadPrefab(const char *path, ProjectManager *project)
 	{
 		Assimp::Importer importer;
-		const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace );
+		const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 		{
 			std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
@@ -251,14 +251,21 @@ namespace ModelLoader
 
 			for (int i = 0; i < mesh->mNumVertices; i++)
 			{
-			
+
 				std::sort(weightsboneids[i].begin(), weightsboneids[i].end(), [](auto a, auto b)
 				{
-					return a.first < b.first;
+					return a.first > b.first;
 				});
-				
-				weightsboneids[i].resize(SKINNED_MESH_MAX_WEIGHT_PER_VERTICES, std::make_pair(0,0));
-				
+				weightsboneids[i].resize(SKINNED_MESH_MAX_WEIGHT_PER_VERTICES, std::make_pair(0, 0));
+				float total = 0.0f;
+				for (auto weight : weightsboneids[i]) { total += weight.first; }
+				total = 1 / total;
+				for (int j = 0; j < SKINNED_MESH_MAX_WEIGHT_PER_VERTICES; j++)
+				{ 
+					weightsboneids[i][j].first *= total;
+				}
+	
+		
 
 			}
 

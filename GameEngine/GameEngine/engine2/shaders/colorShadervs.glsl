@@ -1,5 +1,5 @@
 #version 330 core
-#define MaxBone 30
+#define MaxBone 150
 
 layout(location = 0) in vec3 position;
 layout(location = 3) in vec4 weights;

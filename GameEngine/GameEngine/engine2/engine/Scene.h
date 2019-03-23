@@ -26,11 +26,6 @@ public:
 
 	ActorID rootActor;
 	int actorCounter;
-
-
-
-
-
 	
 	void addActor(Prefab *, glm::vec3);
 	void recursionPrefab(PrefabNode *, glm::mat4 , ActorID);

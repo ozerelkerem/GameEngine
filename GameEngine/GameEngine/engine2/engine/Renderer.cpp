@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include<engine/Actor.h>
 #include<engine/ActorManager.h>
+#include <editor/SceneCamera.h>
 
 Renderer::Renderer(GameBase *gb)
 {
@@ -138,6 +139,56 @@ void Renderer::renderModels()
 			modelmap.first->meshes[i]->unbind();
 		}
 	}
+}
+
+void Renderer::renderLights(SceneCamera *camera)
+{
+	colorShader->setInt("hasBones", 0);
+
+	int idPosition = glGetAttribLocation(colorShader->programID, "position");
+
+	colorShader->setVec3("color", glm::vec3(0.6f, 0.6f, 0.6f));
+
+	glBegin(GL_LINES);
+
+	for (auto light : this->gamebase->currentScene->componentSystem->actorsWhichContainsLightComponent)
+	{
+		Actor *lightActor = GE_Engine->actorManager->GetActor(light.first);
+		
+		//a = camera->position, b = lightActor->transformation->getWorldPosition()
+		//glm::vec3 worldUpVector = { 0,0,1 };
+		//rightVector = glm::normalize(glm::cross(frontVector, worldUpVector));
+		//upVector = glm::normalize(glm::cross(rightVector, frontVector));
+
+		//lightActor->transformation->getWorldPosition()
+		//camera->rightVector;
+		//camera->upVector;
+
+		glm::vec3 lightpos = lightActor->transformation->getWorldPosition();
+		float dist = light.second->distance;
+
+		glm::vec3 startpos = lightpos + (camera->upVector * dist);
+		glm::vec3 endpos = lightpos + (camera->rightVector * dist);
+		glVertexAttrib3f(idPosition, startpos.x, startpos.y, startpos.z);
+		glVertexAttrib3f(idPosition, endpos.x, endpos.y, endpos.z);
+
+		startpos = lightpos + (camera->upVector * dist);
+		endpos = lightpos + (-camera->rightVector * dist);
+		glVertexAttrib3f(idPosition, startpos.x, startpos.y, startpos.z);
+		glVertexAttrib3f(idPosition, endpos.x, endpos.y, endpos.z);
+
+		startpos = lightpos + (-camera->upVector * dist);
+		endpos = lightpos + (-camera->rightVector * dist);
+		glVertexAttrib3f(idPosition, startpos.x, startpos.y, startpos.z);
+		glVertexAttrib3f(idPosition, endpos.x, endpos.y, endpos.z);
+
+		startpos = lightpos + (-camera->upVector * dist);
+		endpos = lightpos + (camera->rightVector * dist);
+		glVertexAttrib3f(idPosition, startpos.x, startpos.y, startpos.z);
+		glVertexAttrib3f(idPosition, endpos.x, endpos.y, endpos.z);
+	}
+
+	glEnd();
 }
 
 void Renderer::prepareLights()

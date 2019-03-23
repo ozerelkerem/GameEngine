@@ -4,7 +4,7 @@
 #include <engine/GameBase.h>
 
 
-
+class SceneCamera;
 class Actor;
 
 class Renderer
@@ -21,7 +21,10 @@ public:
 	GameBase *gamebase;
 
 	virtual void render() = 0;
+
 	void renderModels();
+	void renderLights(SceneCamera *camera);
+
 	void prepareLights();
 
 };
