@@ -32,6 +32,7 @@ using ActorID = GameEngine::Util::Handle64;
 class Shader;
 extern Shader *normalShader;
 extern Shader *colorShader;
+extern Shader *spriteShader;
 
 
 

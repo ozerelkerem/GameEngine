@@ -1,7 +1,7 @@
 #pragma once 
 
 #include "SceneCamera.h"
-
+#include<iostream>
 SceneCamera::SceneCamera(glm::vec3 position, float yaw, float pitch)
 {
 	this->position = position;
@@ -100,12 +100,10 @@ void SceneCamera::RotatePitch(float angle)
 
 glm::vec2 SceneCamera::worldToScreen(glm::vec3 & worldPos, glm::vec2 &size)
 {
-	glm::vec4 pos = projectionMatrix * viewMatrix * glm::vec4(worldPos, 1);
-	glm::vec3 pos2(pos.x / pos.w, pos.y / pos.w, pos.z / pos.w);
-
-	glm::vec2 returnVector(((pos2.x + 1.0) / 2.0) * size.x, ((pos2.y + 1.0) / 2.0) * size.y);
-
-	return returnVector;
+	glm::vec3 returned = glm::project(worldPos, viewMatrix, projectionMatrix, glm::vec4(0,0,size.x,size.y));
+	if (returned.z > 1)
+		return glm::vec2(-1000, -1000);
+	return glm::vec2(returned.x,returned.y);
 }
 
 glm::vec3 SceneCamera::screenToWorld(int x, int y, glm::vec3 &planeNormal, glm::vec2 &viewportSize)

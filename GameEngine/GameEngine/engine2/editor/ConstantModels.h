@@ -1,7 +1,7 @@
 #pragma once
 
 #include <engine/ModelLoader.h>
-
+#include <engine/Texture.h>
 namespace ConstantModels
 {
 	static Model *CreateTranslateTool()
@@ -33,5 +33,20 @@ namespace ConstantModels
 		return model;
 	}
 
+	
+}
+
+namespace ConstantTextures
+{
+	class Textures
+	{
+	public:
+		static Texture * cameraTexture;
+		static void initTextures();
+	};
+	 
+
+	
+	
 	
 }

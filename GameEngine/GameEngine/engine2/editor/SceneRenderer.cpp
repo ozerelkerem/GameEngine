@@ -15,8 +15,153 @@ SceneRenderer::SceneRenderer(GameBase *b) : Renderer(b)
 	hoveredActor = ActorID::INVALID_HANDLE;
 
 	grid = new Grid(16, 1, colorShader->getProgramID());
+
+	spriteRenderer = new SpriteRenderer();
 }
 
+void SceneRenderer::renderLights()
+{
+
+	for (auto light : this->gamebase->currentScene->componentSystem->actorsWhichContainsLightComponent)
+	{
+		Actor *lightActor = GE_Engine->actorManager->GetActor(light.first);
+
+		glm::vec3 worldpos = lightActor->transformation->getWorldPosition();
+		spriteRenderer->DrawSprite(ConstantTextures::Textures::cameraTexture, sceneCamera->worldToScreen(worldpos, sceneSize), { 30,30 });
+	}
+
+	
+}
+
+void SceneRenderer::renderSelectedLight()
+{
+	colorShader->setInt("hasBones", 0);
+	colorShader->setVec3("color", glm::vec3(0.6f, 0.6f, 0.6f));
+
+	glBegin(GL_LINES);
+	
+	if(Actor *lightActor = GE_Engine->actorManager->GetActor(selectedActor); lightActor && lightActor->componentObject->hasComponent<LightComponent>())
+	{
+		
+		LightComponent *lightcomponent = lightActor->componentObject->getComponent<LightComponent>();
+		
+
+		const glm::vec3 lightpos = lightActor->transformation->getWorldPosition();
+		float dist = lightcomponent->distance;
+
+		const int sensivity = 36;
+		float constexpr degree = 360 / sensivity;
+
+		if (lightcomponent->lightType == LightType::Point)
+		{
+			glm::vec3 startpos = lightpos + (glm::vec3(1, 0, 0) *dist);
+			glm::vec3 endpos = glm::rotate((startpos - lightpos), glm::radians(degree), glm::vec3(0, 1, 0));
+			endpos += lightpos;
+
+			for (int i = 0; i < sensivity; i++)
+			{
+				glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+				glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+				startpos = endpos;
+				endpos = glm::rotate((endpos - lightpos), glm::radians(degree), glm::vec3(0, 1, 0));
+				endpos += lightpos;
+			}
+
+			startpos = lightpos + (glm::vec3(1, 0, 0) *dist);
+			endpos = glm::rotate((startpos - lightpos), glm::radians(degree), glm::vec3(0, 0, 1));
+			endpos += lightpos;
+
+			for (int i = 0; i < sensivity; i++)
+			{
+				glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+				glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+				startpos = endpos;
+				endpos = glm::rotate((endpos - lightpos), glm::radians(degree), glm::vec3(0, 0, 1));
+				endpos += lightpos;
+			}
+
+			startpos = lightpos + (glm::vec3(0, 1, 0) *dist);
+			endpos = glm::rotate((startpos - lightpos), glm::radians(degree), glm::vec3(1, 0, 0));
+			endpos += lightpos;
+
+			for (int i = 0; i < sensivity; i++)
+			{
+				glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+				glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+				startpos = endpos;
+				endpos = glm::rotate((endpos - lightpos), glm::radians(degree), glm::vec3(1, 0, 0));
+				endpos += lightpos;
+			}
+
+			startpos = lightpos + (sceneCamera->rightVector * dist);
+			endpos = glm::rotate((startpos - lightpos), glm::radians(degree), sceneCamera->frontVector);
+			endpos += lightpos;
+
+			for (int i = 0; i < sensivity; i++)
+			{
+				glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+				glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+				startpos = endpos;
+				endpos = glm::rotate((endpos - lightpos), glm::radians(degree), sceneCamera->frontVector);
+				endpos += lightpos;
+			}
+		}
+		else if(lightcomponent->lightType == LightType::Spotlight)
+		{
+			glm::vec3 circlepos = lightpos + (lightActor->transformation->getWorldForwardVector() * dist);
+			glm::vec3 startpos = circlepos + (lightActor->transformation->getWorldUpVector() * dist *std::tan(glm::radians(lightcomponent->angle)));
+			glm::vec3 endpos = glm::rotate((startpos - circlepos), glm::radians(degree), lightActor->transformation->getWorldForwardVector());
+			endpos += circlepos;
+			for (int i = 0; i < sensivity; i++)
+			{
+				if (!(i % 4))
+				{
+					glVertexAttrib3f(0, lightpos.x, lightpos.y, lightpos.z);
+					glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+				}
+
+				glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+				glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+				startpos = endpos;
+				endpos = glm::rotate((endpos - circlepos), glm::radians(degree), lightActor->transformation->getWorldForwardVector());
+				endpos += circlepos;
+			}
+		}
+		else if (lightcomponent->lightType == LightType::Directional)
+		{
+			dist = glm::distance(sceneCamera->position, lightpos) / 10.f;
+			glm::vec3 startpos = lightpos + (lightActor->transformation->getWorldUpVector() * dist);
+			glm::vec3 endpos = glm::rotate((startpos - lightpos), glm::radians(degree), lightActor->transformation->getWorldForwardVector());
+			endpos += lightpos;
+			glm::vec3 target;
+			for (int i = 0; i < sensivity; i++)
+			{
+				if (!(i % 3))
+				{
+					glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+					target = endpos + lightActor->transformation->getWorldForwardVector() *dist *3.f;
+					glVertexAttrib3f(0, target.x, target.y, target.z);
+					
+				}
+
+				glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+				glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+				startpos = endpos;
+				endpos = glm::rotate((endpos - lightpos), glm::radians(degree), lightActor->transformation->getWorldForwardVector());
+				endpos += lightpos;
+			}
+		}
+
+	}
+
+	glEnd();
+}
 
 SceneRenderer::~SceneRenderer()
 {
@@ -41,9 +186,17 @@ void SceneRenderer::render()
 	colorShader->setMat4("projectionMatrix", sceneCamera->projectionMatrix);
 	colorShader->setMat4("modelMatrix", glm::mat4(1));
 	grid->Draw();
-	renderLights(this->sceneCamera);
+	
 	if (selectedactor)
+	{
+		renderSelectedLight(); //first light because color shader is still identity 
 		RenderOutlined(selectedactor);
+		
+	}
+
+	spriteShader->Use();
+	spriteShader->setMat4("projectionMatrix", glm::ortho(0.0f, sceneSize.x, 0.0f, sceneSize.y, -1.0f, 1.0f));
+	renderLights();
 
 	normalShader->Use();
 	normalShader->setMat4("viewMatrix", sceneCamera->viewMatrix);

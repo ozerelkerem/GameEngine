@@ -141,19 +141,19 @@ namespace ModelLoader
 				mc->materials.insert(mc->materials.begin(), 1, prefab->materials[scene->mMeshes[node->mMeshes[i]]->mMaterialIndex]);
 			}
 			prefab->addModel(m);
-			
-	
-			
-		
+
 		}
 		else
 		{
 			o = prefab->getObject(node->mName.C_Str());
-
+			
 			if (!o)
 			{
 				o = new Object(node->mName.C_Str());
 			}
+			
+			
+			
 		}
 		
 		PrefabNode *tmpprefabNode = new PrefabNode(o, glm::make_mat4(node->mTransformation[0]));

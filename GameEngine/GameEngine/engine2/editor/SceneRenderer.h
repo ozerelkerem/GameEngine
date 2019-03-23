@@ -4,7 +4,7 @@
 #include <engine/Renderer.h>
 #include <engine/Actor.h>
 #include <engine/ActorManager.h>
-
+#include<engine/SpriteRenderer.h>
 #include <editor/SceneCamera.h>
 #include <editor/Grid.h>
 #include <editor/SceneTools.h>
@@ -27,7 +27,7 @@ public:
 	~SceneRenderer();
 
 	glm::vec2 sceneSize;
-
+	SpriteRenderer *spriteRenderer;
 	SceneCamera *sceneCamera;
 	Grid *grid;
 	glm::vec3 backgroundColor;
@@ -37,6 +37,8 @@ public:
 	ActorID selectedActor;
 	ActorID hoveredActor;
 
+	void renderLights();
+	void renderSelectedLight();
 	void render();
 
 	void renderModelsColored();

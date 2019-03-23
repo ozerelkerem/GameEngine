@@ -52,14 +52,14 @@ void Editor::ShowComponentList()
 			}
 
 			ImGui::ColorEdit4("Light Color##LightComponent", (float*)&lightcomp->color, ImGuiColorEditFlags_NoInputs);
-			ImGui::DragFloat("Intensity##LightComponent", &lightcomp->intensity, 0.05f, 0);
+			ImGui::DragFloat("Intensity##LightComponent", &lightcomp->intensity, 0.05f, 0.05f,100.f);
 
 			if (lightcomp->lightType == LightType::Spotlight)
-				ImGui::DragFloat("Angle##LightComponent", &lightcomp->angle, 0.05f, 0);
+				ImGui::DragFloat("Angle##LightComponent", &lightcomp->angle, 0.05f, 100.f);
 
 			if (!(lightcomp->lightType == LightType::Directional))
 			{
-				if (ImGui::DragFloat("Distance##LightComponent", &lightcomp->distance, 0.05f, 0))
+				if (ImGui::DragFloat("Distance##LightComponent", &lightcomp->distance, 0.05f, 0,10000.f))
 					lightcomp->calculateAttenuation();
 			}
 		}

@@ -23,7 +23,6 @@ public:
 	virtual void render() = 0;
 
 	void renderModels();
-	void renderLights(SceneCamera *camera);
 
 	void prepareLights();
 

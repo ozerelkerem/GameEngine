@@ -77,7 +77,7 @@ void main()
 		}
 		else if (lights[i].type == LIGHT_DIRECTIONAL)
 		{
-			float diff = max(dot(lights[i].direction, v_normal), 0.f);
+			float diff = max(dot(-lights[i].direction, v_normal), 0.f);
 			diffuseLight += (lights[i].color * diff) * lights[i].intensity;
 		}
 		else if(lights[i].type == LIGHT_SPOT) // SPOTLIGHT

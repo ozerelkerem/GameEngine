@@ -54,12 +54,12 @@ Object *Prefab::getObject(std::string name)
 {
 	int i = 0;
 	while (i < numberOfCameras && cameras[i++]->name != name);
-	if (i < numberOfCameras)
+	if (i-1 < numberOfCameras)
 		return cameras[i - 1];
 
 	i = 0;
 	while (i < numberOfLights && lights[i++]->name != name);
-	if (i < numberOfLights)
+	if (i -1< numberOfLights)
 		return lights[i - 1];
 
 	return NULL;

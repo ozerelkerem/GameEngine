@@ -27,6 +27,9 @@ public:
 	void calcQuatFromEuler();
 
 	glm::vec3 getWorldPosition();
+	glm::vec3 getWorldUpVector();
+	glm::vec3 getWorldRightVector();
+	glm::vec3 getWorldForwardVector();
 
 	void calcLocalMatrix();
 	~Transform();
