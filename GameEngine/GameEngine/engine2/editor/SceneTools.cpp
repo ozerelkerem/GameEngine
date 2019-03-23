@@ -41,26 +41,26 @@ void SceneTools::RenderRotate(Transform * transform, float dis, glm::vec3 &camer
 	float rY = 0;
 	float rX = 270.f;
 	float rZ = 90.f;
-	if (camerapos.x < transform->position.x && camerapos.z > transform->position.z)
+	if (camerapos.x < transform->localPosition.x && camerapos.z > transform->localPosition.z)
 		rY = -90.f;
-	else if (camerapos.x < transform->position.x && camerapos.z < transform->position.z)
+	else if (camerapos.x < transform->localPosition.x && camerapos.z < transform->localPosition.z)
 		rY = 180.f;
-	else if (camerapos.x > transform->position.x && camerapos.z < transform->position.z)
+	else if (camerapos.x > transform->localPosition.x && camerapos.z < transform->localPosition.z)
 		rY = 90.f;
 
 
-	if (camerapos.y < transform->position.y && camerapos.z > transform->position.z)
+	if (camerapos.y < transform->localPosition.y && camerapos.z > transform->localPosition.z)
 		rX = 0.f;
-	else if (camerapos.y < transform->position.y && camerapos.z < transform->position.z)
+	else if (camerapos.y < transform->localPosition.y && camerapos.z < transform->localPosition.z)
 		rX = 90.f;
-	else if (camerapos.y > transform->position.y && camerapos.z < transform->position.z)
+	else if (camerapos.y > transform->localPosition.y && camerapos.z < transform->localPosition.z)
 		rX = 180.f;
 
-	if (camerapos.y < transform->position.y && camerapos.x > transform->position.x)
+	if (camerapos.y < transform->localPosition.y && camerapos.x > transform->localPosition.x)
 		rZ = 0.f;
-	else if (camerapos.y < transform->position.y && camerapos.x < transform->position.x)
+	else if (camerapos.y < transform->localPosition.y && camerapos.x < transform->localPosition.x)
 		rZ = -90.f;
-	else if (camerapos.y > transform->position.y && camerapos.x < transform->position.x)
+	else if (camerapos.y > transform->localPosition.y && camerapos.x < transform->localPosition.x)
 		rZ = 180.f;
 
 
@@ -71,7 +71,7 @@ void SceneTools::RenderRotate(Transform * transform, float dis, glm::vec3 &camer
 	glm::vec3 pos, a, b;
 	glm::vec4 c;
 	glm::quat d(1, 1, 1, 1);
-	glm::decompose(transform->realMatrix, a, d, pos, b, c);
+	glm::decompose(transform->worldMatrix, a, d, pos, b, c);
 
 	colorShader->setVec3("color", glm::vec3(1, 0, 0));
 	colorShader->setMat4("modelMatrix", glm::scale(glm::rotate(glm::rotate(glm::translate(pos), glm::radians(rX), glm::vec3(1, 0, 0)), glm::radians(-90.f), glm::vec3(0, 0, 1)), scale));
@@ -98,7 +98,7 @@ void SceneTools::RenderScale(Transform * transform, float dis)
 	glm::vec3 pos, a, b;
 	glm::vec4 c;
 	glm::quat rot(1, 1, 1, 1);
-	glm::decompose(transform->realMatrix, a, rot, pos, b, c);
+	glm::decompose(transform->worldMatrix, a, rot, pos, b, c);
 
 	colorShader->setMat4("modelMatrix", glm::scale(glm::translate(pos) * glm::toMat4(rot), scale));
 
@@ -124,7 +124,7 @@ void SceneTools::RenderMove(Transform * transform, float dis)
 	glm::vec3 pos, a, b;
 	glm::vec4 c;
 	glm::quat d(1,1,1,1);
-	glm::decompose(transform->realMatrix,a, d, pos, b, c);
+	glm::decompose(transform->worldMatrix,a, d, pos, b, c);
 
 	colorShader->setMat4("modelMatrix", glm::scale(glm::translate(pos), scale));
 	sceneRenderer->RenderAnActor(translateTool);
@@ -150,7 +150,7 @@ bool SceneTools::processTool(GLfloat *color, Transform * transform)
 	if (color[2] == 1.f)
 		modedirection |= TOOLZ;
 
-	initPos = transform->position;
+	initPos = transform->localPosition;
 
 	if (modedirection)
 		return true;
@@ -166,15 +166,15 @@ void SceneTools::transObjects(Transform * transform, int x, int y, int dx, int d
 	{
 		if (modedirection & TOOLX)
 		{
-			transform->eRotation.x += dx;
+			transform->localeulerRotation.x += dx;
 		}
 		if (modedirection & TOOLY)
 		{
-			transform->eRotation.y += dx / 4;
+			transform->localeulerRotation.y += dx / 4;
 		}
 		if (modedirection & TOOLZ)
 		{
-			transform->eRotation.z += dx;
+			transform->localeulerRotation.z += dx;
 		}
 		transform->calcQuatFromEuler();
 //		transform->calcModelMatrix();
@@ -185,15 +185,15 @@ void SceneTools::transObjects(Transform * transform, int x, int y, int dx, int d
 	{
 		if (modedirection & TOOLX)
 		{
-			transform->scale.x += dx;
+			transform->localScale.x += dx;
 		}
 		if (modedirection & TOOLY)
 		{
-			transform->scale.y += dx;
+			transform->localScale.y += dx;
 		}
 		if (modedirection & TOOLZ)
 		{
-			transform->scale.z += dx;
+			transform->localScale.z += dx;
 		}
 
 //		transform->calcModelMatrix();
@@ -203,24 +203,24 @@ void SceneTools::transObjects(Transform * transform, int x, int y, int dx, int d
 	{
 		if (modedirection & TOOLX)
 		{
-			transform->position.x = worldtoscreen.x;
+			transform->localPosition.x = worldtoscreen.x;
 		}
 		if (modedirection & TOOLY)
 		{
-			transform->position.y = worldtoscreen.y;
+			transform->localPosition.y = worldtoscreen.y;
 		}
 		if (modedirection & TOOLZ)
 		{
-			transform->position.z = worldtoscreen.z;
+			transform->localPosition.z = worldtoscreen.z;
 		}
 
-		if (glm::distance(transform->position.x, campos.x) > 150.f)
-			transform->position.x = initPos.x;
-		if (glm::distance(transform->position.y, campos.y) > 150.f)
-			transform->position.y = initPos.y;
-		if (glm::distance(transform->position.z, campos.z) > 150.f)
-			transform->position.z = initPos.z;
-		initPos = transform->position;
+		if (glm::distance(transform->localPosition.x, campos.x) > 150.f)
+			transform->localPosition.x = initPos.x;
+		if (glm::distance(transform->localPosition.y, campos.y) > 150.f)
+			transform->localPosition.y = initPos.y;
+		if (glm::distance(transform->localPosition.z, campos.z) > 150.f)
+			transform->localPosition.z = initPos.z;
+		initPos = transform->localPosition;
 //		transform->calcModelMatrix();
 	}
 	break;

@@ -39,6 +39,7 @@ public:
 
 	void render();
 
+	void renderModelsColored();
 	void RenderOutlined(Actor * o);
 	ActorID RenderForObjectPicker(GLint x, GLint y);
 	bool RenderForObjectTools(GLint x, GLint y);

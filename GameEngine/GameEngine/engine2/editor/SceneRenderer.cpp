@@ -58,7 +58,7 @@ void SceneRenderer::render()
 	{
 		glDisable(GL_DEPTH_TEST);
 
-		sceneTool->Render(selectedactor->transformation, glm::distance(sceneCamera->position, selectedactor->transformation->position) / 10, sceneCamera->position);
+		sceneTool->Render(selectedactor->transformation, glm::distance(sceneCamera->position, selectedactor->transformation->getWorldPosition()) / 10, sceneCamera->position);
 
 		glEnable(GL_DEPTH_TEST);
 	}
@@ -99,21 +99,90 @@ inline void SceneRenderer::RenderOutlined(Actor * o)
 	glClear(GL_STENCIL_BUFFER_BIT);
 
 	normalShader->Use();
-	normalShader->setMat4("modelMatrix", o->transformation->realMatrix);
-	RenderAnActor(o);
+	normalShader->setMat4("modelMatrix", o->transformation->worldMatrix);
+	RenderAnActor(o, normalShader);
 
 	colorShader->Use();
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glStencilMask(0x00);
 	colorShader->setVec3("color", glm::vec3(1, 1, 0));
 
-	o->transformation->realMatrix = glm::scale(o->transformation->realMatrix, { 1.1, 1.1, 1.1 });
-	colorShader->setMat4("modelMatrix", o->transformation->realMatrix);
-	RenderAnActor(o);
+	o->transformation->worldMatrix = glm::scale(o->transformation->worldMatrix, { 1.1, 1.1, 1.1 });
+	colorShader->setMat4("modelMatrix", o->transformation->worldMatrix);
+	RenderAnActor(o, colorShader);
 
 	o->RecalculateRealMatrix();
 
 	glDisable(GL_STENCIL_TEST);
+}
+
+void SceneRenderer::renderModelsColored()
+{
+	colorShader->Use();
+	colorShader->setInt("hasBones", 0);
+	for (auto modelmap : this->gamebase->currentScene->componentSystem->actorsWhichContainsModelComponent)
+	{
+		for (int i = 0; i < modelmap.first->numOfMeshes; i++)
+		{
+			modelmap.first->meshes[i]->bind();
+
+			for (auto actorid : modelmap.second)
+			{
+				Actor *actor = GE_Engine->actorManager->GetActor(actorid);
+				ModelComponent *mcmp = actor->componentObject->getComponent<ModelComponent>();
+
+				ActorID test = actorid;
+				float r = (test.index & 0x000000FF) >> 0;
+				float g = (test.index & 0x0000FF00) >> 8;
+				float b = (test.index & 0x00FF0000) >> 16;
+				colorShader->setVec3("color", glm::vec3(r / 255.0f, g / 255.0f, b / 255.0f));
+
+				colorShader->setMat4("modelMatrix", actor->transformation->worldMatrix);
+				modelmap.first->meshes[i]->render();	
+			}
+
+			modelmap.first->meshes[i]->unbind();
+		}
+	}
+
+	colorShader->setInt("hasBones", 1);
+	for (auto modelmap : this->gamebase->currentScene->componentSystem->actorsWhichContainsSkinnedModelComponent)
+	{
+		for (int i = 0; i < modelmap.first->numOfMeshes; i++)
+		{
+			modelmap.first->meshes[i]->bind();
+
+			for (auto actorid : modelmap.second)
+			{
+				Actor *actor = GE_Engine->actorManager->GetActor(actorid);
+				SkinnedModelComponent *mcmp = actor->componentObject->getComponent<SkinnedModelComponent>();
+
+				if (mcmp->rootBone != ActorID::INVALID_HANDLE)
+				{
+					ActorID test = actorid;
+					float r = (test.index & 0x000000FF) >> 0;
+					float g = (test.index & 0x0000FF00) >> 8;
+					float b = (test.index & 0x00FF0000) >> 16;
+					colorShader->setVec3("color", glm::vec3(r / 255.0f, g / 255.0f, b / 255.0f));
+
+					std::vector<glm::mat4> matrixBuffer;
+					int j = 0;
+					for (auto x : mcmp->effectlist[i])
+					{
+						matrixBuffer.push_back((GE_Engine->actorManager->GetActor(x)->transformation->worldMatrix) * glm::transpose(((SkinnedMesh*)modelmap.first->meshes[i])->bones[j].second));
+						j++;
+					}
+					colorShader->setMat4Array("bones", matrixBuffer.size(), matrixBuffer.data()[0]);
+
+					modelmap.first->meshes[i]->render();
+				}
+
+			
+			}
+
+			modelmap.first->meshes[i]->unbind();
+		}
+	}
 }
 
 ActorID SceneRenderer::RenderForObjectPicker(GLint x, GLint y)
@@ -126,26 +195,7 @@ ActorID SceneRenderer::RenderForObjectPicker(GLint x, GLint y)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	
-	for (auto modelmap : this->gamebase->currentScene->componentSystem->actorsWhichContainsModelComponent)
-	{
-		for (int i = 0; i < modelmap.first->numOfMeshes; i++)
-		{
-			modelmap.first->meshes[i]->bind();
-
-			for (auto actor : modelmap.second)
-			{
-				ActorID test = actor;
-				float r = (test.index & 0x000000FF) >> 0;
-				float g = (test.index & 0x0000FF00) >> 8;
-				float b = (test.index & 0x00FF0000) >> 16;
-				colorShader->setVec3("color",glm::vec3(r/255.0f, g/ 255.0f, b/ 255.0f));
-				colorShader->setMat4("modelMatrix", GE_Engine->actorManager->GetActor(actor)->transformation->realMatrix);
-				modelmap.first->meshes[i]->render();
-			}
-
-			modelmap.first->meshes[i]->unbind();
-		}
-	}
+	renderModelsColored();
 
 	unsigned char test[4];
 	glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &test);
@@ -169,7 +219,7 @@ bool SceneRenderer::RenderForObjectTools(GLint x, GLint y)
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	sceneTool->Render(selectedactor->transformation, glm::distance(sceneCamera->position, selectedactor->transformation->position) / 10, sceneCamera->position);
+	sceneTool->Render(selectedactor->transformation, glm::distance(sceneCamera->position, selectedactor->transformation->getWorldPosition()) / 10, sceneCamera->position);
 
 	GLfloat test[4];
 	glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, &test);
@@ -191,8 +241,8 @@ void SceneRenderer::focusActor(ActorID actorid)
 	glm::vec4 minxyz(x.minx, x.miny, x.minz, 1.0);
 	glm::vec4 maxxyz(x.maxx, x.maxy, x.maxz, 1.0);
 
-  	minxyz = actor->transformation->realMatrix * minxyz;
-	maxxyz = actor->transformation->realMatrix *maxxyz;
+  	minxyz = actor->transformation->worldMatrix * minxyz;
+	maxxyz = actor->transformation->worldMatrix *maxxyz;
 	
 	minxyz = minxyz * (float)(1.0 / minxyz.w);
 	maxxyz = maxxyz * (float)(1.0 / maxxyz.w);
@@ -206,7 +256,7 @@ void SceneRenderer::focusActor(ActorID actorid)
 	glm::normalize(look);
 	look *=  dis;
 
-	sceneCamera->position = actor->transformation->position + look;
+	sceneCamera->position = actor->transformation->getWorldPosition() + look;
 	sceneCamera->UpdateCameraVectors();
 	
 }

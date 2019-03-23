@@ -16,6 +16,7 @@ Renderer::~Renderer()
 
 void Renderer::RenderAnActor(Model *model)
 {
+	colorShader->setInt("hasBones",0);
 	if (model)
 	{
 		for (int i = 0; i < model->numOfMeshes; i++)
@@ -27,17 +28,45 @@ void Renderer::RenderAnActor(Model *model)
 	}
 }
 
-void Renderer::RenderAnActor(Actor *actor)
+void Renderer::RenderAnActor(Actor *actor, Shader *shader)
 {
 	ModelComponent *m = actor->componentObject->getComponent<ModelComponent>();
-	
+	SkinnedModelComponent *sm  = actor->componentObject->getComponent<SkinnedModelComponent>();
 	if (m)
 	{
+		shader->setInt("hasBones", 0);
 		for (int i = 0; i < m->model->numOfMeshes; i++)
 		{
 			m->model->meshes[i]->bind();
 			m->model->meshes[i]->render();
 			m->model->meshes[i]->unbind();
+		}
+	}
+	else if(sm)
+	{
+		shader->setInt("hasBones", 1);
+		for (int i = 0; i < sm->model->numOfMeshes; i++)
+		{
+			sm->model->meshes[i]->bind();
+
+			if (sm->rootBone != ActorID::INVALID_HANDLE)
+			{
+				std::vector<glm::mat4> matrixBuffer;
+				int j = 0;
+				for (auto x : sm->effectlist[i])
+				{
+					matrixBuffer.push_back((GE_Engine->actorManager->GetActor(x)->transformation->worldMatrix) * glm::transpose(((SkinnedMesh*)sm->model->meshes[i])->bones[j].second));
+					if(shader == colorShader &&  j==0)
+						matrixBuffer[0]= glm::scale(matrixBuffer[0], { 1.1, 1.1, 1.1 });
+					
+					j++;
+				}
+				shader->setMat4Array("bones", matrixBuffer.size(), matrixBuffer.data()[0]);
+
+				sm->model->meshes[i]->render();
+			}
+
+			sm->model->meshes[i]->unbind();
 		}
 	}
 }
@@ -61,7 +90,7 @@ void Renderer::renderModels()
 				else
 					Material::noMaterial();
 				
-				normalShader->setMat4("modelMatrix", actor->transformation->realMatrix);
+				normalShader->setMat4("modelMatrix", actor->transformation->worldMatrix);
 				modelmap.first->meshes[i]->render();
 				
 				glActiveTexture(GL_TEXTURE0);
@@ -94,14 +123,12 @@ void Renderer::renderModels()
 					int j = 0;
 					for (auto x : mcmp->effectlist[i])
 					{
-						auto bb = GE_Engine->actorManager->GetActor(mcmp->rootBone)->transformation->realMatrix;
-						auto asd = glm::inverse(bb);
-						matrixBuffer.push_back( (GE_Engine->actorManager->GetActor(x)->transformation->realMatrix) * glm::transpose(((SkinnedMesh*)modelmap.first->meshes[i])->bones[j].second));
+					
+						matrixBuffer.push_back( (GE_Engine->actorManager->GetActor(x)->transformation->worldMatrix) * glm::transpose(((SkinnedMesh*)modelmap.first->meshes[i])->bones[j].second));
 						j++;
 					}
 					normalShader->setMat4Array("bones", matrixBuffer.size() , matrixBuffer.data()[0]);
 
-					//normalShader->setMat4("modelMatrix", actor->transformation->realMatrix);
 					modelmap.first->meshes[i]->render();
 				}
 

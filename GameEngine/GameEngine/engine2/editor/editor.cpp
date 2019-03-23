@@ -226,20 +226,20 @@ void Editor::ObjectProperties()
 			ImGui::Text(selectedActor->name.c_str());
 			if (ImGui::CollapsingHeader("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				if (ImGui::DragFloat3("Position", &selectedActor->transformation->position[0], 0.1f, -30000.f, 30000.f))
+				if (ImGui::DragFloat3("Position", &selectedActor->transformation->localPosition[0], 0.1f, -30000.f, 30000.f))
 					selectedActor->processTransformation();
-				if (ImGui::DragFloat3("Rotation Eular", &selectedActor->transformation->eRotation[0], 1.f, -359.99999f, 359.99999f))
+				if (ImGui::DragFloat3("Rotation Eular", &selectedActor->transformation->localeulerRotation[0], 1.f, -359.99999f, 359.99999f))
 				{
 					selectedActor->transformation->calcQuatFromEuler();
 					selectedActor->processTransformation();
 				}
 
-				if (ImGui::DragFloat4("Rotation Quat", &selectedActor->transformation->qRotation[0], 1.f, -30000.f, 30000.f))
+				if (ImGui::DragFloat4("Rotation Quat", &selectedActor->transformation->localquatRotation[0], 1.f, -30000.f, 30000.f))
 				{
 					selectedActor->transformation->calcEulerFromQuat();
 					selectedActor->processTransformation();
 				}
-				if (ImGui::DragFloat3("Scale", &selectedActor->transformation->scale[0], 1.f, -30000.f, 30000.f))
+				if (ImGui::DragFloat3("Scale", &selectedActor->transformation->localScale[0], 1.f, -30000.f, 30000.f))
 				{
 					selectedActor->processTransformation();
 				}

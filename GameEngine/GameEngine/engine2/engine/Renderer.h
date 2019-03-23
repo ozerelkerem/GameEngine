@@ -14,7 +14,7 @@ public:
 	~Renderer();
 
 	void RenderAnActor(Model * model);
-	void RenderAnActor(Actor *);
+	void RenderAnActor(Actor *, Shader *);
 
 	/*Shaders*/
 

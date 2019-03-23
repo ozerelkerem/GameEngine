@@ -33,10 +33,10 @@ void AnimationSystem::Update()
 			for (auto effect : animator.second->effectlist)
 			{
 				Actor *actor = GE_Engine->actorManager->GetActor(effect.second);
-				a->animationNodeMap[effect.first]->calcInterpolationPosition(frame, actor->transformation->position);
-				a->animationNodeMap[effect.first]->calcInterpolationRotation(frame, actor->transformation->qRotation);
+				a->animationNodeMap[effect.first]->calcInterpolationPosition(frame, actor->transformation->localPosition);
+				a->animationNodeMap[effect.first]->calcInterpolationRotation(frame, actor->transformation->localquatRotation);
 				actor->transformation->calcEulerFromQuat();
-				a->animationNodeMap[effect.first]->calcInterpolationScale(frame, actor->transformation->scale);
+				a->animationNodeMap[effect.first]->calcInterpolationScale(frame, actor->transformation->localScale);
 			}
 			
 		}

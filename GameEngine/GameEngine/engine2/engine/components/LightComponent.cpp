@@ -23,8 +23,8 @@ LightComponent::~LightComponent()
 void LightComponent::passShader(Shader * s, Transform *t, int lindex)
 {	
 	s->setInt("lights[" + std::to_string(lindex) + "].type", lightType);
-	s->setVec3("lights[" + std::to_string(lindex) + "].position", t->position);
-	const glm::mat4 inverted = glm::inverse(t->realMatrix);
+	s->setVec3("lights[" + std::to_string(lindex) + "].position", t->getWorldPosition());
+	const glm::mat4 inverted = glm::inverse(t->worldMatrix);
 	const glm::vec3 forward = normalize(glm::vec3(inverted[2]));
 	s->setVec3("lights[" + std::to_string(lindex) + "].direction", forward);
 

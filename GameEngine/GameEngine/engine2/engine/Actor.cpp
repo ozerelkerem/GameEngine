@@ -119,8 +119,8 @@ void Actor::processTransformation()
 
 void Actor::RecalculateRealMatrix()
 {
-	transformation->relativeMatrix = glm::scale(glm::translate(glm::mat4(1), transformation->position) * (glm::toMat4(transformation->qRotation)), transformation->scale);
-	transformation->realMatrix = GE_Engine->actorManager->GetActor(parent)->transformation->realMatrix * transformation->relativeMatrix;
+	transformation->calcLocalMatrix();
+	transformation->worldMatrix = GE_Engine->actorManager->GetActor(parent)->transformation->worldMatrix * transformation->localMatrix;
 }
 
 Actor::~Actor()

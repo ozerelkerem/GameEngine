@@ -42,15 +42,13 @@ void Scene::recursionPrefab(PrefabNode *node, glm::mat4 parent, ActorID actorNod
 
 	
 	
-	a->transformation->relativeMatrix = glm::transpose(node->transformation);
-	glm::mat4 temp = parent *a->transformation->relativeMatrix ;
-	a->transformation->realMatrix = temp;
-	a->transformation->divideRealMatrix();
+	a->transformation->localMatrix = glm::transpose(node->transformation);
+	a->transformation->decomposeLocalMatrix();
 	a->AddParent(actorNode);
 	componentSystem->addActor(actorid);
 	for (int i = 0; i < node->numofChildren; i++)
 	{
-		recursionPrefab(node->children[i], temp, actorid);
+		recursionPrefab(node->children[i], glm::mat4(1), actorid);
 	}
 }
 

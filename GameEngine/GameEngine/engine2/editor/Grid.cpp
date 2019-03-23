@@ -21,7 +21,7 @@ void Grid::Draw()
 
 
 
-
+	colorShader->setInt("hasBones",0);
 	colorShader->setVec3("color", gridColor[0], gridColor[1], gridColor[2]);
 	glBegin(GL_LINES);
 	for (float i = -limit; i < 0; i += spaceLength)

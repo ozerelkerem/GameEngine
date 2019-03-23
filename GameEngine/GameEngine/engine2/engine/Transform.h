@@ -13,19 +13,21 @@ class Transform
 public:
 	Transform();
 
-	void divideRealMatrix();
+	void decomposeLocalMatrix();
 
-	glm::vec3 position;
-	glm::quat qRotation;
-	glm::vec3 eRotation;
-	glm::vec3 scale;
+	glm::vec3 localPosition;
+	glm::quat localquatRotation;
+	glm::vec3 localeulerRotation;
+	glm::vec3 localScale;
 	
-	glm::mat4 relativeMatrix;
-	glm::mat4 realMatrix;
+	glm::mat4 localMatrix;
+	glm::mat4 worldMatrix;
 
 	void calcEulerFromQuat();
 	void calcQuatFromEuler();
 
-	inline void calcModelMatrix();
+	glm::vec3 getWorldPosition();
+
+	void calcLocalMatrix();
 	~Transform();
 };
