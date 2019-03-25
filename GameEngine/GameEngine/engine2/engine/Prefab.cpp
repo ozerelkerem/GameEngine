@@ -52,15 +52,15 @@ void Prefab::addMaterials(Material * material)
 
 Object *Prefab::getObject(std::string name)
 {
-	int i = 0;
-	while (i < numberOfCameras && cameras[i++]->name != name);
-	if (i-1 < numberOfCameras)
-		return cameras[i - 1];
+	int i = -1;
+	while (++i < numberOfCameras && cameras[i]->name != name);
+	if (i < numberOfCameras)
+		return cameras[i];
 
-	i = 0;
-	while (i < numberOfLights && lights[i++]->name != name);
-	if (i -1< numberOfLights)
-		return lights[i - 1];
+	i = -1;
+	while (++i < numberOfLights && lights[i]->name != name);
+	if (i  < numberOfLights )
+		return lights[i];
 
 	return NULL;
 

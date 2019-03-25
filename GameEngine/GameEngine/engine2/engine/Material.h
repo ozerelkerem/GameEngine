@@ -21,7 +21,7 @@ public:
 
 	static const MaterialID INVALID_MATERIAL_ID = std::numeric_limits<MaterialID>::max();
 
-	std::string name;
+
 
 	glm::vec3 ambientColor;
 	Texture *ambientTexture;

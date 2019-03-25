@@ -284,7 +284,7 @@ void Editor::ObjectProperties()
 void Editor::ObjectPropertiesMaterials()
 {
 	
-	if (sceneRenderer->selectedActor)
+	if (sceneRenderer->selectedActor != ActorID::INVALID_HANDLE)
 	{
 		bool flag = false;
 
