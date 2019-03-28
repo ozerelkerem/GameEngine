@@ -3,6 +3,7 @@
 #include <chrono>
 
 class ActorManager;
+class ResourceManager;
 
 class Engine
 {
@@ -17,5 +18,6 @@ public:
 	inline std::chrono::time_point<std::chrono::high_resolution_clock> getTime() { return time; }
 
 	ActorManager * actorManager;
+	ResourceManager * resourceManager;
 };
 

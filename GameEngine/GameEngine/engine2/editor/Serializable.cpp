@@ -39,7 +39,7 @@ void Serializable::WriteTextures(ofstream& file, ProjectManager *pm)
 	for (auto texture : pm->textures)
 	{
 		Serializable::writefile(file, texture->name);
-		Serializable::writefile(file, texture->m_path);
+		Serializable::writefile(file, texture->fullpath);
 	}
 }
 
@@ -56,7 +56,7 @@ void Serializable::WriteModels(ofstream & file, ProjectManager * pm)
 void Serializable::SaveModel(ProjectManager *pm, Model *m)
 {
 	ofstream file;
-	file.open(pm->path + "models\\" + m->name + ".model", ios::binary | ios::out);
+	file.open(m->fullpath, ios::binary | ios::out);
 	if (!file)
 		throw std::exception("File error when saving a model.");
 	Serializable::writefile(file, m->numOfMeshes);
@@ -90,7 +90,7 @@ void Serializable::SaveModel(ProjectManager *pm, Model *m)
 void Serializable::ReadModel(Model *m)
 {
 	ifstream file;
-	file.open(m->path, ios::binary | ios::in);
+	file.open(m->fullpath, ios::binary | ios::in);
 	if (!file)
 		throw std::exception("File error when saving a model.");
 	unsigned int meshcount;

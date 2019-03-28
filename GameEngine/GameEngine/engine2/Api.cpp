@@ -19,6 +19,7 @@ void Initialize()
 		spriteShader = new Shader("engine2/shaders/spriteShadervs.glsl", "engine2/shaders/spriteShaderfs.glsl");
 
 	ConstantTextures::Textures::initTextures();
+	ConstantMaterials::Materials::initMaterial();
 }
 
 void Terminate()

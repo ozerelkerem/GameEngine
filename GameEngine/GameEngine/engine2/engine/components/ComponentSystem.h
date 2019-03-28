@@ -79,6 +79,9 @@ public:
 	template<class T>
 	void changeModel(ActorID, Model *);
 
+	void removeActor(ActorID);
+
+
 	
 };
 

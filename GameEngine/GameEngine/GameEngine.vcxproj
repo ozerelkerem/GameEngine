@@ -159,6 +159,8 @@
     <ClCompile Include="engine2\engine\Prefab.cpp" />
     <ClCompile Include="engine2\engine\PrefabNode.cpp" />
     <ClCompile Include="engine2\engine\Renderer.cpp" />
+    <ClCompile Include="engine2\engine\resource\IResource.cpp" />
+    <ClCompile Include="engine2\engine\resource\ResourceManager.cpp" />
     <ClCompile Include="engine2\engine\Scene.cpp" />
     <ClCompile Include="engine2\engine\Shader.cpp" />
     <ClCompile Include="engine2\engine\SkinnedMesh.cpp" />
@@ -214,6 +216,9 @@
     <ClInclude Include="engine2\engine\Prefab.h" />
     <ClInclude Include="engine2\engine\PrefabNode.h" />
     <ClInclude Include="engine2\engine\Renderer.h" />
+    <ClInclude Include="engine2\engine\resource\IResource.h" />
+    <ClInclude Include="engine2\engine\resource\Resource.h" />
+    <ClInclude Include="engine2\engine\resource\ResourceManager.h" />
     <ClInclude Include="engine2\engine\Scene.h" />
     <ClInclude Include="engine2\engine\Shader.h" />
     <ClInclude Include="engine2\engine\SkinnedMesh.h" />
@@ -225,6 +230,7 @@
     <ClInclude Include="engine2\engine\Transform.h" />
     <ClInclude Include="engine2\util\FamilyTypeID.h" />
     <ClInclude Include="engine2\util\Handle.h" />
+    <ClInclude Include="imgui\file_dialog.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_glfw.h" />

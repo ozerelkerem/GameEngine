@@ -53,7 +53,7 @@ void SpriteRenderer::DrawSprite(Texture *texture, glm::vec2 position, glm::vec2 
 	spriteShader->setVec3("spriteColor", color);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture->textureID);
+	glBindTexture(GL_TEXTURE_2D, texture->gettextureID());
 
 	glBindVertexArray(this->vao);
 	glDrawArrays(GL_TRIANGLES, 0, 6);

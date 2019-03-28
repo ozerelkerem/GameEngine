@@ -19,6 +19,7 @@ private:
 public:
 
 	LightComponent(ActorID);
+	LightComponent(ActorID, LightType a);
 	~LightComponent();
 
 	LightType lightType;

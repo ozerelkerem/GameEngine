@@ -2,7 +2,7 @@
 
 
 
-Material::Material(std::string name) : ambientColor(1,0,0), Namable(name)
+Material::Material(std::string name) : ambientColor(1, 0, 0), Namable(name), isTransparent(false)
 {
 
 }
@@ -18,7 +18,7 @@ void Material::active()
 	if (ambientTexture)
 	{
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, ambientTexture->textureID);
+		glBindTexture(GL_TEXTURE_2D, ambientTexture->gettextureID());
 		
 		glUniform1i(glGetUniformLocation(normalShader->programID, "material.ambientTexture"), 0);
 	}

@@ -3,11 +3,10 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-
+#include<file_dialog.h>
 #include <imgui_user.h>
-
-
 #include <imconfig.h>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -50,12 +49,13 @@ public:
 
 	/*Project Explorer*/
 	void DrawProjectExplorer();
-	bool DrawSingleProjectItem(void *image, std::string name, int n, int buttons_count);
+	bool DrawSingleProjectItem(void *image, std::string name, int n, int buttons_count, bool * isClicked =NULL);
+	bool DrawSingleProjectItem(glm::vec3 color, std::string name, int n, int buttons_count);
 
 	
 private:
 	ImVec2 button_sz = { 120, 120 };
 
-	void * sceneIcon;
-	void loadIcons();
+
+
 };

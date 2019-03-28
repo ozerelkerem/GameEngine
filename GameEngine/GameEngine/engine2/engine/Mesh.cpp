@@ -50,20 +50,4 @@ void Mesh::createVAO()
 	glBindVertexArray(this->vao);
 }
 
-void Mesh::storeData(int attribID, int num, GLenum target, GLenum type, void * buffer, int size, bool isIndices)
-{
-	GLuint vboid;
-	glGenBuffers(1, &vboid);
-	glBindBuffer(target, vboid);
-	glBufferData(target, sizeof(buffer) * num, buffer, GL_STATIC_DRAW);
-	/*
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);*/
-	if (!isIndices)
-	{
-		glVertexAttribPointer(attribID, size, type, false, 0, 0);
-		glBindBuffer(target, 0);
-	}
 
-
-}

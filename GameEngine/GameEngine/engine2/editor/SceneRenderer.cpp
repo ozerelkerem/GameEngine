@@ -27,7 +27,7 @@ void SceneRenderer::renderLights()
 		Actor *lightActor = GE_Engine->actorManager->GetActor(light.first);
 
 		glm::vec3 worldpos = lightActor->transformation->getWorldPosition();
-		spriteRenderer->DrawSprite(ConstantTextures::Textures::cameraTexture, sceneCamera->worldToScreen(worldpos, sceneSize), { 30,30 });
+		spriteRenderer->DrawSprite(ConstantTextures::Textures::lightTexture, sceneCamera->worldToScreen(worldpos, sceneSize), { 30,30 });
 	}
 
 	

@@ -25,13 +25,10 @@ public:
 
 	glm::vec3 ambientColor;
 	Texture *ambientTexture;
+	bool isTransparent;
 	//Texture *normalTexture;
 
 	void active();
 
-	inline static void noMaterial() { 
-		normalShader->setInt("material.hasTexture", 0);
-		normalShader->setVec3("material.ambientColor", glm::vec3(1,0,1));
-	}
 };
 

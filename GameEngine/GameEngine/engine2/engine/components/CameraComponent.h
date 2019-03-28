@@ -10,8 +10,8 @@ public:
 	float fov;
 	float aspect;
 
-	float near;
-	float far;
+	float m_near;
+	float m_far;
 
 
 	inline virtual IComponent * getnew(ActorID own, ComponentTypeID *id) override {

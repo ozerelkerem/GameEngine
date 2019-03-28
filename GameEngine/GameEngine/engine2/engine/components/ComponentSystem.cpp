@@ -38,6 +38,23 @@ void ComponentSystem::addActor(ActorID aid)
 	
 }
 
+void ComponentSystem::removeActor(ActorID aid)
+{
+	Actor *actor = GE_Engine->actorManager->GetActor(aid);
+	ModelComponent *mc = actor->componentObject->getComponent<ModelComponent>();
+	SkinnedModelComponent *smc = actor->componentObject->getComponent<SkinnedModelComponent>();
+	if (mc)
+	{
+		actorsWhichContainsModelComponent[mc->model].remove(aid);
+		delete mc->model;
+	}
+	if (smc)
+	{
+		actorsWhichContainsSkinnedModelComponent[smc->model].remove(aid);
+		delete smc->model;
+	}
+}
+
 template<>
 void ComponentSystem::changeModel<ModelComponent>(ActorID aid, Model *newmodel)
 {

@@ -22,7 +22,6 @@ public:
 	std::string path;
 
 	std::vector<Model *> models;
-	
 	std::vector<Scene *> scenes;
 	std::vector<Prefab *> prefabs;
 	std::vector<Animation *> animations;

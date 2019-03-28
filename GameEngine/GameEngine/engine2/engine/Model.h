@@ -2,7 +2,7 @@
 
 #include <engine/Namable.h>
 #include <engine/SkinnedMesh.h>
-
+#include <engine/resource/Resource.h>
 
 #include<fstream>
 
@@ -12,20 +12,25 @@ enum ModelType { Normal, Skinned };
 class ProjectManager;
 class ComponentSystem;
 
-class Model : public Namable
+class Model : public Resource<Model> ,public Namable
 {
 public:
-	Model(std::string);
-	~Model();
+	/*
+	//param1: path
+	//param2: name
+	*/
+	Model(std::string, std::string);
 
-	std::string path;
 
 	unsigned int numOfMeshes;
 	Mesh *(*meshes);
 
 	void addMesh(Mesh * m);
 
-	void loadModelToGPU(ProjectManager *pm=NULL);
+	//void loadModelToGPU(ProjectManager *pm=NULL);
+
+	virtual void load() override;
+	virtual void unload() override;
 
 	inline ModelType getType() {
 		if (dynamic_cast<SkinnedMesh *>(meshes[0]))
@@ -33,5 +38,7 @@ public:
 		else
 			return Normal;
 	}
+
+	void operator delete(void *a) { };
 };
 

@@ -17,20 +17,8 @@ Editor::Editor(GLFWwindow *window)
 	sm = new SystemManager(as);
 	Serializable::Save(projectManager, projectManager->path.c_str());
 
-	
-	
-
-	loadIcons();
-
-
 }
-void Editor::loadIcons()
-{
-	Texture *t = new Texture("ConstantIcons\\scene.png");
-	t->loadTexture();
-	sceneIcon = (void *)t->textureID;
-	delete t;
-}
+
 void Editor::ShowComponentList()
 {
 	
@@ -288,7 +276,9 @@ void Editor::ObjectPropertiesMaterials()
 	{
 		bool flag = false;
 
-		ModelComponent *mcmp = GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor)->componentObject->getComponent<ModelComponent>();
+		IModelComponent *mcmp = GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor)->componentObject->getComponent<ModelComponent>();
+		if(!mcmp)
+			mcmp = GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor)->componentObject->getComponent<SkinnedModelComponent>();
 		if (mcmp)
 		{
 			for (int i = 0; i < mcmp->numberOfMaterials; i++)
@@ -299,6 +289,24 @@ void Editor::ObjectPropertiesMaterials()
 					if (ImGui::CollapsingHeader(("Material " + m->name +"##" + std::to_string(i)).c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 					{
 						ImGui::ColorEdit3(("Ambient Color##Material" + std::to_string(i)).c_str(), (float*)&m->ambientColor, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_RGB);
+					
+						const char *name = "No Texture";
+						if (m->ambientTexture)
+							name = m->ambientTexture->name.c_str();
+
+						if (ImGui::BeginCombo(("Texture" + std::to_string(i) + "##choiceTexture").c_str(), name)) // The second parameter is the label previewed before opening the combo.
+						{
+							for (auto texture : projectManager->textures)
+							{//projedeki bütün materialyerlleri göster
+								if (ImGui::Selectable(texture->name.c_str()))
+									m->ambientTexture = texture;
+							}
+							ImGui::EndCombo();
+						}
+
+						ImGui::Checkbox("Trasparent##MaterialTransparent", &m->isTransparent);
+					
+					
 					}
 				}
 			}
@@ -715,6 +723,8 @@ void Editor::Render()
 void Editor::DrawHierarchy(ActorID rootid)
 
 {
+	static ActorID renameactor = ActorID::INVALID_HANDLE;
+	static char name[50];
 	int n;
 	ImGuiTreeNodeFlags src_flags = 0;
 	Actor *root = GE_Engine->actorManager->GetActor(rootid);
@@ -724,24 +734,155 @@ void Editor::DrawHierarchy(ActorID rootid)
 		src_flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_OpenOnArrow;
 	if (sceneRenderer->selectedActor == rootid)
 		src_flags |= ImGuiTreeNodeFlags_Selected;
-
+	
+	static ImVec2 x;
+	if (renameactor == rootid)
+	{
+		x = ImGui::GetCursorPos();
+		ImGui::PushStyleColor(ImGuiCol_Text, { 1,1,1,0 });
+		ImGui::PushStyleColor(ImGuiCol_HeaderHovered, { 1,1,1,0 });
+		ImGui::PushStyleColor(ImGuiCol_HeaderActive, { 1,1,1,0 });
+	}
+	
 	bool node_open = ImGui::TreeNodeEx((void *)root, src_flags, root->name.c_str());
+
+	if (renameactor == rootid)
+	{
+		
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+		ImGui::SetCursorPos(x);
+		ImGui::InputText("##edit", name, IM_ARRAYSIZE(name));
+		if (ImGui::IsKeyPressed(GLFW_KEY_ENTER))
+		{
+			root->name = name;
+			renameactor = ActorID::INVALID_HANDLE;
+		}
+	}
+
 
 	//right click popup
 	{
 		ImGui::PushID(root->name.c_str());
-		if (ImGui::BeginPopupContextItem())
+		if (ImGui::BeginPopupContextItem() )
 		{
-			if (ImGui::MenuItem("Delete") && root->name != "root")
+	
+			bool isroot = (rootid != sceneRenderer->gamebase->currentScene->rootActor);
+			if ((rootid != sceneRenderer->gamebase->currentScene->rootActor))
 			{
-				root->RemoveActor();
+				if (ImGui::MenuItem("Delete"))
+				{
+					root->RemoveActor();
 				sceneRenderer->selectedActor = ActorID::INVALID_HANDLE;
 				ImGui::EndPopup();
 				ImGui::PopID();
-				if(node_open)
+				if (node_open)
 					ImGui::TreePop();
 				return;
+				}
 			}
+			else
+			{
+				ImGui::PushStyleColor(ImGuiCol_Text, {0.3,0.3,0.3,1.0});
+				ImGui::Selectable("Delete");
+				ImGui::PopStyleColor();
+			}
+			if (rootid != sceneRenderer->gamebase->currentScene->rootActor)
+			{
+				if (ImGui::MenuItem("Rename"))
+				{
+					renameactor = rootid;
+					strcpy_s(name, root->name.c_str());
+				}
+			}
+			else
+			{
+				ImGui::PushStyleColor(ImGuiCol_Text, { 0.3,0.3,0.3,1.0 });
+				ImGui::Selectable("Rename");
+				ImGui::PopStyleColor();
+			}
+			
+			ImGui::Separator();
+			if (ImGui::MenuItem("Empty")) {
+				ActorID newactor = GE_Engine->actorManager->CreateActor("Empty Actor", sceneRenderer->gamebase->currentScene);
+				GE_Engine->actorManager->GetActor(newactor)->AddParent(rootid);
+			}
+			if (ImGui::BeginMenu("3D Models"))
+			{
+				if (ImGui::MenuItem("Cube")) {
+					ActorID newactor = GE_Engine->actorManager->CreateActor("Cube", sceneRenderer->gamebase->currentScene);
+					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
+					actor->AddParent(rootid);
+					IComponent *ic = (IComponent*)new ModelComponent(newactor, ConstantModels::getCubeModel());
+					actor->AddComponent<ModelComponent>(ic);
+				}
+				if (ImGui::MenuItem("Sphere")) {
+					ActorID newactor = GE_Engine->actorManager->CreateActor("Sphere", sceneRenderer->gamebase->currentScene);
+					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
+					actor->AddParent(rootid);
+					IComponent *ic = (IComponent*)new ModelComponent(newactor, ConstantModels::getSphereModel());
+					actor->AddComponent<ModelComponent>(ic);
+				}
+				if (ImGui::MenuItem("Capsule")) {
+					ActorID newactor = GE_Engine->actorManager->CreateActor("Capsule", sceneRenderer->gamebase->currentScene);
+					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
+					actor->AddParent(rootid);
+					IComponent *ic = (IComponent*)new ModelComponent(newactor, ConstantModels::getCapsuleModel());
+					actor->AddComponent<ModelComponent>(ic);
+				}
+				if (ImGui::MenuItem("Plane")) {
+					ActorID newactor = GE_Engine->actorManager->CreateActor("Plane", sceneRenderer->gamebase->currentScene);
+					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
+					actor->AddParent(rootid);
+					IComponent *ic = (IComponent*)new ModelComponent(newactor, ConstantModels::getPlaneModel());
+					actor->AddComponent<ModelComponent>(ic);
+				}
+				if (ImGui::MenuItem("Cone")) {
+					ActorID newactor = GE_Engine->actorManager->CreateActor("Cone", sceneRenderer->gamebase->currentScene);
+					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
+					actor->AddParent(rootid);
+					IComponent *ic = (IComponent*)new ModelComponent(newactor, ConstantModels::getConeModel());
+					actor->AddComponent<ModelComponent>(ic);
+				}
+				if (ImGui::MenuItem("Cylinder")) {
+					ActorID newactor = GE_Engine->actorManager->CreateActor("Cylinder", sceneRenderer->gamebase->currentScene);
+					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
+					actor->AddParent(rootid);
+					IComponent *ic = (IComponent*)new ModelComponent(newactor, ConstantModels::getCylinderModel());
+					actor->AddComponent<ModelComponent>(ic);
+				}
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Lights"))
+			{
+				if (ImGui::MenuItem("Point")) {
+					ActorID newactor = GE_Engine->actorManager->CreateActor("PointLight", sceneRenderer->gamebase->currentScene);
+					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
+					actor->AddParent(rootid);
+					IComponent *ic = (IComponent*)new LightComponent(newactor, Point);
+					actor->AddComponent<LightComponent>(ic);
+					
+				}
+				if (ImGui::MenuItem("Directional")) {
+					ActorID newactor = GE_Engine->actorManager->CreateActor("DirectionalLight", sceneRenderer->gamebase->currentScene);
+					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
+					actor->AddParent(rootid);
+					IComponent *ic = (IComponent*)new LightComponent(newactor, Directional);
+					actor->AddComponent<LightComponent>(ic);
+				}
+				if (ImGui::MenuItem("Spot")) {
+					ActorID newactor = GE_Engine->actorManager->CreateActor("SpotLight", sceneRenderer->gamebase->currentScene);
+					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
+					actor->AddParent(rootid);
+					IComponent *ic = (IComponent*)new LightComponent(newactor, Spotlight);
+					actor->AddComponent<LightComponent>(ic);
+				}
+				ImGui::EndMenu();
+			}
+			if (ImGui::MenuItem("Camera")) {
+			}
+
 			ImGui::EndPopup();
 		}
 		ImGui::PopID();
@@ -817,6 +958,8 @@ void Editor::DrawProjectExplorer()
 {
 	ImGui::Begin("Project Explorer", NULL);
 	{
+		static Texture *selectedTexture;
+		static bool opentexture = true;
 		int count = 0;
 		int i = 0;
 		count += projectManager->scenes.size();
@@ -827,23 +970,29 @@ void Editor::DrawProjectExplorer()
 		count += projectManager->animations.size();
 		for (auto scene : projectManager->scenes)
 		{
-			if (DrawSingleProjectItem(sceneIcon, scene->name, i++, count))
+			if (DrawSingleProjectItem((void *)ConstantTextures::Textures::sceneTexture->gettextureID(), scene->name, i++, count))
 			{
-				ImGui::SetTooltip("Scene");
+				ImGui::SetTooltip(("Scene -> " + scene->name).c_str());
 			}
 		}
 		for (auto model : projectManager->models)
 		{
 			if(DrawSingleProjectItem((void *)sceneRenderer->GetTextureColorBuffer(), model->name, i++, count))
 			{
-				ImGui::SetTooltip("Model");
+				ImGui::SetTooltip(("Model -> " + model->name).c_str());
 			}
 		}
 		for (auto texture : projectManager->textures)
 		{
-			if (DrawSingleProjectItem((void *)sceneRenderer->GetTextureColorBuffer(), texture->name, i++, count))
+			static bool clicked;
+			if (DrawSingleProjectItem((void *)texture->gettextureID(), texture->name, i++, count, &clicked))
 			{
 				ImGui::SetTooltip("Texture");
+			}
+			if (clicked)
+			{
+				selectedTexture = texture;
+				opentexture = true;
 			}
 		}
 		for (auto prefab : projectManager->prefabs)
@@ -851,38 +1000,78 @@ void Editor::DrawProjectExplorer()
 			if (DrawSingleProjectItem((void *)sceneRenderer->GetTextureColorBuffer(), prefab->name, i++, count))
 			{
 				ImGui::SetTooltip("Prefab");
+				opentexture = true;
 			}
 		}
 		for (auto material : projectManager->materials)
 		{
-			if (DrawSingleProjectItem((void *)sceneRenderer->GetTextureColorBuffer(), material->name, i++, count))
+			if (material->ambientTexture)
 			{
-				ImGui::SetTooltip("Material");
+				if (DrawSingleProjectItem((void *)material->ambientTexture->gettextureID(), material->name, i++, count))
+					ImGui::SetTooltip(("Material -> " + material->name).c_str());
+			}
+			else if (DrawSingleProjectItem(material->ambientColor, material->name, i++, count))
+			{
+				ImGui::SetTooltip(("Material -> " + material->name).c_str());
 			}
 		}
 		for (auto animation : projectManager->animations)
 		{
-			if (DrawSingleProjectItem((void *)sceneRenderer->GetTextureColorBuffer(), animation->name, i++, count))
+			if (DrawSingleProjectItem((void *)ConstantTextures::Textures::animationTexture->gettextureID(), animation->name, i++, count))
 			{
-				ImGui::SetTooltip("Animation");
+				ImGui::SetTooltip(("Animation -> " + animation->name).c_str() );
 			}
 		}
 
 		
-
+		if (selectedTexture)
+		{
+			{
+				
+				if (ImGui::Begin((selectedTexture->name + " | Texture Settings").c_str(), &opentexture))
+				{
+					if (selectedTexture->gettextureID() == Texture::INVALID_TEXTURE_ID)
+						ImGui::Text("Texture Not Found");
+					else
+					{
+						ImGui::ImageButton((void *)selectedTexture->gettextureID(), {300,300}, { 0,0 }, { 1,1 }, 2);
+						ImGui::Text(selectedTexture->name.c_str());
+						if (ImGui::Button("Change Texture"))
+						{
+							auto selection = pfd::open_file("Select a texture", ".",
+								{ "Image Files", "*.png *.jpg *.jpeg *.bmp",}).result();
+							if (!selection.empty())
+							{
+								selectedTexture->unload();
+								GE_Engine->resourceManager->changeKey<Texture>(selectedTexture->fullpath, selection[0]);
+								selectedTexture->fullpath = selection[0];
+								selectedTexture->load();
+								selectedTexture->name = selection[0];
+							}
+							
+						}
+					}
+				}
+				ImGui::End();
+				if (opentexture == false)
+				{
+					selectedTexture = nullptr;
+				}
+			}
+		}
 
 		
 	}
 	ImGui::End();
 }
 
-bool Editor::DrawSingleProjectItem(void * image, std::string name, int n, int buttons_count)
+bool Editor::DrawSingleProjectItem(void * image, std::string name, int n, int buttons_count, bool *isClicked)
 {
 	bool isHovered = false;
 	ImGuiStyle& style = ImGui::GetStyle();
-	
+
 	float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
-	
+
 	ImGui::PushID(n);
 	{
 		ImGui::BeginGroup();
@@ -896,7 +1085,44 @@ bool Editor::DrawSingleProjectItem(void * image, std::string name, int n, int bu
 			ImGui::ImageButton(image, ImVec2(button_sz.x - 4, button_sz.y * 6 / 8), { 0,0 }, { 1,1 }, 2);
 			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 2);
 			ImGui::Text(std::string(name).substr(0, 10).c_str());
-			
+
+		}
+		ImGui::EndGroup();
+		isHovered = ImGui::IsItemHovered();
+		if (isClicked)
+			*isClicked = ImGui::IsItemClicked();
+	}
+	float last_button_x2 = ImGui::GetItemRectMax().x;
+	float next_button_x2 = last_button_x2 + style.ItemSpacing.x + button_sz.x;
+	if (n + 1 < buttons_count && next_button_x2 < window_visible_x2)
+		ImGui::SameLine();
+	ImGui::PopID();
+
+	return isHovered;
+}
+bool Editor::DrawSingleProjectItem(glm::vec3 color, std::string name, int n, int buttons_count)
+{
+	bool isHovered = false;
+	ImGuiStyle& style = ImGui::GetStyle();
+
+	float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+
+	ImGui::PushID(n);
+	{
+		ImGui::BeginGroup();
+		{
+
+			ImVec2 cursorBegin = ImGui::GetCursorPos();
+			ImGui::Button("", button_sz);
+
+			ImVec2 cursorEnd = ImGui::GetCursorPos();
+			ImGui::SetCursorPos(cursorBegin);
+			ImGui::PushStyleColor(ImGuiCol_Button, { color.x,color.y,color.z,1.0 });
+			ImGui::Button(("##empty"+name).c_str(),ImVec2(button_sz.x - 4, button_sz.y * 6 / 8));
+			ImGui::PopStyleColor();
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 2);
+			ImGui::Text(std::string(name).substr(0, 10).c_str());
+
 		}
 		ImGui::EndGroup();
 		isHovered = ImGui::IsItemHovered();

@@ -2,7 +2,7 @@
 #include<engine/Actor.h>
 #include<engine/ActorManager.h>
 #include <editor/SceneCamera.h>
-
+#include <editor/ConstantModels.h>
 Renderer::Renderer(GameBase *gb)
 {
 	
@@ -89,7 +89,8 @@ void Renderer::renderModels()
 				if (mcmp->numberOfMaterials > i && mcmp->materials[i])
 					mcmp->materials[i]->active();
 				else
-					Material::noMaterial();
+					ConstantMaterials::Materials::defaultMaterial->active();
+
 				
 				normalShader->setMat4("modelMatrix", actor->transformation->worldMatrix);
 				modelmap.first->meshes[i]->render();
@@ -118,7 +119,7 @@ void Renderer::renderModels()
 					if (mcmp->numberOfMaterials > i && mcmp->materials[i])
 						mcmp->materials[i]->active();
 					else
-						Material::noMaterial();
+						ConstantMaterials::Materials::defaultMaterial->active();
 
 					std::vector<glm::mat4> matrixBuffer;
 					int j = 0;

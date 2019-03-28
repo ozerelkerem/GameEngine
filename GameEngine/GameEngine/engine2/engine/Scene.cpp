@@ -34,12 +34,12 @@ void Scene::recursionPrefab(PrefabNode *node, glm::mat4 parent, ActorID actorNod
 			a->componentObject->addComponent(ctid,ic);
 			if (ctid == ModelComponent::STATIC_COMPONENT_TYPE_ID)
 			{
-				((ModelComponent *)c)->model->loadModelToGPU(projectManager);
+				((ModelComponent *)ic)->model = GE_Engine->resourceManager->getResource<Model>(((ModelComponent *)c)->model->fullpath,node->object->name);
 			}
 			a->componentObject->addComponent(ctid, ic);
 			if (ctid == SkinnedModelComponent::STATIC_COMPONENT_TYPE_ID)
 			{
-				((SkinnedModelComponent *)c)->model->loadModelToGPU(projectManager);
+				((SkinnedModelComponent *)ic)->model = GE_Engine->resourceManager->getResource<Model>(((SkinnedModelComponent *)c)->model->fullpath, node->object->name);
 			}
 		}
 

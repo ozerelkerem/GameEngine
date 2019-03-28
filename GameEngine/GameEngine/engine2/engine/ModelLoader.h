@@ -35,8 +35,8 @@ namespace ModelLoader
 	static Animation * generateAnimation(const aiAnimation *anim);
 
 
-	static void startingNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene);
-	static void processNode(Mesh **meshes, Prefab *prefab, PrefabNode *prefabNode, aiNode *node, const aiScene *scene);
+	static void startingNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene, ProjectManager *pm);
+	static void processNode(Mesh **meshes, Prefab *prefab, PrefabNode *prefabNode, aiNode *node, const aiScene *scene, ProjectManager *pm);
 
 
 	static Prefab *loadPrefab(const char *path, ProjectManager *project)
@@ -77,7 +77,12 @@ namespace ModelLoader
 		{
 			Material *m = generateMaterial(scene->mMaterials[i], prefab->name + " Material " + std::to_string(i));
 			if (project)
+			{
 				project->add(m);
+				if (m->ambientTexture)
+					project->add(m->ambientTexture);
+			}
+
 			prefab->addMaterials(m);
 		}
 
@@ -89,7 +94,7 @@ namespace ModelLoader
 		}
 
 		
-		startingNode(meshes, prefab, prefab->rootNode, scene->mRootNode, scene);
+		startingNode(meshes, prefab, prefab->rootNode, scene->mRootNode, scene, project);
 
 		for (int i = 0; i < prefab->numberOfModels; i++)
 		{
@@ -105,28 +110,29 @@ namespace ModelLoader
 		return prefab;
 	}
 
-	static void startingNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene)
+	static void startingNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene, ProjectManager *pm)
 	{
 	
 		prefab->rootNode = new PrefabNode(new Object(prefab->name), glm::mat4(aiamat4tomat4(node->mTransformation)));
 
 		for (int i = 0; i < node->mNumChildren; i++)
 		{
-			processNode(meshes, prefab, prefab->rootNode, node->mChildren[i], scene);
+			processNode(meshes, prefab, prefab->rootNode, node->mChildren[i], scene,pm);
 		}
 	}
 	
-	static void processNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene)
+	static void processNode(Mesh **meshes, Prefab *prefab, PrefabNode *rootPNode, aiNode *node, const aiScene *scene, ProjectManager *pm)
 	{
 		Object *o = NULL;
 		if (node->mNumMeshes > 0) // it is a model
 		{
 			o = new Object(node->mName.C_Str());
-			Model *m = new Model(node->mName.C_Str());
+			Model *m = new Model(pm->path + "\\models\\" + node->mName.C_Str() + ".model",node->mName.C_Str());
 			IModelComponent *mc;
 			if (dynamic_cast<SkinnedMesh*>(meshes[node->mMeshes[0]]))
 			{
 				mc = new SkinnedModelComponent(ActorID::INVALID_HANDLE, m);
+				
 				o->componentObject->addComponent<SkinnedModelComponent>((SkinnedModelComponent *)mc);
 
 			}
@@ -135,6 +141,7 @@ namespace ModelLoader
 				mc = new ModelComponent(ActorID::INVALID_HANDLE, m);
 				o->componentObject->addComponent<ModelComponent>((ModelComponent *)mc);
 			}
+			mc->numberOfMaterials = node->mNumMeshes;
 			for (int i = 0; i < node->mNumMeshes; i++)
 			{
 				m->addMesh(meshes[node->mMeshes[i]]);
@@ -161,7 +168,7 @@ namespace ModelLoader
 
 		for (int i = 0; i < node->mNumChildren; i++)
 		{
-			processNode(meshes,prefab, tmpprefabNode, node->mChildren[i], scene);
+			processNode(meshes,prefab, tmpprefabNode, node->mChildren[i], scene, pm);
 		}
 	}
 
@@ -172,9 +179,10 @@ namespace ModelLoader
 		{
 			aiString *path = new aiString();
 			material->GetTexture(aiTextureType_DIFFUSE, 0, path);
-			m->ambientTexture = new Texture(path->data);
+			m->ambientTexture = GE_Engine->resourceManager->getResource<Texture>(path->data);
 		}
 
+		aiGetMaterialFloat(material, AI_MATKEY_COLOR_DIFFUSE, &m->ambientColor[0]);
 		return m;
 	}
 

@@ -47,8 +47,10 @@ void main()
 	vec3 diffuseLight = vec3(0,0,0);
 	if(material.hasTexture > 0)
 	{
-		
-		diffuse = vec3(texture(material.ambientTexture, v_textureCoords));
+		vec4 textureimage = texture(material.ambientTexture, v_textureCoords);
+		if (textureimage.a < 0.2)
+			discard;
+		diffuse = vec3(textureimage);
 		ambient = diffuse;
 	}
 	else

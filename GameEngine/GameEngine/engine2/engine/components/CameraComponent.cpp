@@ -5,9 +5,9 @@
 CameraComponent::CameraComponent(ActorID own, float fov, float aspect, float near, float far) : Component(own)
 {
 	this->aspect = aspect;
-	this->far = far;
+	this->m_far = far;
 	this->fov = fov;
-	this->near = near;
+	this->m_near = near;
 }
 
 
