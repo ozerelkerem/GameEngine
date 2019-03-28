@@ -29,7 +29,7 @@ namespace ModelLoader
 	static Prefab *loadPrefab(const char *path, ProjectManager *project);
 	static Mesh *generateMesh(const aiMesh *mesh);
 	static Prefab *processScene(const aiScene *scene, std::string, ProjectManager *project);
-	static Material *generateMaterial(const aiMaterial *material, std::string);
+	static Material *generateMaterial(const aiMaterial *material, std::string, ProjectManager *project);
 	static Object * generateCamera(const aiCamera *camera);
 	static Object * generateLight(const aiLight *light);
 	static Animation * generateAnimation(const aiAnimation *anim);
@@ -75,7 +75,7 @@ namespace ModelLoader
 
 		for (int i = 0; i < scene->mNumMaterials; i++)
 		{
-			Material *m = generateMaterial(scene->mMaterials[i], prefab->name + " Material " + std::to_string(i));
+			Material *m = generateMaterial(scene->mMaterials[i], prefab->name + " Material " + std::to_string(i), project);
 			if (project)
 			{
 				project->add(m);
@@ -172,7 +172,7 @@ namespace ModelLoader
 		}
 	}
 
-	static Material *generateMaterial(const aiMaterial *material, std::string name)
+	static Material *generateMaterial(const aiMaterial *material, std::string name, ProjectManager *project)
 	{
 		Material *m = new Material(name);
 		if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
