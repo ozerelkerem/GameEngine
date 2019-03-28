@@ -57,7 +57,23 @@ public:
 protected:
 
 	void createVAO();
-	void storeData(int attribID, int num, GLenum target, GLenum type, void * buffer, int size, bool isIndices = false);
+
+	template<typename T>
+	void storeData(int attribID, int num, GLenum target, GLenum type, T * buffer, int size, bool isIndices = false)
+	{
+		GLuint vboid;
+		glGenBuffers(1, &vboid);
+		glBindBuffer(target, vboid);
+		glBufferData(target, sizeof(T) * num, buffer, GL_STATIC_DRAW);
+
+		if (!isIndices)
+		{
+			glVertexAttribPointer(attribID, size, type, false, 0, 0);
+			glBindBuffer(target, 0);
+		}
+
+
+	}
 	
 
 };

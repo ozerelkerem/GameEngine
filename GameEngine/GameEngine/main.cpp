@@ -76,7 +76,7 @@ int main(int, char**)
 		return 1;
 
 	glfwMakeContextCurrent(window);
-	glfwSwapInterval(1); // Enable vsync
+	//glfwSwapInterval(1); // Enable vsync
 
 	glfwSetWindowSizeCallback(window, resize_callback);
 	glfwSetDropCallback(window, drop_callback);
