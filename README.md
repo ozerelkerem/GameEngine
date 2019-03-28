@@ -1,6 +1,8 @@
 # ge_test
+Textured Boned Model Animation
+![Textured Lighted](https://user-images.githubusercontent.com/19158321/55179596-d9a72700-5198-11e9-85da-1f96c183f3d1.gif)
+<br/>
 Boned/Skinned Model Animation
-
 ![boned model animation](https://user-images.githubusercontent.com/19158321/54796208-5e0d1d80-4c60-11e9-84b3-2b94b8371e5b.gif)
 <br/>
 
