@@ -79,6 +79,7 @@ void Renderer::renderModels()
 	{
 		for (int i = 0; i < modelmap.first->numOfMeshes; i++)
 		{
+
 			modelmap.first->meshes[i]->bind();
 
 			for (auto actorid : modelmap.second)

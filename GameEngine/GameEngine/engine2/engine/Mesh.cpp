@@ -14,12 +14,7 @@ Mesh::Mesh(unsigned int nov, unsigned int noi, float * vert, float * norm, unsig
 
 Mesh::~Mesh()
 {
-
-	free(vertices);
-	free(normals);
-	free(indices);
-	if (textureCoords)
-		free(textureCoords);
+	glDeleteBuffers(1, &vao);
 }
 
 

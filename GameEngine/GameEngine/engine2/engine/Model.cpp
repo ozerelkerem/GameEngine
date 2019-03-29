@@ -46,4 +46,8 @@ void Model::load()
 
 void Model::unload()
 {
+	for (int i = 0; i < numOfMeshes; i++)
+	{
+		delete meshes[i];
+	}
 }

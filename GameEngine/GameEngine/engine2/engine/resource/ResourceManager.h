@@ -78,7 +78,11 @@ public:
 		{
 			if ((*it).second.second <= 1)
 			{
-				//TODO NO MORE RESOURCE YOU SHOUDL DELETE IT
+				(*it).second.first->unload();
+				resourcelist[CID].erase(resource->fullpath);
+				
+				delete resource;
+				
 			}
 			else
 			{

@@ -1,6 +1,7 @@
 #include "ComponentSystem.h"
 #include<engine/Actor.h>
 #include<engine/ActorManager.h>
+#include<engine/resource/ResourceManager.h>
 ComponentSystem::ComponentSystem()
 {
 }
@@ -46,12 +47,16 @@ void ComponentSystem::removeActor(ActorID aid)
 	if (mc)
 	{
 		actorsWhichContainsModelComponent[mc->model].remove(aid);
-		delete mc->model;
+		if (actorsWhichContainsModelComponent[mc->model].empty())
+			actorsWhichContainsModelComponent.erase(mc->model);
+		GE_Engine->resourceManager->removeResource(mc->model);
 	}
-	if (smc)
+	if(smc)
 	{
 		actorsWhichContainsSkinnedModelComponent[smc->model].remove(aid);
-		delete smc->model;
+		if (actorsWhichContainsSkinnedModelComponent[mc->model].empty())
+			actorsWhichContainsSkinnedModelComponent.erase(mc->model);
+		GE_Engine->resourceManager->removeResource(smc->model);
 	}
 }
 

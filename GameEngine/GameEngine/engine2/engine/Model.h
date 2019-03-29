@@ -20,7 +20,7 @@ public:
 	//param2: name
 	*/
 	Model(std::string, std::string);
-
+	~Model() {};
 
 	unsigned int numOfMeshes;
 	Mesh *(*meshes);
