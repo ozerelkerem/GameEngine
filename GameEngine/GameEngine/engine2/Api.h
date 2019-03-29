@@ -25,6 +25,11 @@
 #include <chrono>
 #include <util/Handle.h>
 
+#define ACTOR_CHUNK_SIZE 512
+
+#define GLOBAL_MEMORY_CAPACITY 134217728 // 128 MB
+
+
 using TypeID = uint16_t;
 
 using ActorID = GameEngine::Util::Handle64;
@@ -36,7 +41,23 @@ extern Shader *normalShader;
 extern Shader *colorShader;
 extern Shader *spriteShader;
 
+class  MemoryManager;
+extern MemoryManager*				ECSMemoryManager;
 
+class GlobalMemoryUser
+{
+private:
+
+	MemoryManager* ECS_MEMORY_MANAGER;
+
+public:
+
+	GlobalMemoryUser();
+	virtual ~GlobalMemoryUser();
+
+	 const void* Allocate(size_t memSize);
+	 void Free(void* pMem);
+};
 
 
 class Engine;

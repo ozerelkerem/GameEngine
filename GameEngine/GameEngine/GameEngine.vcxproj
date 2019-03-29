@@ -171,14 +171,19 @@
     <ClCompile Include="engine2\engine\Texture.cpp" />
     <ClCompile Include="engine2\engine\Transform.cpp" />
     <ClCompile Include="engine2\util\FamilyTypeID.cpp" />
+    <ClCompile Include="engine2\memory\Allocator\IAllocator.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_impl_glfw.cpp" />
     <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="engine2\memory\Allocator\LinearAllocator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine2\engine\SpriteRenderer.cpp" />
+    <ClCompile Include="engine2\memory\Allocator\StackAllocator.cpp" />
+    <ClCompile Include="engine2\memory\MemoryManager.cpp" />
+    <ClCompile Include="engine2\memory\Allocator\PoolAllocator.cpp" />
     <ClCompile Include="stb\stb_image.c" />
   </ItemGroup>
   <ItemGroup>
@@ -228,8 +233,10 @@
     <ClInclude Include="engine2\engine\systems\SystemManager.h" />
     <ClInclude Include="engine2\engine\Texture.h" />
     <ClInclude Include="engine2\engine\Transform.h" />
+    <ClInclude Include="engine2\memory\MemoryChuckAllocator.h" />
     <ClInclude Include="engine2\util\FamilyTypeID.h" />
     <ClInclude Include="engine2\util\Handle.h" />
+    <ClInclude Include="engine2\memory\Allocator\IAllocator.h" />
     <ClInclude Include="imgui\file_dialog.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
@@ -241,6 +248,10 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="engine2\engine\SpriteRenderer.h" />
+    <ClInclude Include="engine2\memory\Allocator\LinearAllocator.h" />
+    <ClInclude Include="engine2\memory\Allocator\StackAllocator.h" />
+    <ClInclude Include="engine2\memory\MemoryManager.h" />
+    <ClInclude Include="engine2\memory\Allocator\PoolAllocator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

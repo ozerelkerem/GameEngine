@@ -4,6 +4,7 @@
 
 ActorManager::ActorManager()
 {
+	this->actorContainer = new ActorContainer();
 }
 
 
