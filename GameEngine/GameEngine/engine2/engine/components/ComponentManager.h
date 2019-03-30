@@ -106,7 +106,7 @@ public:
 
 		void *pObjectMemory = GetComponentContainer<T>()->CreateObject();
 
-		ComponentID componentid = this->AqcuireComponentId((T*)pObjectMemory);
+		ComponentID componentid = this->AqcuireComponentId((IComponent*)pObjectMemory);
 		((T*)pObjectMemory)->componentID = componentid;
 
 		IComponent* component = new (pObjectMemory)T(std::forward<ARGS>(args)...);
@@ -161,7 +161,7 @@ public:
 		static const size_t NUM_COMPONENTS = this->actorComponentMap[0].size();
 		for (ComponentTypeID componentTypeId = 0; componentTypeId < NUM_COMPONENTS; ++componentTypeId)
 		{
-			const ComponentTypeID componentId = this->actorComponentMap[actorid.index][componentTypeId];
+			const ComponentID componentId = this->actorComponentMap[actorid.index][componentTypeId];
 			if (componentId == IComponent::INVALID_COMPONENT_ID)
 				continue;
 
