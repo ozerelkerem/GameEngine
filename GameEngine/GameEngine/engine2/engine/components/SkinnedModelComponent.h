@@ -8,7 +8,7 @@ class Actor;
 class SkinnedModelComponent : public IModelComponent, public Component<SkinnedModelComponent>
 {
 public:
-	SkinnedModelComponent(ActorID, Model *);
+	SkinnedModelComponent(Model *);
 	~SkinnedModelComponent();
 
 	ActorID rootBone;
@@ -23,6 +23,10 @@ public:
 		auto x = ((IComponent*) new SkinnedModelComponent(*this));
 		x->owner = own;
 		return x;
+	}
+
+	inline virtual void setModel(Model *m) override {
+		model = m;
 	}
 };
 

@@ -2,10 +2,12 @@
 
 #include<Api.h>
 #include<engine/ActorManager.h>
-
-SkinnedModelComponent::SkinnedModelComponent(ActorID own, Model *m) : IModelComponent(m), Component(own), rootBone(ActorID::INVALID_HANDLE)
+#include <editor/ConstantModels.h>
+SkinnedModelComponent::SkinnedModelComponent(Model *m) : IModelComponent(), Component(), rootBone(ActorID::INVALID_HANDLE)
 {
-
+	setModel(m);
+	numberOfMaterials = m->numOfMeshes;
+	materials.resize(numberOfMaterials, ConstantMaterials::Materials::defaultMaterial);
 }
 
 
@@ -15,12 +17,12 @@ SkinnedModelComponent::~SkinnedModelComponent()
 
 void SkinnedModelComponent::matchBones()
 {
-	if (!model)
+	if (!getModel())
 		return;
 	effectlist.clear();
-	effectlist.resize(model->numOfMeshes);
+	effectlist.resize(getModel()->numOfMeshes);
 	for (int i = 0; i < effectlist.size(); i++)
-		effectlist[i].resize(((SkinnedMesh *)model->meshes[i])->bones.size(),ActorID::INVALID_HANDLE);
+		effectlist[i].resize(((SkinnedMesh *)getModel()->meshes[i])->bones.size(),ActorID::INVALID_HANDLE);
 	Actor *a = GE_Engine->actorManager->GetActor(this->rootBone);
 
 	std::list<Actor *> queue;
@@ -34,7 +36,7 @@ void SkinnedModelComponent::matchBones()
 		
 		for (int i = 0; i < effectlist.size(); i++)
 		{
-			auto bonelist = ((SkinnedMesh*)model->meshes[i])->bones;
+			auto bonelist = ((SkinnedMesh*)getModel()->meshes[i])->bones;
 			auto it = std::find_if(bonelist.begin(), bonelist.end(),
 				[&s](const std::pair<std::string, glm::mat4>& element) { return element.first == s->name; });
 			if (it != bonelist.end())

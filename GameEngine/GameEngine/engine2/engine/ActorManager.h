@@ -28,6 +28,9 @@ class ActorManager
 	};
 
 
+	using PendingDestroyedActors = std::vector<ActorID>;
+	PendingDestroyedActors pendingDestroyedActors;
+	size_t numPendingDestroyedActors;
 
 
 public:
@@ -77,6 +80,22 @@ public:
 
 		return actorid;
 	}
+	void DestroyActor(ActorID actorid)
+	{
+		Actor* actor = this->actorHandleTable[actorid];
+
+		if (this->numPendingDestroyedActors < this->pendingDestroyedActors.size())
+		{
+			this->pendingDestroyedActors[this->numPendingDestroyedActors++] = actorid;
+		}
+		else
+		{
+			this->pendingDestroyedActors.push_back(actorid);
+			this->numPendingDestroyedActors++;
+		}
+	}
+
+	void RemoveDestroyedActors();
 
 	
 

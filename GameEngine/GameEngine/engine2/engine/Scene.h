@@ -6,7 +6,7 @@
 #include<Engine.h>
 
 #include <engine/Prefab.h>
-#include <engine/components/ComponentSystem.h>
+
 
 
 class Prefab;
@@ -21,7 +21,6 @@ public:
 
 	std::string name;
 
-	ComponentSystem *componentSystem;
 	ProjectManager *projectManager;
 
 	ActorID rootActor;

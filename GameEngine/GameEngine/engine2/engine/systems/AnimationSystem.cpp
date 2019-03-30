@@ -1,7 +1,7 @@
 #include "System.h"
 #include "AnimationSystem.h"
 #include <engine/ActorManager.h>
-#include <iostream>
+#include <engine/components/AnimatorComponent.h>
 AnimationSystem::AnimationSystem(GameBase *gb) : gamebase(gb) {}
 
 AnimationSystem::~AnimationSystem()
@@ -15,22 +15,23 @@ void AnimationSystem::PreUpdate()
 
 void AnimationSystem::Update()
 {
-	auto animators = gamebase->currentScene->componentSystem->GetComponents<AnimatorComponent>();
-	for (auto animator : animators)
+	auto end = GE_Engine->componentManager->end<AnimatorComponent>();
+	
+	for (auto it = GE_Engine->componentManager->begin<AnimatorComponent>(); it.operator!=(end); it.operator++())
 	{
-		if (animator.second->currentAnimation && animator.second->state)
+		if (it->currentAnimation && it->state)
 		{
-			Animation *a = animator.second->currentAnimation;
-			auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(GE_Engine->getTime() - animator.second->startTime).count();
-			if (!animator.second->isLoop && elapsed >( a->duration * (1000.f / (float)a->ticksPerSecond)))
+			Animation *a = it->currentAnimation;
+			auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(GE_Engine->getTime() - it->startTime).count();
+			if (!it->isLoop && elapsed >( a->duration * (1000.f / (float)a->ticksPerSecond)))
 			{
-				animator.second->state = 0;
+				it->state = 0;
 				continue;
 			}
 			
 			auto  frame = fmod((elapsed / (1000.f / (float)a->ticksPerSecond)), a->duration);
 
-			for (auto effect : animator.second->effectlist)
+			for (auto effect : it->effectlist)
 			{
 				Actor *actor = GE_Engine->actorManager->GetActor(effect.second);
 				a->animationNodeMap[effect.first]->calcInterpolationPosition(frame, actor->transformation->localPosition);

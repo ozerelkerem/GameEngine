@@ -21,10 +21,11 @@ SceneRenderer::SceneRenderer(GameBase *b) : Renderer(b)
 
 void SceneRenderer::renderLights()
 {
-
-	for (auto light : this->gamebase->currentScene->componentSystem->actorsWhichContainsLightComponent)
+	auto begin = GE_Engine->componentManager->begin<LightComponent>();
+	auto end = GE_Engine->componentManager->end<LightComponent>();
+	for (auto light = begin; light.operator!=(end); light.operator++())
 	{
-		Actor *lightActor = GE_Engine->actorManager->GetActor(light.first);
+		Actor *lightActor = GE_Engine->actorManager->GetActor(light->owner);
 
 		glm::vec3 worldpos = lightActor->transformation->getWorldPosition();
 		spriteRenderer->DrawSprite(ConstantTextures::Textures::lightTexture, sceneCamera->worldToScreen(worldpos, sceneSize), { 30,30 });
@@ -40,10 +41,10 @@ void SceneRenderer::renderSelectedLight()
 
 	glBegin(GL_LINES);
 	
-	if(Actor *lightActor = GE_Engine->actorManager->GetActor(selectedActor); lightActor && lightActor->componentObject->hasComponent<LightComponent>())
+	if(Actor *lightActor = GE_Engine->actorManager->GetActor(selectedActor); lightActor && lightActor->GetComponent<LightComponent>())
 	{
 		
-		LightComponent *lightcomponent = lightActor->componentObject->getComponent<LightComponent>();
+		LightComponent *lightcomponent = lightActor->GetComponent<LightComponent>();
 		
 
 		const glm::vec3 lightpos = lightActor->transformation->getWorldPosition();
@@ -272,48 +273,44 @@ inline void SceneRenderer::RenderOutlined(Actor * o)
 
 void SceneRenderer::renderModelsColored()
 {
+
 	colorShader->Use();
 	colorShader->setInt("hasBones", 0);
-	for (auto modelmap : this->gamebase->currentScene->componentSystem->actorsWhichContainsModelComponent)
+	auto mend = GE_Engine->componentManager->end<ModelComponent>();
+	for (auto model = GE_Engine->componentManager->begin<ModelComponent>(); model.operator!=(mend); model.operator++())
 	{
-		for (int i = 0; i < modelmap.first->numOfMeshes; i++)
+		if (!model->getModel())
+			continue;
+		Actor *actor = GE_Engine->actorManager->GetActor(model->owner);
+		ModelComponent *mcmp = actor->GetComponent<ModelComponent>();
+		ActorID test = model->owner;
+		float r = (test.index & 0x000000FF) >> 0;
+		float g = (test.index & 0x0000FF00) >> 8;
+		float b = (test.index & 0x00FF0000) >> 16;
+		colorShader->setVec3("color", glm::vec3(r / 255.0f, g / 255.0f, b / 255.0f));
+		colorShader->setMat4("modelMatrix", actor->transformation->worldMatrix);
+		for (int i = 0; i < model->getModel()->numOfMeshes; i++)
 		{
-			modelmap.first->meshes[i]->bind();
-
-			for (auto actorid : modelmap.second)
-			{
-				Actor *actor = GE_Engine->actorManager->GetActor(actorid);
-				ModelComponent *mcmp = actor->componentObject->getComponent<ModelComponent>();
-
-				ActorID test = actorid;
-				float r = (test.index & 0x000000FF) >> 0;
-				float g = (test.index & 0x0000FF00) >> 8;
-				float b = (test.index & 0x00FF0000) >> 16;
-				colorShader->setVec3("color", glm::vec3(r / 255.0f, g / 255.0f, b / 255.0f));
-
-				colorShader->setMat4("modelMatrix", actor->transformation->worldMatrix);
-				modelmap.first->meshes[i]->render();	
-			}
-
-			modelmap.first->meshes[i]->unbind();
+			model->getModel()->meshes[i]->bind();
+			model->getModel()->meshes[i]->render();
+			model->getModel()->meshes[i]->unbind();
 		}
 	}
 
 	colorShader->setInt("hasBones", 1);
-	for (auto modelmap : this->gamebase->currentScene->componentSystem->actorsWhichContainsSkinnedModelComponent)
+	auto send = GE_Engine->componentManager->end<SkinnedModelComponent>();
+	for (auto model = GE_Engine->componentManager->begin<SkinnedModelComponent>(); model.operator!=(send); model.operator++())
 	{
-		for (int i = 0; i < modelmap.first->numOfMeshes; i++)
+		if (!model->getModel())
+			continue;
+		for (int i = 0; i < model->getModel()->numOfMeshes; i++)
 		{
-			modelmap.first->meshes[i]->bind();
+				Actor *actor = GE_Engine->actorManager->GetActor(model->owner);
 
-			for (auto actorid : modelmap.second)
-			{
-				Actor *actor = GE_Engine->actorManager->GetActor(actorid);
-				SkinnedModelComponent *mcmp = actor->componentObject->getComponent<SkinnedModelComponent>();
-
-				if (mcmp->rootBone != ActorID::INVALID_HANDLE)
+				if (model->rootBone != ActorID::INVALID_HANDLE)
 				{
-					ActorID test = actorid;
+					model->getModel()->meshes[i]->bind();
+					ActorID test = model->owner;
 					float r = (test.index & 0x000000FF) >> 0;
 					float g = (test.index & 0x0000FF00) >> 8;
 					float b = (test.index & 0x00FF0000) >> 16;
@@ -321,20 +318,17 @@ void SceneRenderer::renderModelsColored()
 
 					std::vector<glm::mat4> matrixBuffer;
 					int j = 0;
-					for (auto x : mcmp->effectlist[i])
+					for (auto x : model->effectlist[i])
 					{
-						matrixBuffer.push_back((GE_Engine->actorManager->GetActor(x)->transformation->worldMatrix) * glm::transpose(((SkinnedMesh*)modelmap.first->meshes[i])->bones[j].second));
+						matrixBuffer.push_back((GE_Engine->actorManager->GetActor(x)->transformation->worldMatrix) * glm::transpose(((SkinnedMesh*)model->getModel()->meshes[i])->bones[j].second));
 						j++;
 					}
 					colorShader->setMat4Array("bones", matrixBuffer.size(), matrixBuffer.data()[0]);
 
-					modelmap.first->meshes[i]->render();
+					model->getModel()->meshes[i]->render();
+					model->getModel()->meshes[i]->unbind();
 				}
-
-			
-			}
-
-			modelmap.first->meshes[i]->unbind();
+	
 		}
 	}
 }
@@ -386,11 +380,11 @@ void SceneRenderer::focusActor(ActorID actorid)
 {
 	//@TODO CALC MÝN MAX FOR EACH MESH AND CHECK MAYBE THERE IS NO MODEL
 	Actor * actor = GE_Engine->actorManager->GetActor(actorid);
-	if (!actor->componentObject->hasComponent<ModelComponent>())
+	if (!actor->GetComponent<ModelComponent>())
 		return;
 
-	ModelComponent *mcmp = actor->componentObject->getComponent<ModelComponent>();
-	auto x = mcmp->model->meshes[0]->bounds;
+	ModelComponent *mcmp = actor->GetComponent<ModelComponent>();
+	auto x = mcmp->getModel()->meshes[0]->bounds;
 
 	glm::vec4 minxyz(x.minx, x.miny, x.minz, 1.0);
 	glm::vec4 maxxyz(x.maxx, x.maxy, x.maxz, 1.0);

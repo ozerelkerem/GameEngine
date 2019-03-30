@@ -4,7 +4,7 @@
 class CameraComponent :public Component<CameraComponent>
 {
 public:
-	CameraComponent(ActorID own, float fov, float aspect, float near, float far);
+	CameraComponent(float fov, float aspect, float near, float far);
 	~CameraComponent();
 
 	float fov;

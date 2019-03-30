@@ -21,3 +21,28 @@ void ActorManager::ReleaseActorID(ActorID id)
 {
 	this->actorHandleTable.ReleaseHandle(id);
 }
+
+void ActorManager::RemoveDestroyedActors()
+{
+	for (size_t i = 0; i < this->numPendingDestroyedActors; ++i)
+	{
+		ActorID actorid = this->pendingDestroyedActors[i];
+
+		Actor* actor = this->actorHandleTable[actorid];
+
+		
+
+	
+	
+			// release entity's components
+			this->componentManagerInstance->RemoveAllComponents(actorid);
+
+			actorContainer->DestroyActor(actor);
+	
+
+		// free entity id
+		this->ReleaseActorID(actorid);
+	}
+
+	this->numPendingDestroyedActors = 0;
+}

@@ -1,12 +1,9 @@
 #include "IModelComponent.h"
 
-#include <editor/ConstantModels.h>
 
-IModelComponent::IModelComponent(Model *m)
+
+IModelComponent::IModelComponent()
 {
-	model = m;
-	numberOfMaterials = m->numOfMeshes;
-	materials.resize(numberOfMaterials,ConstantMaterials::Materials::defaultMaterial);
 
 }
 

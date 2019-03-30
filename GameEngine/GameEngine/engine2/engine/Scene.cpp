@@ -2,13 +2,15 @@
 #include "Scene.h"
 #include<engine/Actor.h>
 #include<engine/ActorManager.h>
+#include<engine/components/ModelComponent.h>
+#include<engine/components/SkinnedModelComponent.h>
 Scene::Scene(std::string name, ProjectManager *pm) : projectManager(pm)
 {
 	this->name = name;
 
 	actorCounter = 1;
 	rootActor = GE_Engine->actorManager->CreateActor(this->name, this);
-	componentSystem = new ComponentSystem();
+
 }
 
 
@@ -28,9 +30,21 @@ void Scene::recursionPrefab(PrefabNode *node, glm::mat4 parent, ActorID actorNod
 	for (auto t : node->object->componentObject->componentlist)
 		for (auto c : t.second)
 		{	
-			ComponentTypeID ctid;
+			ComponentTypeID ctid = t.first;
+			if (ctid == ModelComponent::STATIC_COMPONENT_TYPE_ID)
+			{
+				a->AddComponent<ModelComponent>((ModelComponent*)c);
+				a->GetComponent<ModelComponent>()->setModel(GE_Engine->resourceManager->getResource<Model>(((ModelComponent *)c)->getModel()->fullpath, node->object->name));
+			}
 			
-			IComponent * ic = c->getnew(actorid,&ctid);
+			if (ctid == SkinnedModelComponent::STATIC_COMPONENT_TYPE_ID)
+			{
+				a->AddComponent<SkinnedModelComponent>((SkinnedModelComponent*)c);
+				a->GetComponent<SkinnedModelComponent>()->setModel(GE_Engine->resourceManager->getResource<Model>(((SkinnedModelComponent *)c)->getModel()->fullpath, node->object->name));
+			}
+			
+			//CHECK HERE
+		/*	IComponent * ic = c->getnew(actorid,&ctid);
 			a->componentObject->addComponent(ctid,ic);
 			if (ctid == ModelComponent::STATIC_COMPONENT_TYPE_ID)
 			{
@@ -40,7 +54,7 @@ void Scene::recursionPrefab(PrefabNode *node, glm::mat4 parent, ActorID actorNod
 			if (ctid == SkinnedModelComponent::STATIC_COMPONENT_TYPE_ID)
 			{
 				((SkinnedModelComponent *)ic)->model = GE_Engine->resourceManager->getResource<Model>(((SkinnedModelComponent *)c)->model->fullpath, node->object->name);
-			}
+			}*/
 		}
 
 	
@@ -48,7 +62,7 @@ void Scene::recursionPrefab(PrefabNode *node, glm::mat4 parent, ActorID actorNod
 	a->transformation->localMatrix = glm::transpose(node->transformation);
 	a->transformation->decomposeLocalMatrix();
 	a->AddParent(actorNode);
-	componentSystem->addActor(actorid);
+//	componentSystem->addActor(actorid);
 	for (int i = 0; i < node->numofChildren; i++)
 	{
 		recursionPrefab(node->children[i], glm::mat4(1), actorid);

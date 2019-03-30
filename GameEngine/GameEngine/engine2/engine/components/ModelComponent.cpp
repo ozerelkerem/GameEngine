@@ -1,10 +1,12 @@
 #include "ModelComponent.h"
 
+#include <editor/ConstantModels.h>
 
-
-ModelComponent::ModelComponent(ActorID own, Model *m) : IModelComponent(m) ,Component(own)
+ModelComponent::ModelComponent(Model *m) : IModelComponent() ,Component()
 {
-	
+	setModel(m);
+	numberOfMaterials = m->numOfMeshes;
+	materials.resize(numberOfMaterials, ConstantMaterials::Materials::defaultMaterial);
 }
 
 

@@ -9,7 +9,7 @@ class ComponentSystem;
 class ModelComponent : public IModelComponent, public Component<ModelComponent>
 {
 public:
-	ModelComponent(ActorID, Model *m);
+	ModelComponent(Model *m);
 	~ModelComponent();
 
 	inline virtual IComponent * getnew(ActorID own, ComponentTypeID *id) override {
@@ -17,6 +17,10 @@ public:
 		auto x = ((IComponent*) new ModelComponent(*this));
 		x->owner = own;
 		return x;
+	}
+
+	inline virtual void setModel(Model *m) override {
+		model = m;
 	}
 };
 

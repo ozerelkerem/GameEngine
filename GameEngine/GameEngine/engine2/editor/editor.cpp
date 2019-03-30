@@ -23,9 +23,9 @@ void Editor::ShowComponentList()
 {
 	
 			
-	auto cob = GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor)->componentObject;
+	auto actor = GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor);
 
-	if (LightComponent *lightcomp = cob->getComponent<LightComponent>())
+	if (LightComponent *lightcomp = actor->GetComponent<LightComponent>())
 	{
 		if (ImGui::CollapsingHeader("Light Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
@@ -53,19 +53,18 @@ void Editor::ShowComponentList()
 		}
 	}
 
-	if (ModelComponent *modelcomp = cob->getComponent<ModelComponent>())
+	if (ModelComponent *modelcomp = actor->GetComponent<ModelComponent>())
 	{
 		if (ImGui::CollapsingHeader("Model Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 
-			if (ImGui::BeginCombo(("Select Model##selectmodel"), modelcomp->model->name.c_str())) // The second parameter is the label previewed before opening the combo.
+			if (ImGui::BeginCombo(("Select Model##selectmodel"), modelcomp->getModel()->name.c_str())) // The second parameter is the label previewed before opening the combo.
 			{
 				for (auto model : projectManager->models)
 				{
 					if (ImGui::Selectable(model->name.c_str()))
 					{
-						gameBase->currentScene->componentSystem->changeModel<ModelComponent>(sceneRenderer->selectedActor, model);
-						modelcomp->model = model;
+						GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor)->GetComponent<ModelComponent>()->setModel(model);
 					}
 				}
 				ImGui::EndCombo();
@@ -95,7 +94,7 @@ void Editor::ShowComponentList()
 
 	}
 
-	if (SkinnedModelComponent *modelcomp = cob->getComponent<SkinnedModelComponent>())
+	if (SkinnedModelComponent *modelcomp = actor->GetComponent<SkinnedModelComponent>())
 	{
 		if (ImGui::CollapsingHeader("Skinned Model Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
@@ -124,14 +123,13 @@ void Editor::ShowComponentList()
 				}
 				ImGui::EndCombo();
 			}
-			if (ImGui::BeginCombo(("Select Model##selectmodel"), modelcomp->model->name.c_str())) // The second parameter is the label previewed before opening the combo.
+			if (ImGui::BeginCombo(("Select Model##selectmodel"), modelcomp->getModel()->name.c_str())) // The second parameter is the label previewed before opening the combo.
 			{
 				for (auto model : projectManager->models)
 				{
 					if (ImGui::Selectable(model->name.c_str()))
 					{
-						gameBase->currentScene->componentSystem->changeModel<SkinnedModelComponent>(sceneRenderer->selectedActor, model);
-						modelcomp->model = model;
+						GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor)->GetComponent<SkinnedModelComponent>()->setModel(model);
 					}
 				}
 				ImGui::EndCombo();
@@ -161,7 +159,7 @@ void Editor::ShowComponentList()
 
 	}
 
-	if (AnimatorComponent *animator = cob->getComponent<AnimatorComponent>())
+	if (AnimatorComponent *animator = actor->GetComponent<AnimatorComponent>())
 	{
 		if (ImGui::CollapsingHeader("Animator Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
@@ -246,14 +244,12 @@ void Editor::ObjectProperties()
 							{
 							case 0://light component
 							{
-								IComponent *ic = (IComponent*)new LightComponent(sceneRenderer->selectedActor);
-								selectedActor->AddComponent<LightComponent>(ic);
+								selectedActor->AddComponent<LightComponent>();
 							}break;
 
 							case 1:
 							{
-								IComponent *ic = (IComponent*)new AnimatorComponent(sceneRenderer->selectedActor);
-								selectedActor->AddComponent<AnimatorComponent>(ic);
+								selectedActor->AddComponent<AnimatorComponent>();
 
 							}break;
 
@@ -276,9 +272,9 @@ void Editor::ObjectPropertiesMaterials()
 	{
 		bool flag = false;
 
-		IModelComponent *mcmp = GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor)->componentObject->getComponent<ModelComponent>();
+		IModelComponent *mcmp = GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor)->GetComponent<ModelComponent>();
 		if(!mcmp)
-			mcmp = GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor)->componentObject->getComponent<SkinnedModelComponent>();
+			mcmp = GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor)->GetComponent<SkinnedModelComponent>();
 		if (mcmp)
 		{
 			for (int i = 0; i < mcmp->numberOfMaterials; i++)
@@ -814,43 +810,39 @@ void Editor::DrawHierarchy(ActorID rootid)
 					ActorID newactor = GE_Engine->actorManager->CreateActor("Cube", sceneRenderer->gamebase->currentScene);
 					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
 					actor->AddParent(rootid);
-					IComponent *ic = (IComponent*)new ModelComponent(newactor, ConstantModels::getCubeModel());
-					actor->AddComponent<ModelComponent>(ic);
+
+					actor->AddComponent<ModelComponent>(ConstantModels::getCubeModel());
 				}
 				if (ImGui::MenuItem("Sphere")) {
 					ActorID newactor = GE_Engine->actorManager->CreateActor("Sphere", sceneRenderer->gamebase->currentScene);
 					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
 					actor->AddParent(rootid);
-					IComponent *ic = (IComponent*)new ModelComponent(newactor, ConstantModels::getSphereModel());
-					actor->AddComponent<ModelComponent>(ic);
+
+					actor->AddComponent<ModelComponent>(ConstantModels::getSphereModel());
 				}
 				if (ImGui::MenuItem("Capsule")) {
 					ActorID newactor = GE_Engine->actorManager->CreateActor("Capsule", sceneRenderer->gamebase->currentScene);
 					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
 					actor->AddParent(rootid);
-					IComponent *ic = (IComponent*)new ModelComponent(newactor, ConstantModels::getCapsuleModel());
-					actor->AddComponent<ModelComponent>(ic);
+					actor->AddComponent<ModelComponent>(ConstantModels::getCapsuleModel());
 				}
 				if (ImGui::MenuItem("Plane")) {
 					ActorID newactor = GE_Engine->actorManager->CreateActor("Plane", sceneRenderer->gamebase->currentScene);
 					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
 					actor->AddParent(rootid);
-					IComponent *ic = (IComponent*)new ModelComponent(newactor, ConstantModels::getPlaneModel());
-					actor->AddComponent<ModelComponent>(ic);
+					actor->AddComponent<ModelComponent>(ConstantModels::getPlaneModel());
 				}
 				if (ImGui::MenuItem("Cone")) {
 					ActorID newactor = GE_Engine->actorManager->CreateActor("Cone", sceneRenderer->gamebase->currentScene);
 					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
 					actor->AddParent(rootid);
-					IComponent *ic = (IComponent*)new ModelComponent(newactor, ConstantModels::getConeModel());
-					actor->AddComponent<ModelComponent>(ic);
+					actor->AddComponent<ModelComponent>(ConstantModels::getConeModel());
 				}
 				if (ImGui::MenuItem("Cylinder")) {
 					ActorID newactor = GE_Engine->actorManager->CreateActor("Cylinder", sceneRenderer->gamebase->currentScene);
 					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
 					actor->AddParent(rootid);
-					IComponent *ic = (IComponent*)new ModelComponent(newactor, ConstantModels::getCylinderModel());
-					actor->AddComponent<ModelComponent>(ic);
+					actor->AddComponent<ModelComponent>(ConstantModels::getCylinderModel());
 				}
 				ImGui::EndMenu();
 			}
@@ -860,23 +852,23 @@ void Editor::DrawHierarchy(ActorID rootid)
 					ActorID newactor = GE_Engine->actorManager->CreateActor("PointLight", sceneRenderer->gamebase->currentScene);
 					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
 					actor->AddParent(rootid);
-					IComponent *ic = (IComponent*)new LightComponent(newactor, Point);
-					actor->AddComponent<LightComponent>(ic);
+
+					actor->AddComponent<LightComponent>(Point);
 					
 				}
 				if (ImGui::MenuItem("Directional")) {
 					ActorID newactor = GE_Engine->actorManager->CreateActor("DirectionalLight", sceneRenderer->gamebase->currentScene);
 					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
 					actor->AddParent(rootid);
-					IComponent *ic = (IComponent*)new LightComponent(newactor, Directional);
-					actor->AddComponent<LightComponent>(ic);
+
+					actor->AddComponent<LightComponent>(Directional);
 				}
 				if (ImGui::MenuItem("Spot")) {
 					ActorID newactor = GE_Engine->actorManager->CreateActor("SpotLight", sceneRenderer->gamebase->currentScene);
 					Actor *actor = GE_Engine->actorManager->GetActor(newactor);
 					actor->AddParent(rootid);
-					IComponent *ic = (IComponent*)new LightComponent(newactor, Spotlight);
-					actor->AddComponent<LightComponent>(ic);
+
+					actor->AddComponent<LightComponent>(Spotlight);
 				}
 				ImGui::EndMenu();
 			}

@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-LightComponent::LightComponent(ActorID own) : Component(own)
+LightComponent::LightComponent() : Component()
 {
 	this->lightType = LightType::Point;
 	this->color = { 1,1,1 };
@@ -15,7 +15,7 @@ LightComponent::LightComponent(ActorID own) : Component(own)
 	this->intensity = 1;
 }
 
-LightComponent::LightComponent(ActorID own, LightType a) : Component(own) , lightType(a) {
+LightComponent::LightComponent(LightType a) : Component() , lightType(a) {
 	this->color = { 1,1,1 };
 	this->angle = 10;
 

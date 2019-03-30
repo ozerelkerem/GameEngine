@@ -2,7 +2,7 @@
 #include <Engine.h>
 #include <engine/ActorManager.h>
 
-AnimatorComponent::AnimatorComponent(ActorID own) : Component(own)
+AnimatorComponent::AnimatorComponent() : Component()
 {
 	state = false;
 }

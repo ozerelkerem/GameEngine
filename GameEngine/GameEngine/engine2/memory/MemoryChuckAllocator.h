@@ -96,11 +96,8 @@ public:
 	MemoryChunks m_Chunks;
 
 public:
-	MemoryChunkAllocator()
+	MemoryChunkAllocator(const char* allocatorTag = nullptr)
 	{
-		std::cout << sizeof(OBJECT_TYPE);
-		std::cout << alignof(OBJECT_TYPE);
-		
 		Allocator *allocator = new Allocator(ALLOC_SIZE, Allocate(ALLOC_SIZE), sizeof(OBJECT_TYPE), alignof(OBJECT_TYPE));
 		this->m_Chunks.push_back(new MemoryChunk(allocator));
 	}

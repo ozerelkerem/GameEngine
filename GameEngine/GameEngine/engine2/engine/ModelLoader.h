@@ -9,6 +9,8 @@
 #include <engine/components/CameraComponent.h>
 #include <engine/components/LightComponent.h>
 #include <engine/components/ModelComponent.h>
+#include <engine/components/SkinnedModelComponent.h>
+#include <engine/components/AnimatorComponent.h>
 #include <editor/ProjectManager.h>
 #include <editor/Serializable.h>
 #include <assimp/Importer.hpp>
@@ -131,14 +133,14 @@ namespace ModelLoader
 			IModelComponent *mc;
 			if (dynamic_cast<SkinnedMesh*>(meshes[node->mMeshes[0]]))
 			{
-				mc = new SkinnedModelComponent(ActorID::INVALID_HANDLE, m);
+				mc = new SkinnedModelComponent(m);
 				
 				o->componentObject->addComponent<SkinnedModelComponent>((SkinnedModelComponent *)mc);
 
 			}
 			else
 			{
-				mc = new ModelComponent(ActorID::INVALID_HANDLE, m);
+				mc = new ModelComponent(m);
 				o->componentObject->addComponent<ModelComponent>((ModelComponent *)mc);
 			}
 			mc->numberOfMaterials = node->mNumMeshes;
@@ -307,14 +309,14 @@ namespace ModelLoader
 	{
 		Object *c = new Object(light->mName.C_Str());
 		//	c->componentObject->addComponent(new LightComponent((LightType)light->mType, aicolortovec3(light->mColorDiffuse), aicolortovec3(light->mColorAmbient), aicolortovec3(light->mColorSpecular)));
-		c->componentObject->addComponent(new LightComponent(ActorID::INVALID_HANDLE));
+		c->componentObject->addComponent(new LightComponent());
 		return c;
 	}
 
 	static Object * generateCamera(const aiCamera *camera)
 	{
 		Object *c = new Object(camera->mName.C_Str());
-		c->componentObject->addComponent(new CameraComponent(ActorID::INVALID_HANDLE,camera->mHorizontalFOV, camera->mAspect, camera->mClipPlaneNear, camera->mClipPlaneFar));
+		c->componentObject->addComponent(new CameraComponent(camera->mHorizontalFOV, camera->mAspect, camera->mClipPlaneNear, camera->mClipPlaneFar));
 		return c;
 	}
 

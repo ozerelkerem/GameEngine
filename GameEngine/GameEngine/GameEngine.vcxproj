@@ -145,7 +145,6 @@
     <ClCompile Include="engine2\engine\components\CameraComponent.cpp" />
     <ClCompile Include="engine2\engine\components\Component.cpp" />
     <ClCompile Include="engine2\engine\components\ComponentObject.cpp" />
-    <ClCompile Include="engine2\engine\components\ComponentSystem.cpp" />
     <ClCompile Include="engine2\engine\components\IComponent.cpp" />
     <ClCompile Include="engine2\engine\components\IModelComponent.cpp" />
     <ClCompile Include="engine2\engine\components\LightComponent.cpp" />
@@ -185,6 +184,7 @@
     <ClCompile Include="engine2\memory\Allocator\StackAllocator.cpp" />
     <ClCompile Include="engine2\memory\MemoryManager.cpp" />
     <ClCompile Include="engine2\memory\Allocator\PoolAllocator.cpp" />
+    <ClCompile Include="engine2\engine\systems\RenderSystem.cpp" />
     <ClCompile Include="stb\stb_image.c" />
   </ItemGroup>
   <ItemGroup>
@@ -206,7 +206,6 @@
     <ClInclude Include="engine2\engine\components\CameraComponent.h" />
     <ClInclude Include="engine2\engine\components\Component.h" />
     <ClInclude Include="engine2\engine\components\ComponentObject.h" />
-    <ClInclude Include="engine2\engine\components\ComponentSystem.h" />
     <ClInclude Include="engine2\engine\components\IComponent.h" />
     <ClInclude Include="engine2\engine\components\IModelComponent.h" />
     <ClInclude Include="engine2\engine\components\LightComponent.h" />
@@ -254,6 +253,7 @@
     <ClInclude Include="engine2\memory\Allocator\StackAllocator.h" />
     <ClInclude Include="engine2\memory\MemoryManager.h" />
     <ClInclude Include="engine2\memory\Allocator\PoolAllocator.h" />
+    <ClInclude Include="engine2\engine\systems\RenderSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

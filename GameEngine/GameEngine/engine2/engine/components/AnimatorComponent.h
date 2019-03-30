@@ -13,7 +13,7 @@ public:
 	bool state;
 	bool isLoop;
 
-	AnimatorComponent(ActorID);
+	AnimatorComponent();
 	~AnimatorComponent();
 
 	void PlayLoop(Animation * anim);

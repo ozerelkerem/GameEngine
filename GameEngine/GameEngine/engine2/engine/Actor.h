@@ -20,7 +20,7 @@ public:
 
 	ComponentManager* componentManagerInstance;
 
-	ComponentObject *componentObject;
+	
 
 	ActorID actorID;
 
@@ -41,8 +41,7 @@ public:
 	bool AddParent(ActorID newParent);
 	bool RemoveParent();
 
-	template<class T>
-	inline void AddComponent(IComponent *component);
+
 
 	void processTransformation();
 	void RecalculateRealMatrix();
@@ -51,34 +50,28 @@ public:
 	template<class T>
 	T* GetComponent() const
 	{
-		return this->m_ComponentManagerInstance->GetComponent<T>(this->m_EntityID);
+		return this->componentManagerInstance->GetComponent<T>(this->actorID);
 	}
 
 	template<class T, class ...P>
 	T* AddComponent(P&&... param)
 	{
-		return this->m_ComponentManagerInstance->AddComponent<T>(this->m_EntityID, std::forward<P>(param)...);
+		return this->componentManagerInstance->AddComponent<T>(this->actorID, std::forward<P>(param)...);
+	}
+
+	template<class T>
+	T* AddComponent(T* other)
+	{
+		return this->componentManagerInstance->AddComponent<T>(this->actorID, other);
 	}
 
 	template<class T>
 	void RemoveComponent()
 	{
-		this->m_ComponentManagerInstance->RemoveComponent<T>(this->m_EntityID);
+		this->componentManagerInstance->RemoveComponent<T>(this->actorID);
 	}
 
 };
+
 #include <engine/Scene.h>
-
-
-template<class T>
-inline void Actor::AddComponent(IComponent *component)
-{
-	componentObject->addComponent<T>(reinterpret_cast<T*>(component));
-	scene->componentSystem->AddComponent<T>(this->actorID, reinterpret_cast<T*>(component));
-}
-
-
-
-
-
 #include <engine/components/ComponentObject.h>

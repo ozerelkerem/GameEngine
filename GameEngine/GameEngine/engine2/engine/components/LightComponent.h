@@ -18,8 +18,8 @@ private:
 	float quadratic;
 public:
 
-	LightComponent(ActorID);
-	LightComponent(ActorID, LightType a);
+	LightComponent();
+	LightComponent(LightType a);
 	~LightComponent();
 
 	LightType lightType;

@@ -15,8 +15,6 @@ Actor::Actor(std::string name, Scene *scene, ActorID aid) : actorID(aid)
 
 	if (name != scene->name)
 		AddParent(scene->rootActor);
-
-	componentObject = new ComponentObject();
 }
 
 
@@ -43,11 +41,9 @@ void Actor::RemoveActor()
 	for (int i = 0; i < numberOfChildren; i++)
 		GE_Engine->actorManager->GetActor(children[i])->RemoveParent();
 
-	scene->componentSystem->removeActor(this->actorID);
-	GE_Engine->actorManager->ReleaseActorID(this->actorID);
+//	scene->componentSystem->removeActor(this->actorID);
+	GE_Engine->actorManager->DestroyActor(this->actorID);
 
-	
-	
 
 	//TODO REMOVE ACTOR FROM EVERYWHERE ActorManager, ComponenentManager vs..
 }

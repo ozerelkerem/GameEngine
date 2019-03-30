@@ -7,13 +7,19 @@
 class IModelComponent
 {
 public:
-	IModelComponent(Model *m);
+	IModelComponent();
 	~IModelComponent();
 
 
-	Model *model;
+
 
 	int numberOfMaterials;
 	std::vector<Material*> materials;
+
+	inline virtual void setModel(Model *m) = 0;
+	inline virtual Model* getModel() { return model; };
+
+protected:
+	Model *model;
 };
 

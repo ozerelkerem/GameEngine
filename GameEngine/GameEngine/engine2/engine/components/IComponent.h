@@ -10,7 +10,9 @@ class IComponent
 public:
 	static const ComponentID INVALID_COMPONENT_ID = std::numeric_limits<ComponentID>::max();
 
-	IComponent(ActorID);
+	friend class ComponentManager;
+
+	IComponent();
 	~IComponent();
 
 	ComponentID componentID;

@@ -126,9 +126,6 @@
     <ClCompile Include="engine2\engine\components\ComponentObject.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-    <ClCompile Include="engine2\engine\components\ComponentSystem.cpp">
-      <Filter>Kaynak Dosyalar</Filter>
-    </ClCompile>
     <ClCompile Include="engine2\engine\components\IComponent.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
@@ -193,6 +190,9 @@
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
     <ClCompile Include="engine2\engine\components\ComponentManager.cpp">
+      <Filter>Kaynak Dosyalar</Filter>
+    </ClCompile>
+    <ClCompile Include="engine2\engine\systems\RenderSystem.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
   </ItemGroup>
@@ -317,9 +317,6 @@
     <ClInclude Include="engine2\engine\components\ComponentObject.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
-    <ClInclude Include="engine2\engine\components\ComponentSystem.h">
-      <Filter>Üst Bilgi Dosyaları</Filter>
-    </ClInclude>
     <ClInclude Include="engine2\engine\components\IComponent.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
@@ -393,6 +390,9 @@
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
     <ClInclude Include="engine2\engine\components\ComponentManager.h">
+      <Filter>Üst Bilgi Dosyaları</Filter>
+    </ClInclude>
+    <ClInclude Include="engine2\engine\systems\RenderSystem.h">
       <Filter>Üst Bilgi Dosyaları</Filter>
     </ClInclude>
   </ItemGroup>

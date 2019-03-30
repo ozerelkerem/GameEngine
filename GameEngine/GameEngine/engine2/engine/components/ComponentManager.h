@@ -1,9 +1,14 @@
 #pragma once
-#include<engine/components/Component.h>
+#include<Api.h>
 #include<memory/MemoryChuckAllocator.h>
+#include<engine/components/Component.h>
+
+
 
 class ComponentManager : GlobalMemoryUser
 {
+	friend class IComponent;
+
 
 	class IComponentContainer
 	{
@@ -22,12 +27,13 @@ class ComponentManager : GlobalMemoryUser
 
 	public:
 
-		ComponentContainer() : MemoryChunkAllocator() {}
-		
+		ComponentContainer() : MemoryChunkAllocator<T, COMPONENT_CHUNK_SIZE>()
+		{}
+
 		virtual ~ComponentContainer() {}
 
-		virtual const char* GetComponentContainerTypeName() const override{
-			static const char* COMPONENT_TYPE_NAME{ typeid(T).name };
+		virtual const char* GetComponentContainerTypeName() const override {
+			static const char* COMPONENT_TYPE_NAME{ typeid(T).name() };
 			return COMPONENT_TYPE_NAME;
 		}
 
@@ -37,8 +43,6 @@ class ComponentManager : GlobalMemoryUser
 
 			this->DestroyObject(object);
 		}
-
-
 
 
 	};
@@ -65,7 +69,7 @@ class ComponentManager : GlobalMemoryUser
 		else
 			cc = static_cast<ComponentContainer<T>*>(it->second);
 
-		assert(cc != nullptr_t && "Failed to get component container");
+		assert(cc != nullptr && "Failed to get component container");
 
 
 		return cc;
@@ -111,6 +115,27 @@ public:
 		MapActorComponent(actorid, componentid, CTID);
 
 		return static_cast<T*>(component);
+
+	}
+	template<class T>
+	T* AddComponent(const ActorID actorid, T* other)
+	{
+		//	static constexpr std::hash<ComponentID> ACTOR_COMPONENT_ID_HASHER{ std::hash<ComponentID>() };
+
+		const ComponentTypeID CTID = T::STATIC_COMPONENT_TYPE_ID;
+
+		void *pObjectMemory = GetComponentContainer<T>()->CreateObject();
+
+		ComponentID componentid = this->AqcuireComponentId((T*)pObjectMemory);
+		
+
+		memcpy(pObjectMemory, other, sizeof(T));
+		((T*)pObjectMemory)->componentID = componentid;
+		((T*)pObjectMemory)->owner = actorid;
+
+		MapActorComponent(actorid, componentid, CTID);
+
+		return static_cast<T*>(pObjectMemory);
 
 	}
 
