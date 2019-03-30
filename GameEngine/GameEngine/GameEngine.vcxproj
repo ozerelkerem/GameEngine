@@ -127,6 +127,8 @@
     <None Include="Debug\glew32.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="engine2\engine\components\colliders\CubeColliderComponent.cpp" />
+    <ClCompile Include="engine2\engine\components\colliders\CapsuleColliderComponent.cpp" />
     <ClCompile Include="engine2\engine\components\ComponentManager.cpp" />
     <ClCompile Include="engine2\Api.cpp" />
     <ClCompile Include="engine2\editor\ConstantModels.cpp" />
@@ -172,6 +174,7 @@
     <ClCompile Include="engine2\engine\Transform.cpp" />
     <ClCompile Include="engine2\util\FamilyTypeID.cpp" />
     <ClCompile Include="engine2\memory\Allocator\IAllocator.cpp" />
+    <ClCompile Include="engine2\engine\components\colliders\ICollider.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -185,9 +188,12 @@
     <ClCompile Include="engine2\memory\MemoryManager.cpp" />
     <ClCompile Include="engine2\memory\Allocator\PoolAllocator.cpp" />
     <ClCompile Include="engine2\engine\systems\RenderSystem.cpp" />
+    <ClCompile Include="engine2\engine\components\colliders\SphereColliderComponent.cpp" />
     <ClCompile Include="stb\stb_image.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine2\engine\components\colliders\CubeColliderComponent.h" />
+    <ClInclude Include="engine2\engine\components\colliders\CapsuleColliderComponent.h" />
     <ClInclude Include="engine2\engine\components\ComponentManager.h" />
     <ClInclude Include="engine2\Api.h" />
     <ClInclude Include="engine2\editor\ConstantModels.h" />
@@ -238,6 +244,7 @@
     <ClInclude Include="engine2\util\FamilyTypeID.h" />
     <ClInclude Include="engine2\util\Handle.h" />
     <ClInclude Include="engine2\memory\Allocator\IAllocator.h" />
+    <ClInclude Include="engine2\engine\components\colliders\ICollider.h" />
     <ClInclude Include="imgui\file_dialog.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
@@ -254,6 +261,7 @@
     <ClInclude Include="engine2\memory\MemoryManager.h" />
     <ClInclude Include="engine2\memory\Allocator\PoolAllocator.h" />
     <ClInclude Include="engine2\engine\systems\RenderSystem.h" />
+    <ClInclude Include="engine2\engine\components\colliders\SphereColliderComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

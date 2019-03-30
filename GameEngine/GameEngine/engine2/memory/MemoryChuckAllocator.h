@@ -11,20 +11,20 @@ class MemoryChunkAllocator : protected GlobalMemoryUser
 
 public:
 
-	using Allocator = PoolAllocator;
+	using Allocator2 = PoolAllocator;
 	using ObjectList = std::list<OBJECT_TYPE *>;
 
 
 	class MemoryChunk
 	{
 	public:
-		Allocator *allocator;
+		Allocator2 *allocator;
 		ObjectList objects;
 
 		uintptr_t chunkStart;
 		uintptr_t chunkEnd;
 
-		MemoryChunk(Allocator *allo) : allocator(allo) {
+		MemoryChunk(Allocator2 *allo) : allocator(allo) {
 			
 			this->chunkStart = reinterpret_cast<uintptr_t>(allo->GetMemoryAddress0());
 			this->chunkEnd = this->chunkStart + ALLOC_SIZE;
@@ -98,7 +98,7 @@ public:
 public:
 	MemoryChunkAllocator(const char* allocatorTag = nullptr)
 	{
-		Allocator *allocator = new Allocator(ALLOC_SIZE, Allocate(ALLOC_SIZE), sizeof(OBJECT_TYPE), alignof(OBJECT_TYPE));
+		Allocator2 *allocator = new Allocator2(ALLOC_SIZE, Allocate(ALLOC_SIZE), sizeof(OBJECT_TYPE), alignof(OBJECT_TYPE));
 		this->m_Chunks.push_back(new MemoryChunk(allocator));
 	}
 
@@ -135,13 +135,13 @@ public:
 			slot = chunk->allocator->allocate(sizeof(OBJECT_TYPE), alignof(OBJECT_TYPE));
 			if (slot != nullptr)
 			{
-				chunk->objects.push_back((OBJECT_TYPE*)slot);
+ 				chunk->objects.push_back((OBJECT_TYPE*)slot);
 				break;
 			}
 		}
 		if (slot == nullptr)
 		{
-			Allocator* allocator = new Allocator(ALLOC_SIZE, Allocate(ALLOC_SIZE), sizeof(OBJECT_TYPE), alignof(OBJECT_TYPE));
+			Allocator2* allocator = new Allocator2(ALLOC_SIZE, Allocate(ALLOC_SIZE), sizeof(OBJECT_TYPE), alignof(OBJECT_TYPE));
 			MemoryChunk* newChunk = new MemoryChunk(allocator);
 
 			// put new chunk in front

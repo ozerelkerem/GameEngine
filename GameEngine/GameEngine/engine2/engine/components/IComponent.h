@@ -18,6 +18,6 @@ public:
 	ComponentID componentID;
 	ActorID owner;
 
-	virtual IComponent * getnew(ActorID, ComponentTypeID *) = 0;
+
 };
 

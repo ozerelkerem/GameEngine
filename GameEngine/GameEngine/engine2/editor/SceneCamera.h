@@ -26,7 +26,8 @@ public:
 	glm::vec3 frontVector;
 
 	const glm::vec3 worldUpVector = {0,0,1};
-	
+	const glm::vec3 worldRightVector = { 1,0,0 };
+	const glm::vec3 worldFrontVector = { 0,1,0 };
 
 
 

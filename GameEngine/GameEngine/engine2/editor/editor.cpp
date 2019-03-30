@@ -194,8 +194,36 @@ void Editor::ShowComponentList()
 
 	}
 
+	if (SphereColliderComponent *spherecollider = actor->GetComponent<SphereColliderComponent>())
+	{
+		if (ImGui::CollapsingHeader("SphereCollider Component", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::DragFloat("Radius##SphereColliderRadius", &spherecollider->radius, 0.1, 0.1, 100.f);
+		}
 
+	}
+
+	if (CapsuleColliderComponent *capsulecollider = actor->GetComponent<CapsuleColliderComponent>())
+	{
+		if (ImGui::CollapsingHeader("CapsuleCollider Component", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::DragFloat("Radius##CapsuleColliderRadiues", &capsulecollider->radius, 0.1, 0.1, 100.f);
+			ImGui::DragFloat("HalfHeight##CapsuleColliderRadiues", &capsulecollider->halfheight, 0.1, 0.1, 100.f);
+		}
+
+	}
 		
+	if (CubeColliderComponent *cubecollider = actor->GetComponent<CubeColliderComponent>())
+	{
+		if (ImGui::CollapsingHeader("CubeCollider Component", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::DragFloat("X##CubeColliderX", &cubecollider->x, 0.1, 0.1, 100.f);
+			ImGui::DragFloat("Y##CubeColliderY", &cubecollider->y, 0.1, 0.1, 100.f);
+			ImGui::DragFloat("Z##CubeColliderZ", &cubecollider->z, 0.1, 0.1, 100.f);
+		}
+
+	}
+
 }
 
 void Editor::ObjectProperties()
@@ -234,7 +262,7 @@ void Editor::ObjectProperties()
 				
 				ObjectPropertiesMaterials();
 				
-				const char *items[] = {"Light Component", "Animator Component"};
+				const char *items[] = {"Light Component", "Animator Component", "SphereCollider Component", "CapsuleCollider Component", "CubeCollider Component" };
 				if (ImGui::BeginCombo("##addcomponent", "Add Component", ImGuiComboFlags_NoArrowButton)) // The second parameter is the label previewed before opening the combo.
 				{
 					for (int n = 0; n < IM_ARRAYSIZE(items); n++)
@@ -250,9 +278,19 @@ void Editor::ObjectProperties()
 							case 1:
 							{
 								selectedActor->AddComponent<AnimatorComponent>();
-
 							}break;
-
+							case 2:
+							{
+								selectedActor->AddComponent<SphereColliderComponent>();
+							}break;
+							case 3:
+							{
+								selectedActor->AddComponent<CapsuleColliderComponent>();
+							}break;
+							case 4:
+							{
+								selectedActor->AddComponent<CubeColliderComponent>();
+							}break;
 							default:
 								break;
 							}

@@ -106,7 +106,7 @@ public:
 
 		void *pObjectMemory = GetComponentContainer<T>()->CreateObject();
 
-		ComponentID componentid = this->AqcuireComponentId((IComponent*)pObjectMemory);
+		ComponentID componentid = this->AqcuireComponentId((T*)pObjectMemory);
 		((T*)pObjectMemory)->componentID = componentid;
 
 		IComponent* component = new (pObjectMemory)T(std::forward<ARGS>(args)...);
@@ -151,7 +151,7 @@ public:
 		assert(component != nullptr && "FATAL: Trying to remove a component which is not used by this entity!");
 
 		GetComponentContainer<T>()->DestroyObject(component);
-
+		
 		UnmapActorComponent(actorid, componentId, CTID);
 
 	}

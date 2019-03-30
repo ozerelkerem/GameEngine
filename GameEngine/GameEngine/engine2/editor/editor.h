@@ -16,6 +16,9 @@
 #include <editor/Serializable.h>
 #include<engine/components/SkinnedModelComponent.h>
 #include<engine/components/AnimatorComponent.h>
+#include<engine/components/colliders/SphereColliderComponent.h>
+#include<engine/components/colliders/CapsuleColliderComponent.h>
+#include<engine/components/colliders/CubeColliderComponent.h>
 #include <engine/systems/SystemManager.h>
 class Editor
 {

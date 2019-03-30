@@ -6,18 +6,13 @@
 class Model;
 class ComponentSystem;
 
-class ModelComponent : public IModelComponent, public Component<ModelComponent>
+class ModelComponent : public Component<ModelComponent>, public IModelComponent
 {
 public:
 	ModelComponent(Model *m);
 	~ModelComponent();
 
-	inline virtual IComponent * getnew(ActorID own, ComponentTypeID *id) override {
-		*id = STATIC_COMPONENT_TYPE_ID;
-		auto x = ((IComponent*) new ModelComponent(*this));
-		x->owner = own;
-		return x;
-	}
+
 
 	inline virtual void setModel(Model *m) override {
 		model = m;

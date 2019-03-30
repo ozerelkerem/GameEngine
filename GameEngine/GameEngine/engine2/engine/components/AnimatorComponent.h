@@ -22,13 +22,7 @@ public:
 	Animation *currentAnimation;
 	std::unordered_map<std::string, ActorID::value_type> effectlist;
 
-	inline virtual IComponent * getnew(ActorID own, ComponentTypeID *id) override {
-		*id = STATIC_COMPONENT_TYPE_ID;
-		auto x = ((IComponent*) new AnimatorComponent(*this));
-		x->owner = own;
-		return x;
-	}
-
+	
 	void matchAnimation();
 };
 

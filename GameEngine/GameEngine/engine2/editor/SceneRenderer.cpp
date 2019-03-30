@@ -55,61 +55,7 @@ void SceneRenderer::renderSelectedLight()
 
 		if (lightcomponent->lightType == LightType::Point)
 		{
-			glm::vec3 startpos = lightpos + (glm::vec3(1, 0, 0) *dist);
-			glm::vec3 endpos = glm::rotate((startpos - lightpos), glm::radians(degree), glm::vec3(0, 1, 0));
-			endpos += lightpos;
-
-			for (int i = 0; i < sensivity; i++)
-			{
-				glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
-				glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
-
-				startpos = endpos;
-				endpos = glm::rotate((endpos - lightpos), glm::radians(degree), glm::vec3(0, 1, 0));
-				endpos += lightpos;
-			}
-
-			startpos = lightpos + (glm::vec3(1, 0, 0) *dist);
-			endpos = glm::rotate((startpos - lightpos), glm::radians(degree), glm::vec3(0, 0, 1));
-			endpos += lightpos;
-
-			for (int i = 0; i < sensivity; i++)
-			{
-				glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
-				glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
-
-				startpos = endpos;
-				endpos = glm::rotate((endpos - lightpos), glm::radians(degree), glm::vec3(0, 0, 1));
-				endpos += lightpos;
-			}
-
-			startpos = lightpos + (glm::vec3(0, 1, 0) *dist);
-			endpos = glm::rotate((startpos - lightpos), glm::radians(degree), glm::vec3(1, 0, 0));
-			endpos += lightpos;
-
-			for (int i = 0; i < sensivity; i++)
-			{
-				glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
-				glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
-
-				startpos = endpos;
-				endpos = glm::rotate((endpos - lightpos), glm::radians(degree), glm::vec3(1, 0, 0));
-				endpos += lightpos;
-			}
-
-			startpos = lightpos + (sceneCamera->rightVector * dist);
-			endpos = glm::rotate((startpos - lightpos), glm::radians(degree), sceneCamera->frontVector);
-			endpos += lightpos;
-
-			for (int i = 0; i < sensivity; i++)
-			{
-				glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
-				glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
-
-				startpos = endpos;
-				endpos = glm::rotate((endpos - lightpos), glm::radians(degree), sceneCamera->frontVector);
-				endpos += lightpos;
-			}
+			renderSphere(lightpos, dist, 18);
 		}
 		else if(lightcomponent->lightType == LightType::Spotlight)
 		{
@@ -164,6 +110,27 @@ void SceneRenderer::renderSelectedLight()
 	glEnd();
 }
 
+void SceneRenderer::renderSelectedCollider()
+{
+	colorShader->setVec3("color", glm::vec3(0,0.9,1));
+	glBegin(GL_LINES);
+	Actor * selectedactor = GE_Engine->actorManager->GetActor(selectedActor);
+	if (SphereColliderComponent *spherecollider = selectedactor->GetComponent<SphereColliderComponent>(); spherecollider)
+	{
+		renderSphere(selectedactor->transformation->getWorldPosition(), spherecollider->radius);
+	}
+	if (CapsuleColliderComponent *capsulecollider = selectedactor->GetComponent<CapsuleColliderComponent>(); capsulecollider)
+	{
+		renderCapsule(selectedactor->transformation->getWorldPosition(), capsulecollider->radius, capsulecollider->halfheight);
+	}
+	if (CubeColliderComponent *cubecollider = selectedactor->GetComponent<CubeColliderComponent>(); cubecollider)
+	{
+		renderCube(selectedactor->transformation->getWorldPosition(), cubecollider->x,cubecollider->y,cubecollider->z);
+	}
+
+	glEnd();
+}
+
 SceneRenderer::~SceneRenderer()
 {
 }
@@ -190,6 +157,7 @@ void SceneRenderer::render()
 	
 	if (selectedactor)
 	{
+		renderSelectedCollider();
 		renderSelectedLight(); //first light because color shader is still identity 
 		RenderOutlined(selectedactor);
 		
@@ -407,6 +375,228 @@ void SceneRenderer::focusActor(ActorID actorid)
 	sceneCamera->position = actor->transformation->getWorldPosition() + look;
 	sceneCamera->UpdateCameraVectors();
 	
+}
+
+void SceneRenderer::renderSphere(const glm::vec3 &pos, float radius, int sensivity)
+{
+	const float degree = 360 / sensivity;
+
+	glm::vec3 startpos = pos + (glm::vec3(1, 0, 0) *radius);
+	glm::vec3 endpos = glm::rotate((startpos - pos), glm::radians(degree), glm::vec3(0, 1, 0));
+	endpos += pos;
+
+	for (int i = 0; i < sensivity; i++)
+	{
+		glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+		glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+		startpos = endpos;
+		endpos = glm::rotate((endpos - pos), glm::radians(degree), glm::vec3(0, 1, 0));
+		endpos += pos;
+	}
+
+	startpos = pos + (glm::vec3(1, 0, 0) *radius);
+	endpos = glm::rotate((startpos - pos), glm::radians(degree), glm::vec3(0, 0, 1));
+	endpos += pos;
+
+	for (int i = 0; i < sensivity; i++)
+	{
+		glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+		glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+		startpos = endpos;
+		endpos = glm::rotate((endpos - pos), glm::radians(degree), glm::vec3(0, 0, 1));
+		endpos += pos;
+	}
+
+	startpos = pos + (glm::vec3(0, 1, 0) *radius);
+	endpos = glm::rotate((startpos - pos), glm::radians(degree), glm::vec3(1, 0, 0));
+	endpos += pos;
+
+	for (int i = 0; i < sensivity; i++)
+	{
+		glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+		glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+		startpos = endpos;
+		endpos = glm::rotate((endpos - pos), glm::radians(degree), glm::vec3(1, 0, 0));
+		endpos += pos;
+	}
+
+	startpos = pos + (sceneCamera->rightVector * radius);
+	endpos = glm::rotate((startpos - pos), glm::radians(degree), sceneCamera->frontVector);
+	endpos += pos;
+
+	for (int i = 0; i < sensivity; i++)
+	{
+		glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+		glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+		startpos = endpos;
+		endpos = glm::rotate((endpos - pos), glm::radians(degree), sceneCamera->frontVector);
+		endpos += pos;
+	}
+}
+
+void SceneRenderer::renderCapsule(const glm::vec3 & pos, float radius, float halfheight, int sensivity)
+{
+	const float degree = 360 / sensivity;
+
+	glm::vec3 startup[4],startdown[4];
+
+	glm::vec3 circlepos = pos + (sceneCamera->worldUpVector * halfheight);
+	glm::vec3 startpos = circlepos + (sceneCamera->worldRightVector *radius);
+	glm::vec3 endpos = glm::rotate((startpos - circlepos), glm::radians(degree), sceneCamera->worldUpVector);
+	endpos += circlepos;
+	for (int i = 0; i < sensivity; i++)
+	{
+
+		glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+		glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+		startpos = endpos;
+		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), sceneCamera->worldUpVector);
+		endpos += circlepos;
+	}
+	startpos = circlepos + (sceneCamera->worldUpVector *radius);
+	endpos = glm::rotate((startpos - circlepos), glm::radians(-sensivity/4*degree), sceneCamera->worldRightVector);
+	endpos += circlepos;
+	startpos = glm::rotate((endpos - circlepos), glm::radians(-degree), sceneCamera->worldRightVector);
+	startpos += circlepos;
+	startup[0] = startpos;
+
+	for (int i = 0; i < sensivity/2; i++)
+	{
+
+		glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+		glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+		startpos = endpos;
+		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), sceneCamera->worldRightVector);
+		endpos += circlepos;
+	}
+	startup[1] = startpos;
+
+	startpos = circlepos + (sceneCamera->worldUpVector *radius);
+	endpos = glm::rotate((startpos - circlepos), glm::radians(-sensivity / 4 * degree), sceneCamera->worldFrontVector);
+	endpos += circlepos;
+	startpos = glm::rotate((endpos - circlepos), glm::radians(-degree), sceneCamera->worldFrontVector);
+	startpos += circlepos;
+	startup[2] = startpos;
+
+	for (int i = 0; i < sensivity / 2; i++)
+	{
+
+		glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+		glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+		startpos = endpos;
+		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), sceneCamera->worldFrontVector);
+		endpos += circlepos;
+	}
+	startup[3] = startpos;
+
+
+
+	circlepos = pos - (sceneCamera->worldUpVector * halfheight);
+	startpos = circlepos + (sceneCamera->worldRightVector *radius);
+	endpos = glm::rotate((startpos - circlepos), glm::radians(degree), sceneCamera->worldUpVector);
+	endpos += circlepos;
+	for (int i = 0; i < sensivity; i++)
+	{
+
+		glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+		glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+		startpos = endpos;
+		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), sceneCamera->worldUpVector);
+		endpos += circlepos;
+	}
+
+	/**/
+	startpos = circlepos - (sceneCamera->worldUpVector *radius);
+	endpos = glm::rotate((startpos - circlepos), glm::radians(-sensivity / 4 * degree), sceneCamera->worldRightVector);
+	endpos += circlepos;
+	startpos = glm::rotate((endpos - circlepos), glm::radians(-degree), sceneCamera->worldRightVector);
+	startpos += circlepos;
+	startdown[0] = startpos;
+
+	for (int i = 0; i < sensivity / 2; i++)
+	{
+
+		glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+		glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+		startpos = endpos;
+		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), sceneCamera->worldRightVector);
+		endpos += circlepos;
+	}
+	startdown[1] = startpos;
+
+	startpos = circlepos - (sceneCamera->worldUpVector *radius);
+	endpos = glm::rotate((startpos - circlepos), glm::radians(-sensivity / 4 * degree), sceneCamera->worldFrontVector);
+	endpos += circlepos;
+	startpos = glm::rotate((endpos - circlepos), glm::radians(-degree), sceneCamera->worldFrontVector);
+	startpos += circlepos;
+	startdown[2] = startpos;
+
+	for (int i = 0; i < sensivity / 2; i++)
+	{
+
+		glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+		glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+		startpos = endpos;
+		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), sceneCamera->worldFrontVector);
+		endpos += circlepos;
+	}
+	startdown[3] = startpos;
+
+
+		glVertexAttrib3f(0, startup[0].x, startup[0].y, startup[0].z);
+		glVertexAttrib3f(0, startdown[1].x, startdown[1].y, startdown[1].z);
+		glVertexAttrib3f(0, startup[1].x, startup[1].y, startup[1].z);
+		glVertexAttrib3f(0, startdown[0].x, startdown[0].y, startdown[0].z);
+
+		glVertexAttrib3f(0, startup[2].x, startup[2].y, startup[2].z);
+		glVertexAttrib3f(0, startdown[3].x, startdown[3].y, startdown[3].z);
+		glVertexAttrib3f(0, startup[3].x, startup[3].y, startup[3].z);
+		glVertexAttrib3f(0, startdown[2].x, startdown[2].y, startdown[2].z);
+
+	
+
+}
+
+void SceneRenderer::renderCube(const glm::vec3 & pos, float x, float y, float z)
+{
+	glVertexAttrib3f(0, pos.x - x, pos.y - y, pos.z + z);
+	glVertexAttrib3f(0, pos.x - x, pos.y + y, pos.z + z);
+	glVertexAttrib3f(0, pos.x + x, pos.y - y, pos.z + z);
+	glVertexAttrib3f(0, pos.x + x, pos.y + y, pos.z + z);
+	glVertexAttrib3f(0, pos.x - x, pos.y + y, pos.z + z);
+	glVertexAttrib3f(0, pos.x + x, pos.y + y, pos.z + z);
+	glVertexAttrib3f(0, pos.x - x, pos.y - y, pos.z + z);
+	glVertexAttrib3f(0, pos.x + x, pos.y - y, pos.z + z);
+
+	glVertexAttrib3f(0, pos.x - x, pos.y - y, pos.z - z);
+	glVertexAttrib3f(0, pos.x - x, pos.y + y, pos.z - z);
+	glVertexAttrib3f(0, pos.x + x, pos.y - y, pos.z - z);
+	glVertexAttrib3f(0, pos.x + x, pos.y + y, pos.z - z);
+	glVertexAttrib3f(0, pos.x - x, pos.y + y, pos.z - z);
+	glVertexAttrib3f(0, pos.x + x, pos.y + y, pos.z - z);
+	glVertexAttrib3f(0, pos.x - x, pos.y - y, pos.z - z);
+	glVertexAttrib3f(0, pos.x + x, pos.y - y, pos.z - z);
+
+
+	glVertexAttrib3f(0, pos.x - x, pos.y - y, pos.z + z);
+	glVertexAttrib3f(0, pos.x - x, pos.y - y, pos.z - z);
+	glVertexAttrib3f(0, pos.x - x, pos.y + y, pos.z + z);
+	glVertexAttrib3f(0, pos.x - x, pos.y + y, pos.z - z);
+	glVertexAttrib3f(0, pos.x + x, pos.y - y, pos.z + z);
+	glVertexAttrib3f(0, pos.x + x, pos.y - y, pos.z - z);
+	glVertexAttrib3f(0, pos.x + x, pos.y + y, pos.z + z);
+	glVertexAttrib3f(0, pos.x + x, pos.y + y, pos.z - z);
+
 }
 
 

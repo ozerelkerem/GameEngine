@@ -35,11 +35,6 @@ public:
 	void passShader(Shader *s, Transform *, int);
 
 	
-	inline virtual IComponent * getnew(ActorID own, ComponentTypeID *id) override {
-		*id = STATIC_COMPONENT_TYPE_ID;
-		auto x = ((IComponent*) new LightComponent(*this));
-		x->owner = own;
-		return x;
-	}
+	
 };
 

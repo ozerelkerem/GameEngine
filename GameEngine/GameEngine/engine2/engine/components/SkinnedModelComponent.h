@@ -5,7 +5,7 @@
 #include <engine/components/IModelComponent.h>
 class Actor;
 
-class SkinnedModelComponent : public IModelComponent, public Component<SkinnedModelComponent>
+class SkinnedModelComponent :  public Component<SkinnedModelComponent>, public IModelComponent
 {
 public:
 	SkinnedModelComponent(Model *);
@@ -18,12 +18,6 @@ public:
 
 	void matchBones();
 
-	inline virtual IComponent * getnew(ActorID own, ComponentTypeID *id) override {
-		*id = STATIC_COMPONENT_TYPE_ID;
-		auto x = ((IComponent*) new SkinnedModelComponent(*this));
-		x->owner = own;
-		return x;
-	}
 
 	inline virtual void setModel(Model *m) override {
 		model = m;
