@@ -25,9 +25,13 @@
 #include <chrono>
 #include <util/Handle.h>
 
+#define ACTOR_LUT_GROW 1024
+#define COMPONENT_LUT_GROW 1024
 #define ACTOR_CHUNK_SIZE 512
+#define COMPONENT_CHUNK_SIZE 512
 
 #define GLOBAL_MEMORY_CAPACITY 134217728 // 128 MB
+
 
 
 using TypeID = uint16_t;

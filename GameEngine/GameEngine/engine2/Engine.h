@@ -4,6 +4,7 @@
 
 class ActorManager;
 class ResourceManager;
+class ComponentManager;
 
 class Engine
 {
@@ -19,5 +20,6 @@ public:
 
 	ActorManager * actorManager;
 	ResourceManager * resourceManager;
+	ComponentManager* componentManager;
 };
 

@@ -2,9 +2,12 @@
 
 #include <engine/ActorManager.h>
 #include <engine/resource/ResourceManager.h>
+#include<engine/components/ComponentManager.h>
+
 Engine::Engine()
 {
-	actorManager = new ActorManager();
+	componentManager = new ComponentManager();
+	actorManager = new ActorManager(componentManager);
 	resourceManager = new ResourceManager();
 }
 

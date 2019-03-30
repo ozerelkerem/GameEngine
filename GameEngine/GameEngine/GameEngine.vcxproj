@@ -127,6 +127,7 @@
     <None Include="Debug\glew32.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="engine2\engine\components\ComponentManager.cpp" />
     <ClCompile Include="engine2\Api.cpp" />
     <ClCompile Include="engine2\editor\ConstantModels.cpp" />
     <ClCompile Include="engine2\editor\editor.cpp" />
@@ -187,6 +188,7 @@
     <ClCompile Include="stb\stb_image.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine2\engine\components\ComponentManager.h" />
     <ClInclude Include="engine2\Api.h" />
     <ClInclude Include="engine2\editor\ConstantModels.h" />
     <ClInclude Include="engine2\editor\editor.h" />

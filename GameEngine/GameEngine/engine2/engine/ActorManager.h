@@ -3,8 +3,11 @@
 #include<util/Handle.h>
 #include<engine/Actor.h>
 #include<memory/MemoryChuckAllocator.h>
+
 class ActorManager
 {
+	ComponentManager *componentManagerInstance;
+
 
 	class ActorContainer : public MemoryChunkAllocator<Actor, ACTOR_CHUNK_SIZE>
 	{
@@ -33,7 +36,7 @@ public:
 	ActorContainer* actorContainer;
 	ActorHandleTable actorHandleTable;
 
-	ActorManager();
+	ActorManager(ComponentManager* componentManagerInstance);
 	~ActorManager();
 
 private:
@@ -67,7 +70,7 @@ public:
 	
 
 //		actor->actorID = actorid;
-		//((T*)pObjectMemory)->m_ComponentManagerInstance = this->m_ComponentManagerInstance;
+		((Actor*)pObjectMemory)->componentManagerInstance = this->componentManagerInstance;
 
 		// create entity inplace
 		

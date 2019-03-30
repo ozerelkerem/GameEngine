@@ -2,7 +2,7 @@
 
 
 
-ActorManager::ActorManager()
+ActorManager::ActorManager(ComponentManager* cmi) : componentManagerInstance(cmi)
 {
 	this->actorContainer = new ActorContainer();
 }

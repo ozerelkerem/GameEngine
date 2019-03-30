@@ -2,6 +2,7 @@
 
 #include <Api.h>
 
+#include<engine/components/ComponentManager.h>
 #include <engine/Transform.h>
 #include<util/Handle.h>
 
@@ -11,12 +12,13 @@ class Scene;
 class ComponentSystem;
 
 
-
 class Actor
 {
 public:
 	Actor(std::string, Scene *, ActorID);
 	~Actor();
+
+	ComponentManager* componentManagerInstance;
 
 	ComponentObject *componentObject;
 
@@ -44,6 +46,26 @@ public:
 
 	void processTransformation();
 	void RecalculateRealMatrix();
+
+
+	template<class T>
+	T* GetComponent() const
+	{
+		return this->m_ComponentManagerInstance->GetComponent<T>(this->m_EntityID);
+	}
+
+	template<class T, class ...P>
+	T* AddComponent(P&&... param)
+	{
+		return this->m_ComponentManagerInstance->AddComponent<T>(this->m_EntityID, std::forward<P>(param)...);
+	}
+
+	template<class T>
+	void RemoveComponent()
+	{
+		this->m_ComponentManagerInstance->RemoveComponent<T>(this->m_EntityID);
+	}
+
 };
 #include <engine/Scene.h>
 
