@@ -1,6 +1,7 @@
 #include<editor/ConstantModels.h>
 #include<Engine.h>
 #include<engine/resource/ResourceManager.h>
+
 namespace ConstantTextures
 {
 	Texture * Textures::lightTexture = nullptr;
@@ -26,5 +27,15 @@ namespace ConstantMaterials
 		Materials::defaultMaterial->ambientColor = glm::vec3(0.8, 0.8, 0.8);
 
 		//Textures::cameraTexture->loadTexture();
+	}
+}
+
+namespace ConstantPhysicMaterials
+{
+	physx::PxMaterial* PhysicMaterials::defaultMaterial = nullptr;
+
+	void PhysicMaterials::initMaterials()
+	{
+		PhysicMaterials::defaultMaterial = PxGetPhysics().createMaterial(0.1, 0.1, 0.5);
 	}
 }

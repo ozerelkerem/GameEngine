@@ -2,6 +2,7 @@
 
 #include<memory/Allocator/PoolAllocator.h>
 
+
 template<class OBJECT_TYPE, size_t MAX_CHUNK_OBJECTS>
 class MemoryChunkAllocator : protected GlobalMemoryUser
 {

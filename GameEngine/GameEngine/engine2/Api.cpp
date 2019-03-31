@@ -39,6 +39,7 @@ void Initialize()
 
 	ConstantTextures::Textures::initTextures();
 	ConstantMaterials::Materials::initMaterial();
+	ConstantPhysicMaterials::PhysicMaterials::initMaterials();
 }
 
 void Terminate()

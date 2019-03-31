@@ -1,7 +1,13 @@
 #pragma once
 #include<Api.h>
 #include<memory/MemoryChuckAllocator.h>
-#include<engine/components/Component.h>
+
+#include<engine/components/colliders/CapsuleColliderComponent.h>
+#include<engine/components/colliders/CubeColliderComponent.h>
+#include<engine/components/colliders/CapsuleColliderComponent.h>
+#include<engine/components/colliders/SphereColliderComponent.h>
+#include<engine/components/RigidBodyComponent.h>
+
 
 
 
@@ -93,30 +99,15 @@ public:
 	template<class T>
 	using TComponentIterator = typename ComponentContainer<T>::iterator;
 
+	
+
 	ComponentManager();
 	~ComponentManager();
 
 
 	template<class T, class ...ARGS>
-	T* AddComponent(const ActorID actorid, ARGS&&... args)
-	{
-	//	static constexpr std::hash<ComponentID> ACTOR_COMPONENT_ID_HASHER{ std::hash<ComponentID>() };
-
-		const ComponentTypeID CTID = T::STATIC_COMPONENT_TYPE_ID;
-
-		void *pObjectMemory = GetComponentContainer<T>()->CreateObject();
-
-		ComponentID componentid = this->AqcuireComponentId((T*)pObjectMemory);
-		((T*)pObjectMemory)->componentID = componentid;
-
-		IComponent* component = new (pObjectMemory)T(std::forward<ARGS>(args)...);
-		component->owner = actorid;
-
-		MapActorComponent(actorid, componentid, CTID);
-
-		return static_cast<T*>(component);
-
-	}
+	T* AddComponent(const ActorID actorid, ARGS&&... args);
+	
 	template<class T>
 	T* AddComponent(const ActorID actorid, T* other)
 	{
@@ -208,3 +199,26 @@ public:
 	}
 };
 
+#include<engine/physx/PhysicSystem.h>
+
+template<class T, class ...ARGS>
+inline T * ComponentManager::AddComponent(const ActorID actorid, ARGS && ...args)
+{
+const ComponentTypeID CTID = T::STATIC_COMPONENT_TYPE_ID;
+
+	void *pObjectMemory = GetComponentContainer<T>()->CreateObject();
+
+	ComponentID componentid = this->AqcuireComponentId((T*)pObjectMemory);
+	((T*)pObjectMemory)->componentID = componentid;
+
+	IComponent* component = new (pObjectMemory)T(std::forward<ARGS>(args)...);
+	component->owner = actorid;
+
+	MapActorComponent(actorid, componentid, CTID);
+
+	if constexpr (std::is_same<T, RigidBodyComponent>::value || std::is_same<T, CubeColliderComponent>::value || std::is_same<T, SphereColliderComponent>::value || std::is_same<T, CapsuleColliderComponent>::value)
+	{
+		GE_Engine->physicSystem->addComponent<T>(static_cast<T*>(component));
+	}
+	return static_cast<T*>(component);
+}

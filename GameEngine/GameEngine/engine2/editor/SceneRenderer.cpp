@@ -117,18 +117,28 @@ void SceneRenderer::renderSelectedCollider()
 	Actor * selectedactor = GE_Engine->actorManager->GetActor(selectedActor);
 	if (SphereColliderComponent *spherecollider = selectedactor->GetComponent<SphereColliderComponent>(); spherecollider)
 	{
-		renderSphere(selectedactor->transformation->getWorldPosition(), spherecollider->radius);
-	}
-	if (CapsuleColliderComponent *capsulecollider = selectedactor->GetComponent<CapsuleColliderComponent>(); capsulecollider)
-	{
-		renderCapsule(selectedactor->transformation->getWorldPosition(), capsulecollider->radius, capsulecollider->halfheight);
+		renderSphere(selectedactor->transformation->getWorldPosition(), spherecollider->geometry.radius);
 	}
 	if (CubeColliderComponent *cubecollider = selectedactor->GetComponent<CubeColliderComponent>(); cubecollider)
 	{
-		renderCube(selectedactor->transformation->getWorldPosition(), cubecollider->x,cubecollider->y,cubecollider->z);
+		renderCube(selectedactor->transformation->getWorldPosition(), cubecollider->geometry.halfExtents.x, cubecollider->geometry.halfExtents.y, cubecollider->geometry.halfExtents.z);
+	}
+	glEnd();
+
+	if (CapsuleColliderComponent *capsulecollider = selectedactor->GetComponent<CapsuleColliderComponent>(); capsulecollider)
+	{
+		glm::vec3 t(0,0,1);
+		if (capsulecollider->upp == 0)
+			t = { 0,1,0 };
+		else if (capsulecollider->upp == 1)
+			t = { 1,0,0 };
+			colorShader->setMat4("modelMatrix", glm::rotate(glm::mat4(1), glm::radians(90.f), t));
+		glBegin(GL_LINES);
+		renderCapsule(selectedactor->transformation->getWorldPosition(), capsulecollider->geometry.radius, capsulecollider->geometry.halfHeight);
+		glEnd();
+		colorShader->setMat4("modelMatrix",glm::mat4(1));
 	}
 
-	glEnd();
 }
 
 SceneRenderer::~SceneRenderer()

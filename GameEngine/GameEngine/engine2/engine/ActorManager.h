@@ -1,31 +1,35 @@
 #pragma once
 #include<Api.h>
 #include<util/Handle.h>
-#include<engine/Actor.h>
+
 #include<memory/MemoryChuckAllocator.h>
+#include<engine/Actor.h>
+
+class ActorContainer : public MemoryChunkAllocator<Actor, ACTOR_CHUNK_SIZE>
+{
+	ActorContainer(const ActorContainer&) = delete;
+	ActorContainer& operator=(ActorContainer&) = delete;
+
+public:
+	ActorContainer() : MemoryChunkAllocator() {}
+	virtual ~ActorContainer() {}
+
+	virtual void DestroyActor(Actor* object)
+	{
+		// call d'tor
+		object->~Actor();
+
+		this->DestroyObject(object);
+	}
+};
+class Actor;
 
 class ActorManager
 {
 	ComponentManager *componentManagerInstance;
 
 
-	class ActorContainer : public MemoryChunkAllocator<Actor, ACTOR_CHUNK_SIZE>
-	{
-		ActorContainer(const ActorContainer&) = delete;
-		ActorContainer& operator=(ActorContainer&) = delete;
-
-	public:
-		ActorContainer() : MemoryChunkAllocator() {}
-		virtual ~ActorContainer() {}
-
-		virtual void DestroyActor(Actor* object)
-		{
-			// call d'tor
-			object->~Actor();
-
-			this->DestroyObject(object);
-		}
-	};
+	
 
 
 	using PendingDestroyedActors = std::vector<ActorID>;

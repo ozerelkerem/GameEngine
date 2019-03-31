@@ -37,7 +37,6 @@ public:
 	ProjectManager *projectManager;
 
 	GameBase *gameBase;
-	SystemManager *sm;
 
 
 	void Render();

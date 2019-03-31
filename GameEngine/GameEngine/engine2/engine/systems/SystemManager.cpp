@@ -5,9 +5,10 @@
 
 
 
-SystemManager::SystemManager(AnimationSystem * m)
+SystemManager::SystemManager(AnimationSystem * m, PhysicSystem *p)
 {
 	this->m = m;
+	this->p = p;
 }
 
 SystemManager::~SystemManager()

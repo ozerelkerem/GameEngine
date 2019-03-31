@@ -9,7 +9,7 @@ class AnimationSystem : public System <AnimationSystem>
 {
 public:
 
-	AnimationSystem(GameBase *);
+	AnimationSystem();
 	~AnimationSystem();
 
 	virtual void PreUpdate() override;
@@ -18,7 +18,7 @@ public:
 
 	void loopHierarchy(ActorID);
 
-	GameBase *gamebase;
+	
 
 };
 

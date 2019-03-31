@@ -7,10 +7,9 @@
 #include<util/Handle.h>
 
 class IComponent;
-class ComponentObject;
 class Scene;
 class ComponentSystem;
-
+class ActorManager;
 
 class Actor
 {
@@ -73,5 +72,4 @@ public:
 
 };
 
-#include <engine/Scene.h>
-#include <engine/components/ComponentObject.h>
+

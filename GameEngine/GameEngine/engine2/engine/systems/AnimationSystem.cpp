@@ -2,7 +2,7 @@
 #include "AnimationSystem.h"
 #include <engine/ActorManager.h>
 #include <engine/components/AnimatorComponent.h>
-AnimationSystem::AnimationSystem(GameBase *gb) : gamebase(gb) {}
+AnimationSystem::AnimationSystem() {}
 
 AnimationSystem::~AnimationSystem()
 {

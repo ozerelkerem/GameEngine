@@ -1,5 +1,5 @@
 #pragma once
-
+#include<physx/PxPhysicsAPI.h>
 #include <engine/ModelLoader.h>
 class Texture;
 namespace ConstantModels
@@ -88,9 +88,16 @@ namespace ConstantTextures
 		static Texture * animationTexture;
 		static void initTextures();
 	};
-	 
+		
+}
 
 	
-	
-	
+namespace ConstantPhysicMaterials
+{
+	class PhysicMaterials
+	{
+	public:
+		static physx::PxMaterial* defaultMaterial;
+		static void initMaterials();
+	};
 }

@@ -13,8 +13,7 @@ Editor::Editor(GLFWwindow *window)
 	projectManager->add(scene);
 	gameBase = new GameBase(scene);
 	sceneRenderer = new SceneRenderer(gameBase);
-	auto as = new AnimationSystem(gameBase);
-	sm = new SystemManager(as);
+
 	Serializable::Save(projectManager, projectManager->path.c_str());
 
 }
@@ -198,7 +197,8 @@ void Editor::ShowComponentList()
 	{
 		if (ImGui::CollapsingHeader("SphereCollider Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			ImGui::DragFloat("Radius##SphereColliderRadius", &spherecollider->radius, 0.1, 0.1, 100.f);
+			if (ImGui::DragFloat("Radius##SphereColliderRadius", &spherecollider->geometry.radius, 0.1, 0.1, 100.f))
+				spherecollider->update();
 		}
 
 	}
@@ -207,8 +207,12 @@ void Editor::ShowComponentList()
 	{
 		if (ImGui::CollapsingHeader("CapsuleCollider Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			ImGui::DragFloat("Radius##CapsuleColliderRadiues", &capsulecollider->radius, 0.1, 0.1, 100.f);
-			ImGui::DragFloat("HalfHeight##CapsuleColliderRadiues", &capsulecollider->halfheight, 0.1, 0.1, 100.f);
+			if (ImGui::SliderInt("Up",&capsulecollider->upp,0,2))
+				capsulecollider->update();
+			if (ImGui::DragFloat("Radius##CapsuleColliderRadiues", &capsulecollider->geometry.radius, 0.1, 0.1, 100.f))
+				capsulecollider->update();
+			if (ImGui::DragFloat("HalfHeight##CapsuleColliderRadiues", &capsulecollider->geometry.halfHeight, 0.1, 0.1, 100.f))
+				capsulecollider->update();
 		}
 
 	}
@@ -217,9 +221,20 @@ void Editor::ShowComponentList()
 	{
 		if (ImGui::CollapsingHeader("CubeCollider Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			ImGui::DragFloat("X##CubeColliderX", &cubecollider->x, 0.1, 0.1, 100.f);
-			ImGui::DragFloat("Y##CubeColliderY", &cubecollider->y, 0.1, 0.1, 100.f);
-			ImGui::DragFloat("Z##CubeColliderZ", &cubecollider->z, 0.1, 0.1, 100.f);
+			if (ImGui::DragFloat("X##CubeColliderX", &cubecollider->geometry.halfExtents.x, 0.1, 0.1, 100.f))
+				cubecollider->update();
+
+			ImGui::DragFloat("Y##CubeColliderY", &cubecollider->geometry.halfExtents.y, 0.1, 0.1, 100.f);
+			ImGui::DragFloat("Z##CubeColliderZ", &cubecollider->geometry.halfExtents.z, 0.1, 0.1, 100.f);
+		}
+
+	}
+
+	if (RigidBodyComponent *rigidbody = actor->GetComponent<RigidBodyComponent>())
+	{
+		if (ImGui::CollapsingHeader("RigidBody Component", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			
 		}
 
 	}
@@ -262,7 +277,7 @@ void Editor::ObjectProperties()
 				
 				ObjectPropertiesMaterials();
 				
-				const char *items[] = {"Light Component", "Animator Component", "SphereCollider Component", "CapsuleCollider Component", "CubeCollider Component" };
+				const char *items[] = {"Light Component", "Animator Component", "SphereCollider Component", "CapsuleCollider Component", "CubeCollider Component","RigidBody Component" };
 				if (ImGui::BeginCombo("##addcomponent", "Add Component", ImGuiComboFlags_NoArrowButton)) // The second parameter is the label previewed before opening the combo.
 				{
 					for (int n = 0; n < IM_ARRAYSIZE(items); n++)
@@ -290,6 +305,10 @@ void Editor::ObjectProperties()
 							case 4:
 							{
 								selectedActor->AddComponent<CubeColliderComponent>();
+							}break;
+							case 5:
+							{
+								selectedActor->AddComponent<RigidBodyComponent>();
 							}break;
 							default:
 								break;
@@ -358,7 +377,7 @@ Editor::~Editor()
 
 void Editor::Render()
 {
-	sm->work();
+	GE_Engine->sytemManager->work();
 	Actor *root = GE_Engine->actorManager->GetActor(gameBase->currentScene->rootActor);
 	for (int i = 0; i < root->numberOfChildren; i++)
 		GE_Engine->actorManager->GetActor(root->children[i])->processTransformation();

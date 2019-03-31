@@ -1,7 +1,7 @@
 #include "Actor.h"
 #include <Engine.h>
 #include <engine/ActorManager.h>
-
+#include <engine/Scene.h>
 Actor::Actor(std::string name, Scene *scene, ActorID aid) : actorID(aid)
 {
 	this->name = name;

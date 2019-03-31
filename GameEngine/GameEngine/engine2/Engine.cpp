@@ -4,13 +4,18 @@
 #include<engine/components/ComponentManager.h>
 #include <engine/ActorManager.h>
 #include <engine/resource/ResourceManager.h>
-
+#include <engine/systems/AnimationSystem.h>
+#include <engine/physx/PhysicSystem.h>
+#include <engine/systems/SystemManager.h>
 
 Engine::Engine()
 {
 	componentManager = new ComponentManager();
 	actorManager = new ActorManager(componentManager);
+	physicSystem = new PhysicSystem();
 	resourceManager = new ResourceManager();
+	animationSystem = new AnimationSystem();
+	sytemManager = new SystemManager(animationSystem,physicSystem);
 }
 
 

@@ -7,6 +7,9 @@ public:
 	SphereColliderComponent();
 	~SphereColliderComponent();
 
-	float radius;
+	physx::PxSphereGeometry geometry;
+
+	inline virtual void update() override { shape->setGeometry(geometry); };
+
 };
 
