@@ -29,7 +29,7 @@ SOON
 
 
 
-## Some ScreenShoots
+## Some Screenshots
 **Textured Boned Model Animation**
 
 ![Textured Lighted](https://user-images.githubusercontent.com/19158321/55179596-d9a72700-5198-11e9-85da-1f96c183f3d1.gif)
