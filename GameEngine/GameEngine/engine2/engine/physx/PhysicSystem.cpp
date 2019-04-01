@@ -31,6 +31,15 @@ void PhysicSystem::Update()
 {
 	gScene->simulate(1.0f / 60.0f);
 	gScene->fetchResults(true);
+
+	for (auto obje : objects)
+	{
+		Actor *actor = GE_Engine->actorManager->GetActor(obje.first);
+		glm::mat4 temp;
+		PhysXMat4ToglmMat4(obje.second->getGlobalPose(), temp);
+		temp = glm::scale(temp, actor->transformation.getWorldScale());
+		actor->transformation.setWorldMatrix(static_cast<glm::mat4>(temp));
+	}
 }
 
 void PhysicSystem::PostUpdate()
@@ -39,7 +48,7 @@ void PhysicSystem::PostUpdate()
 
 Transform * PhysicSystem::getfix(ActorID actorid)
 {
-	return GE_Engine->actorManager->GetActor(actorid)->transformation;
+	return &GE_Engine->actorManager->GetActor(actorid)->transformation;
 }
 
 void PhysicSystem::initPhysx()

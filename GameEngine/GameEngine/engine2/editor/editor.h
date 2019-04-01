@@ -20,7 +20,8 @@
 #include<engine/components/colliders/CapsuleColliderComponent.h>
 #include<engine/components/colliders/CubeColliderComponent.h>
 #include <engine/systems/SystemManager.h>
-class Editor
+#include <memory/Allocator/LinearAllocator.h>
+class Editor 
 {
 public:
 	Editor(GLFWwindow *);
@@ -38,6 +39,8 @@ public:
 
 	GameBase *gameBase;
 
+	bool isPlaying;
+	
 
 	void Render();
 	void DrawHierarchy(ActorID);

@@ -56,7 +56,7 @@ void Renderer::RenderAnActor(Actor *actor, Shader *shader)
 				int j = 0;
 				for (auto x : sm->effectlist[i])
 				{
-					matrixBuffer.push_back((GE_Engine->actorManager->GetActor(x)->transformation->worldMatrix) * glm::transpose(((SkinnedMesh*)sm->getModel()->meshes[i])->bones[j].second));
+					matrixBuffer.push_back((GE_Engine->actorManager->GetActor(x)->transformation.getWorldMatrix()) * glm::transpose(((SkinnedMesh*)sm->getModel()->meshes[i])->bones[j].second));
 					if(shader == colorShader &&  j==0)
 						matrixBuffer[0]= glm::scale(matrixBuffer[0], { 1.1, 1.1, 1.1 });
 					
@@ -86,7 +86,7 @@ void Renderer::renderModels()
 				model->materials[i]->active();
 			else
 				ConstantMaterials::Materials::defaultMaterial->active();
-			normalShader->setMat4("modelMatrix", GE_Engine->actorManager->GetActor(model->owner)->transformation->worldMatrix);
+			normalShader->setMat4("modelMatrix", GE_Engine->actorManager->GetActor(model->owner)->transformation.getWorldMatrix());
 			model->getModel()->meshes[i]->bind();
 			model->getModel()->meshes[i]->render();
 			model->getModel()->meshes[i]->unbind();
@@ -115,7 +115,7 @@ void Renderer::renderModels()
 				int j = 0;
 				for (auto x : model->effectlist[i])
 				{
-					matrixBuffer.push_back((GE_Engine->actorManager->GetActor(x)->transformation->worldMatrix) * glm::transpose(((SkinnedMesh*)model->getModel()->meshes[i])->bones[j].second));
+					matrixBuffer.push_back((GE_Engine->actorManager->GetActor(x)->transformation.getWorldMatrix()) * glm::transpose(((SkinnedMesh*)model->getModel()->meshes[i])->bones[j].second));
 					j++;
 				}
 				normalShader->setMat4Array("bones", matrixBuffer.size(), matrixBuffer.data()[0]);
@@ -136,7 +136,7 @@ void Renderer::prepareLights()
 	auto end = GE_Engine->componentManager->end<LightComponent>();
 	for (auto light = GE_Engine->componentManager->begin<LightComponent>(); light.operator!=(end);  light.operator++())
 	{
-		light->passShader(normalShader, GE_Engine->actorManager->GetActor(light->owner)->transformation, index);
+		light->passShader(normalShader, &(GE_Engine->actorManager->GetActor(light->owner)->transformation), index);
 		index++;
 	} 
 	while (index <= maxlight)

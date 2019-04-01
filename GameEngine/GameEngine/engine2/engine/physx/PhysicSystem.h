@@ -49,7 +49,8 @@ void PhysicSystem::addComponent(T* component)
 {
 	auto it = objects.find((ActorID::value_type)component->owner);
 	Transform* tr = getfix(component->owner);
-	PxTransform t(glmMat4ToPhysxMat4(tr->worldMatrix));
+	PxTransform t(glmMat4ToPhysxMat4(tr->getWorldMatrix()));
+
 	if constexpr (std::is_same<T, RigidBodyComponent>::value)
 	{//dynamic
 		if (it == objects.end()) //new one
@@ -58,15 +59,16 @@ void PhysicSystem::addComponent(T* component)
 			dynamic->setAngularDamping(0.5f);
 			dynamic->setLinearVelocity({ 1,0,0 });
 			objects[component->owner] = dynamic;
-			
 		}
 		else
 		{
 			PxShape** shapes = (PxShape**)malloc(sizeof(PxShape*)*1);
+			std::cout << it->second->getNbShapes();
 			(it->second)->getShapes(shapes, 1);
+			it->second->detachShape(*shapes[0]);
 			gScene->removeActor(*(it->second));
 			it->second = gPhysics->createRigidDynamic(t);
-			it->second->attachShape(*(shapes[0]));
+			it->second->attachShape(*shapes[0]);
 			free(shapes);
 		}
 	}
@@ -84,6 +86,9 @@ void PhysicSystem::addComponent(T* component)
 		objects[component->owner]->attachShape(*component->shape);
 	}
 	gScene->addActor(*objects[component->owner]);
+	tr->physicactor = objects[component->owner];
+
+
 
 }
 

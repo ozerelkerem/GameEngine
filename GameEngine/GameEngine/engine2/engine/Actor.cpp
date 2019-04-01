@@ -8,7 +8,6 @@ Actor::Actor(std::string name, Scene *scene, ActorID aid) : actorID(aid)
 	this->scene = scene;
 	parent = ActorID::INVALID_HANDLE;
 
-	transformation = new Transform();
 
 	numberOfChildren = 0;
 	children = (ActorID*)calloc((numberOfChildren + 1), sizeof(ActorID));
@@ -93,7 +92,9 @@ bool Actor::AddParent(ActorID newParent)
 	}
 
 	parent = newParent;
-	GE_Engine->actorManager->GetActor(parent)->AddChild(this->actorID);
+	Actor *pr = GE_Engine->actorManager->GetActor(parent);
+	pr->AddChild(this->actorID);
+	transformation.parent = &pr->transformation;
 
 	return true;
 }
@@ -121,8 +122,8 @@ void Actor::processTransformation()
 
 void Actor::RecalculateRealMatrix()
 {
-	transformation->calcLocalMatrix();
-	transformation->worldMatrix = GE_Engine->actorManager->GetActor(parent)->transformation->worldMatrix * transformation->localMatrix;
+	transformation.calcLocalMatrix();
+	transformation.setWorldMatrix(GE_Engine->actorManager->GetActor(parent)->transformation.getWorldMatrix() * transformation.getLocalMatrix());
 }
 
 Actor::~Actor()

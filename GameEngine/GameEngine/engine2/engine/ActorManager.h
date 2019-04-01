@@ -28,10 +28,6 @@ class ActorManager
 {
 	ComponentManager *componentManagerInstance;
 
-
-	
-
-
 	using PendingDestroyedActors = std::vector<ActorID>;
 	PendingDestroyedActors pendingDestroyedActors;
 	size_t numPendingDestroyedActors;

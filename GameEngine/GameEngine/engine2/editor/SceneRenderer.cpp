@@ -27,7 +27,7 @@ void SceneRenderer::renderLights()
 	{
 		Actor *lightActor = GE_Engine->actorManager->GetActor(light->owner);
 
-		glm::vec3 worldpos = lightActor->transformation->getWorldPosition();
+		glm::vec3 worldpos = lightActor->transformation.getWorldPosition();
 		spriteRenderer->DrawSprite(ConstantTextures::Textures::lightTexture, sceneCamera->worldToScreen(worldpos, sceneSize), { 30,30 });
 	}
 
@@ -47,7 +47,7 @@ void SceneRenderer::renderSelectedLight()
 		LightComponent *lightcomponent = lightActor->GetComponent<LightComponent>();
 		
 
-		const glm::vec3 lightpos = lightActor->transformation->getWorldPosition();
+		const glm::vec3 lightpos = lightActor->transformation.getWorldPosition();
 		float dist = lightcomponent->distance;
 
 		const int sensivity = 36;
@@ -59,9 +59,9 @@ void SceneRenderer::renderSelectedLight()
 		}
 		else if(lightcomponent->lightType == LightType::Spotlight)
 		{
-			glm::vec3 circlepos = lightpos + (lightActor->transformation->getWorldForwardVector() * dist);
-			glm::vec3 startpos = circlepos + (lightActor->transformation->getWorldUpVector() * dist *std::tan(glm::radians(lightcomponent->angle)));
-			glm::vec3 endpos = glm::rotate((startpos - circlepos), glm::radians(degree), lightActor->transformation->getWorldForwardVector());
+			glm::vec3 circlepos = lightpos + (lightActor->transformation.getWorldForwardVector() * dist);
+			glm::vec3 startpos = circlepos + (lightActor->transformation.getWorldUpVector() * dist *std::tan(glm::radians(lightcomponent->angle)));
+			glm::vec3 endpos = glm::rotate((startpos - circlepos), glm::radians(degree), lightActor->transformation.getWorldForwardVector());
 			endpos += circlepos;
 			for (int i = 0; i < sensivity; i++)
 			{
@@ -75,15 +75,15 @@ void SceneRenderer::renderSelectedLight()
 				glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
 
 				startpos = endpos;
-				endpos = glm::rotate((endpos - circlepos), glm::radians(degree), lightActor->transformation->getWorldForwardVector());
+				endpos = glm::rotate((endpos - circlepos), glm::radians(degree), lightActor->transformation.getWorldForwardVector());
 				endpos += circlepos;
 			}
 		}
 		else if (lightcomponent->lightType == LightType::Directional)
 		{
 			dist = glm::distance(sceneCamera->position, lightpos) / 10.f;
-			glm::vec3 startpos = lightpos + (lightActor->transformation->getWorldUpVector() * dist);
-			glm::vec3 endpos = glm::rotate((startpos - lightpos), glm::radians(degree), lightActor->transformation->getWorldForwardVector());
+			glm::vec3 startpos = lightpos + (lightActor->transformation.getWorldUpVector() * dist);
+			glm::vec3 endpos = glm::rotate((startpos - lightpos), glm::radians(degree), lightActor->transformation.getWorldForwardVector());
 			endpos += lightpos;
 			glm::vec3 target;
 			for (int i = 0; i < sensivity; i++)
@@ -91,7 +91,7 @@ void SceneRenderer::renderSelectedLight()
 				if (!(i % 3))
 				{
 					glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
-					target = endpos + lightActor->transformation->getWorldForwardVector() *dist *3.f;
+					target = endpos + lightActor->transformation.getWorldForwardVector() *dist *3.f;
 					glVertexAttrib3f(0, target.x, target.y, target.z);
 					
 				}
@@ -100,7 +100,7 @@ void SceneRenderer::renderSelectedLight()
 				glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
 
 				startpos = endpos;
-				endpos = glm::rotate((endpos - lightpos), glm::radians(degree), lightActor->transformation->getWorldForwardVector());
+				endpos = glm::rotate((endpos - lightpos), glm::radians(degree), lightActor->transformation.getWorldForwardVector());
 				endpos += lightpos;
 			}
 		}
@@ -112,16 +112,18 @@ void SceneRenderer::renderSelectedLight()
 
 void SceneRenderer::renderSelectedCollider()
 {
-	colorShader->setVec3("color", glm::vec3(0,0.9,1));
-	glBegin(GL_LINES);
 	Actor * selectedactor = GE_Engine->actorManager->GetActor(selectedActor);
+	colorShader->setVec3("color", glm::vec3(0,0.9,1));
+	colorShader->setMat4("modelMatrix", glm::scale(selectedactor->transformation.getWorldMatrix(), 1.f/ selectedactor->transformation.getWorldScale()));
+	glBegin(GL_LINES);
+	
 	if (SphereColliderComponent *spherecollider = selectedactor->GetComponent<SphereColliderComponent>(); spherecollider)
 	{
-		renderSphere(selectedactor->transformation->getWorldPosition(), spherecollider->geometry.radius);
+		renderSphere({ 0,0,0 }, spherecollider->geometry.radius);
 	}
 	if (CubeColliderComponent *cubecollider = selectedactor->GetComponent<CubeColliderComponent>(); cubecollider)
 	{
-		renderCube(selectedactor->transformation->getWorldPosition(), cubecollider->geometry.halfExtents.x, cubecollider->geometry.halfExtents.y, cubecollider->geometry.halfExtents.z);
+		renderCube({ 0,0,0 }, cubecollider->geometry.halfExtents.x, cubecollider->geometry.halfExtents.y, cubecollider->geometry.halfExtents.z);
 	}
 	glEnd();
 
@@ -134,7 +136,7 @@ void SceneRenderer::renderSelectedCollider()
 			t = { 1,0,0 };
 			colorShader->setMat4("modelMatrix", glm::rotate(glm::mat4(1), glm::radians(90.f), t));
 		glBegin(GL_LINES);
-		renderCapsule(selectedactor->transformation->getWorldPosition(), capsulecollider->geometry.radius, capsulecollider->geometry.halfHeight);
+		renderCapsule(selectedactor->transformation.getWorldPosition(), capsulecollider->geometry.radius, capsulecollider->geometry.halfHeight);
 		glEnd();
 		colorShader->setMat4("modelMatrix",glm::mat4(1));
 	}
@@ -191,7 +193,7 @@ void SceneRenderer::render()
 	{
 		glDisable(GL_DEPTH_TEST);
 
-		sceneTool->Render(selectedactor->transformation, glm::distance(sceneCamera->position, selectedactor->transformation->getWorldPosition()) / 10, sceneCamera->position);
+		sceneTool->Render(&selectedactor->transformation, glm::distance(sceneCamera->position, selectedactor->transformation.getWorldPosition()) / 10, sceneCamera->position);
 
 		glEnable(GL_DEPTH_TEST);
 	}
@@ -232,7 +234,7 @@ inline void SceneRenderer::RenderOutlined(Actor * o)
 	glClear(GL_STENCIL_BUFFER_BIT);
 
 	normalShader->Use();
-	normalShader->setMat4("modelMatrix", o->transformation->worldMatrix);
+	normalShader->setMat4("modelMatrix", o->transformation.getWorldMatrix());
 	RenderAnActor(o, normalShader);
 
 	colorShader->Use();
@@ -240,11 +242,10 @@ inline void SceneRenderer::RenderOutlined(Actor * o)
 	glStencilMask(0x00);
 	colorShader->setVec3("color", glm::vec3(1, 1, 0));
 
-	o->transformation->worldMatrix = glm::scale(o->transformation->worldMatrix, { 1.1, 1.1, 1.1 });
-	colorShader->setMat4("modelMatrix", o->transformation->worldMatrix);
+	
+	colorShader->setMat4("modelMatrix", glm::scale(o->transformation.getWorldMatrix(), { 1.1, 1.1, 1.1 }));
 	RenderAnActor(o, colorShader);
 
-	o->RecalculateRealMatrix();
 
 	glDisable(GL_STENCIL_TEST);
 }
@@ -266,7 +267,7 @@ void SceneRenderer::renderModelsColored()
 		float g = (test.index & 0x0000FF00) >> 8;
 		float b = (test.index & 0x00FF0000) >> 16;
 		colorShader->setVec3("color", glm::vec3(r / 255.0f, g / 255.0f, b / 255.0f));
-		colorShader->setMat4("modelMatrix", actor->transformation->worldMatrix);
+		colorShader->setMat4("modelMatrix", actor->transformation.getWorldMatrix());
 		for (int i = 0; i < model->getModel()->numOfMeshes; i++)
 		{
 			model->getModel()->meshes[i]->bind();
@@ -298,7 +299,7 @@ void SceneRenderer::renderModelsColored()
 					int j = 0;
 					for (auto x : model->effectlist[i])
 					{
-						matrixBuffer.push_back((GE_Engine->actorManager->GetActor(x)->transformation->worldMatrix) * glm::transpose(((SkinnedMesh*)model->getModel()->meshes[i])->bones[j].second));
+						matrixBuffer.push_back((GE_Engine->actorManager->GetActor(x)->transformation.getWorldMatrix()) * glm::transpose(((SkinnedMesh*)model->getModel()->meshes[i])->bones[j].second));
 						j++;
 					}
 					colorShader->setMat4Array("bones", matrixBuffer.size(), matrixBuffer.data()[0]);
@@ -345,13 +346,13 @@ bool SceneRenderer::RenderForObjectTools(GLint x, GLint y)
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	sceneTool->Render(selectedactor->transformation, glm::distance(sceneCamera->position, selectedactor->transformation->getWorldPosition()) / 10, sceneCamera->position);
+	sceneTool->Render(&selectedactor->transformation, glm::distance(sceneCamera->position, selectedactor->transformation.getWorldPosition()) / 10, sceneCamera->position);
 
 	GLfloat test[4];
 	glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, &test);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	return sceneTool->processTool(test, selectedactor->transformation);
+	return sceneTool->processTool(test, &selectedactor->transformation);
 }
 
 void SceneRenderer::focusActor(ActorID actorid)
@@ -367,8 +368,8 @@ void SceneRenderer::focusActor(ActorID actorid)
 	glm::vec4 minxyz(x.minx, x.miny, x.minz, 1.0);
 	glm::vec4 maxxyz(x.maxx, x.maxy, x.maxz, 1.0);
 
-  	minxyz = actor->transformation->worldMatrix * minxyz;
-	maxxyz = actor->transformation->worldMatrix *maxxyz;
+  	minxyz = actor->transformation.getWorldMatrix() * minxyz;
+	maxxyz = actor->transformation.getWorldMatrix() *maxxyz;
 	
 	minxyz = minxyz * (float)(1.0 / minxyz.w);
 	maxxyz = maxxyz * (float)(1.0 / maxxyz.w);
@@ -382,7 +383,7 @@ void SceneRenderer::focusActor(ActorID actorid)
 	glm::normalize(look);
 	look *=  dis;
 
-	sceneCamera->position = actor->transformation->getWorldPosition() + look;
+	sceneCamera->position = actor->transformation.getWorldPosition() + look;
 	sceneCamera->UpdateCameraVectors();
 	
 }
@@ -579,33 +580,32 @@ void SceneRenderer::renderCapsule(const glm::vec3 & pos, float radius, float hal
 
 void SceneRenderer::renderCube(const glm::vec3 & pos, float x, float y, float z)
 {
-	glVertexAttrib3f(0, pos.x - x, pos.y - y, pos.z + z);
-	glVertexAttrib3f(0, pos.x - x, pos.y + y, pos.z + z);
-	glVertexAttrib3f(0, pos.x + x, pos.y - y, pos.z + z);
-	glVertexAttrib3f(0, pos.x + x, pos.y + y, pos.z + z);
-	glVertexAttrib3f(0, pos.x - x, pos.y + y, pos.z + z);
-	glVertexAttrib3f(0, pos.x + x, pos.y + y, pos.z + z);
-	glVertexAttrib3f(0, pos.x - x, pos.y - y, pos.z + z);
-	glVertexAttrib3f(0, pos.x + x, pos.y - y, pos.z + z);
-
-	glVertexAttrib3f(0, pos.x - x, pos.y - y, pos.z - z);
-	glVertexAttrib3f(0, pos.x - x, pos.y + y, pos.z - z);
-	glVertexAttrib3f(0, pos.x + x, pos.y - y, pos.z - z);
-	glVertexAttrib3f(0, pos.x + x, pos.y + y, pos.z - z);
-	glVertexAttrib3f(0, pos.x - x, pos.y + y, pos.z - z);
-	glVertexAttrib3f(0, pos.x + x, pos.y + y, pos.z - z);
-	glVertexAttrib3f(0, pos.x - x, pos.y - y, pos.z - z);
-	glVertexAttrib3f(0, pos.x + x, pos.y - y, pos.z - z);
-
-
-	glVertexAttrib3f(0, pos.x - x, pos.y - y, pos.z + z);
-	glVertexAttrib3f(0, pos.x - x, pos.y - y, pos.z - z);
-	glVertexAttrib3f(0, pos.x - x, pos.y + y, pos.z + z);
-	glVertexAttrib3f(0, pos.x - x, pos.y + y, pos.z - z);
-	glVertexAttrib3f(0, pos.x + x, pos.y - y, pos.z + z);
-	glVertexAttrib3f(0, pos.x + x, pos.y - y, pos.z - z);
-	glVertexAttrib3f(0, pos.x + x, pos.y + y, pos.z + z);
-	glVertexAttrib3f(0, pos.x + x, pos.y + y, pos.z - z);
+	glVertexAttrib3f(0, 0 - x, 0 - y, 0 + z);
+	glVertexAttrib3f(0, 0 - x, 0 + y, 0 + z);
+	glVertexAttrib3f(0, 0 + x, 0 - y, 0 + z);
+	glVertexAttrib3f(0, 0 + x, 0 + y, 0 + z);
+	glVertexAttrib3f(0, 0 - x, 0 + y, 0 + z);
+	glVertexAttrib3f(0, 0 + x, 0 + y, 0 + z);
+	glVertexAttrib3f(0, 0 - x, 0 - y, 0 + z);
+	glVertexAttrib3f(0, 0 + x, 0 - y, 0 + z);
+							   	  
+	glVertexAttrib3f(0, 0 - x, 0 - y, 0 - z);
+	glVertexAttrib3f(0, 0 - x, 0 + y, 0 - z);
+	glVertexAttrib3f(0, 0 + x, 0 - y, 0 - z);
+	glVertexAttrib3f(0, 0 + x, 0 + y, 0 - z);
+	glVertexAttrib3f(0, 0 - x, 0 + y, 0 - z);
+	glVertexAttrib3f(0, 0 + x, 0 + y, 0 - z);
+	glVertexAttrib3f(0, 0 - x, 0 - y, 0 - z);
+	glVertexAttrib3f(0, 0 + x, 0 - y, 0 - z);
+					
+	glVertexAttrib3f(0, 0 - x, 0 - y, 0 + z);
+	glVertexAttrib3f(0, 0 - x, 0 - y, 0 - z);
+	glVertexAttrib3f(0, 0 - x, 0 + y, 0 + z);
+	glVertexAttrib3f(0, 0 - x, 0 + y, 0 - z);
+	glVertexAttrib3f(0, 0 + x, 0 - y, 0 + z);
+	glVertexAttrib3f(0, 0 + x, 0 - y, 0 - z);
+	glVertexAttrib3f(0, 0 + x, 0 + y, 0 + z);
+	glVertexAttrib3f(0, 0 + x, 0 + y, 0 - z);
 
 }
 

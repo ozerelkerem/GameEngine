@@ -27,7 +27,7 @@ public:
 	unsigned int id;
 	Scene *scene;
 
-	Transform *transformation;
+	Transform transformation;
 	ActorID parent;
 
 	unsigned int numberOfChildren;

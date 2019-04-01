@@ -4,7 +4,9 @@
 #include<stack>
 #define stringify( name ) # name
 
-Editor::Editor(GLFWwindow *window)
+#define StateSize 1000000
+
+Editor::Editor(GLFWwindow *window) : isPlaying(false)
 {
 	this->window = window;
 
@@ -15,6 +17,8 @@ Editor::Editor(GLFWwindow *window)
 	sceneRenderer = new SceneRenderer(gameBase);
 
 	Serializable::Save(projectManager, projectManager->path.c_str());
+
+
 
 }
 
@@ -223,9 +227,10 @@ void Editor::ShowComponentList()
 		{
 			if (ImGui::DragFloat("X##CubeColliderX", &cubecollider->geometry.halfExtents.x, 0.1, 0.1, 100.f))
 				cubecollider->update();
-
-			ImGui::DragFloat("Y##CubeColliderY", &cubecollider->geometry.halfExtents.y, 0.1, 0.1, 100.f);
-			ImGui::DragFloat("Z##CubeColliderZ", &cubecollider->geometry.halfExtents.z, 0.1, 0.1, 100.f);
+			if(ImGui::DragFloat("Y##CubeColliderY", &cubecollider->geometry.halfExtents.y, 0.1, 0.1, 100.f))
+				cubecollider->update();
+			if(ImGui::DragFloat("Z##CubeColliderZ", &cubecollider->geometry.halfExtents.z, 0.1, 0.1, 100.f))
+				cubecollider->update();
 		}
 
 	}
@@ -253,22 +258,28 @@ void Editor::ObjectProperties()
 			ImGui::Text(selectedActor->name.c_str());
 			if (ImGui::CollapsingHeader("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				if (ImGui::DragFloat3("Position", &selectedActor->transformation->localPosition[0], 0.1f, -30000.f, 30000.f))
-					selectedActor->processTransformation();
-				if (ImGui::DragFloat3("Rotation Eular", &selectedActor->transformation->localeulerRotation[0], 1.f, -359.99999f, 359.99999f))
+				if (ImGui::DragFloat3("Position", &selectedActor->transformation.localPosition[0], 0.1f, -30000.f, 30000.f))
 				{
-					selectedActor->transformation->calcQuatFromEuler();
 					selectedActor->processTransformation();
+					selectedActor->transformation.applyPhysic();
+				}
+				if (ImGui::DragFloat3("Rotation Eular", &selectedActor->transformation.localeulerRotation[0], 1.f, -359.99999f, 359.99999f))
+				{
+					selectedActor->transformation.calcQuatFromEuler();
+					selectedActor->processTransformation();
+					selectedActor->transformation.applyPhysic();
 				}
 
-				if (ImGui::DragFloat4("Rotation Quat", &selectedActor->transformation->localquatRotation[0], 1.f, -30000.f, 30000.f))
+				if (ImGui::DragFloat4("Rotation Quat", &selectedActor->transformation.localquatRotation[0], 1.f, -30000.f, 30000.f))
 				{
-					selectedActor->transformation->calcEulerFromQuat();
+					selectedActor->transformation.calcEulerFromQuat();
 					selectedActor->processTransformation();
+					selectedActor->transformation.applyPhysic();
 				}
-				if (ImGui::DragFloat3("Scale", &selectedActor->transformation->localScale[0], 1.f, -30000.f, 30000.f))
+				if (ImGui::DragFloat3("Scale", &selectedActor->transformation.localScale[0], 1.f, -30000.f, 30000.f))
 				{
 					selectedActor->processTransformation();
+					selectedActor->transformation.applyPhysic();
 				}
 
 				ShowComponentList();
@@ -431,6 +442,24 @@ void Editor::Render()
 	}
 	ImGui::End();
 
+	ImGui::Begin("ToolBar", NULL, ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoTitleBar);
+	{
+		if (ImGui::ButtonEx("Play", { 0,0 }, isPlaying ? ImGuiButtonFlags_Disabled : 0))
+		{
+			isPlaying = true;
+			GE_Engine->physicSystem->enabled = true;
+			
+		}
+		ImGui::SameLine();
+		if (ImGui::ButtonEx("Stop", { 0,0 }, !isPlaying ? ImGuiButtonFlags_Disabled : 0))
+		{
+			isPlaying = false;
+			GE_Engine->physicSystem->enabled = false;
+		
+		}
+	}
+	ImGui::End();
+
 	ImGui::Begin("Scene", NULL);
 	{
 		viewportSize = ImGui::GetWindowSize();
@@ -485,7 +514,7 @@ void Editor::Render()
 					normal = { 0,1,0 };
 				glm::vec2 size; size.x = viewportSize.x; size.y = viewportSize.y;
 
-				sceneRenderer->sceneTool->transObjects(selectedActor->transformation, x, y, io.MouseDelta.x, io.MouseDelta.y,
+				sceneRenderer->sceneTool->transObjects(&selectedActor->transformation, x, y, io.MouseDelta.x, io.MouseDelta.y,
 					sceneRenderer->sceneCamera->position, sceneRenderer->sceneCamera->screenToWorld(x, y, normal, size));
 
 				//selectedActor->processTransformation();
@@ -496,7 +525,7 @@ void Editor::Render()
 			{
 				toolMode = false;
 			}
-
+			
 			if (!toolMode && ImGui::IsMouseHoveringWindow() && ImGui::IsMouseClicked(ImGuiMouse_Left_))
 			{
 				sceneRenderer->selectedActor = sceneRenderer->RenderForObjectPicker(x, y);
@@ -1184,5 +1213,6 @@ bool Editor::DrawSingleProjectItem(glm::vec3 color, std::string name, int n, int
 
 	return isHovered;
 }
+
 
 

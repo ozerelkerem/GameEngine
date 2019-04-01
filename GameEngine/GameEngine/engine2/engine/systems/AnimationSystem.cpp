@@ -34,10 +34,10 @@ void AnimationSystem::Update()
 			for (auto effect : it->effectlist)
 			{
 				Actor *actor = GE_Engine->actorManager->GetActor(effect.second);
-				a->animationNodeMap[effect.first]->calcInterpolationPosition(frame, actor->transformation->localPosition);
-				a->animationNodeMap[effect.first]->calcInterpolationRotation(frame, actor->transformation->localquatRotation);
-				actor->transformation->calcEulerFromQuat();
-				a->animationNodeMap[effect.first]->calcInterpolationScale(frame, actor->transformation->localScale);
+				a->animationNodeMap[effect.first]->calcInterpolationPosition(frame, actor->transformation.localPosition);
+				a->animationNodeMap[effect.first]->calcInterpolationRotation(frame, actor->transformation.localquatRotation);
+				actor->transformation.calcEulerFromQuat();
+				a->animationNodeMap[effect.first]->calcInterpolationScale(frame, actor->transformation.localScale);
 			}
 			
 		}
@@ -53,7 +53,7 @@ void AnimationSystem::PostUpdate()
 void AnimationSystem::loopHierarchy(ActorID aid)
 {
 	/*Actor *a = GE_Engine->actorManager.
-	a->transformation->position.x += 1;
+	a->transformation.position.x += 1;
 	a->RecalculateRealMatrix();
 	for (int i = 0; i < a->numberOfChildren; i++)
 	{

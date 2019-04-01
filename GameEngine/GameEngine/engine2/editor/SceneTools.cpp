@@ -71,7 +71,7 @@ void SceneTools::RenderRotate(Transform * transform, float dis, glm::vec3 &camer
 	glm::vec3 pos, a, b;
 	glm::vec4 c;
 	glm::quat d(1, 1, 1, 1);
-	glm::decompose(transform->worldMatrix, a, d, pos, b, c);
+	glm::decompose(transform->getWorldMatrix(), a, d, pos, b, c);
 
 	colorShader->setVec3("color", glm::vec3(1, 0, 0));
 	colorShader->setMat4("modelMatrix", glm::scale(glm::rotate(glm::rotate(glm::translate(pos), glm::radians(rX), glm::vec3(1, 0, 0)), glm::radians(-90.f), glm::vec3(0, 0, 1)), scale));
@@ -98,7 +98,7 @@ void SceneTools::RenderScale(Transform * transform, float dis)
 	glm::vec3 pos, a, b;
 	glm::vec4 c;
 	glm::quat rot(1, 1, 1, 1);
-	glm::decompose(transform->worldMatrix, a, rot, pos, b, c);
+	glm::decompose(transform->getWorldMatrix(), a, rot, pos, b, c);
 
 	colorShader->setMat4("modelMatrix", glm::scale(glm::translate(pos) * glm::toMat4(rot), scale));
 
@@ -124,7 +124,7 @@ void SceneTools::RenderMove(Transform * transform, float dis)
 	glm::vec3 pos, a, b;
 	glm::vec4 c;
 	glm::quat d(1,1,1,1);
-	glm::decompose(transform->worldMatrix,a, d, pos, b, c);
+	glm::decompose(transform->getWorldMatrix(),a, d, pos, b, c);
 
 	colorShader->setMat4("modelMatrix", glm::scale(glm::translate(pos), scale));
 	sceneRenderer->RenderAnActor(translateTool);

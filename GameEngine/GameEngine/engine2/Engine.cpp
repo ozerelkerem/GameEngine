@@ -16,6 +16,7 @@ Engine::Engine()
 	resourceManager = new ResourceManager();
 	animationSystem = new AnimationSystem();
 	sytemManager = new SystemManager(animationSystem,physicSystem);
+	physicSystem->enabled = false;
 }
 
 

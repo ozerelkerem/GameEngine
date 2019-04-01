@@ -4,7 +4,7 @@
 
 #define pi (float)3.14159
 
-Transform::Transform() : localPosition(0,0,0), localScale(1,1,1), localeulerRotation(0,0,0), worldMatrix(1), localMatrix(1)
+Transform::Transform() : localPosition(0,0,0), localScale(1,1,1), localeulerRotation(0,0,0), worldMatrix(1), localMatrix(1), physicactor(nullptr)
 {
 	localquatRotation = glm::toQuat((glm::orientate3(localeulerRotation)));
 }
@@ -29,6 +29,9 @@ void Transform::calcQuatFromEuler()
 	localquatRotation = glm::toQuat((glm::orientate3(glm::radians(glm::vec3(localeulerRotation.x, localeulerRotation.z, localeulerRotation.y)))));
 }
 
+
+
+
 glm::vec3 Transform::getWorldPosition()
 {
 	glm::vec3 pos;
@@ -37,6 +40,26 @@ glm::vec3 Transform::getWorldPosition()
 	glm::vec3 testp;
 	glm::decompose(worldMatrix, testp, testq, pos, testp, test);
 	return pos;
+}
+
+glm::vec3 Transform::getWorldScale()
+{
+	glm::vec3 pos;
+	glm::vec4 test;
+	glm::quat testq;
+	glm::vec3 scale;
+	glm::decompose(worldMatrix, scale, testq, pos, pos, test);
+	return scale;
+}
+
+glm::quat Transform::getWorldRotation()
+{
+	glm::vec3 pos;
+	glm::vec4 test;
+	glm::quat testq;
+	glm::vec3 scale;
+	glm::decompose(worldMatrix, scale, testq, pos, pos, test);
+	return testq;
 }
 
 glm::vec3 Transform::getWorldForwardVector()
