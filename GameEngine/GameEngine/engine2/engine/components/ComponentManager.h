@@ -208,7 +208,7 @@ const ComponentTypeID CTID = T::STATIC_COMPONENT_TYPE_ID;
 
 	void *pObjectMemory = GetComponentContainer<T>()->CreateObject();
 
-	ComponentID componentid = this->AqcuireComponentId((T*)pObjectMemory);
+	ComponentID componentid = this->AqcuireComponentId(static_cast<IComponent*>(pObjectMemory));
 	((T*)pObjectMemory)->componentID = componentid;
 
 	IComponent* component = new (pObjectMemory)T(std::forward<ARGS>(args)...);

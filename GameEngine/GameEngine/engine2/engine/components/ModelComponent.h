@@ -6,7 +6,7 @@
 class Model;
 class ComponentSystem;
 
-class ModelComponent : public Component<ModelComponent>, public IModelComponent
+class ModelComponent :public Component<ModelComponent> , public IModelComponent
 {
 public:
 	ModelComponent(Model *m);

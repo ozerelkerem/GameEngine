@@ -2,7 +2,7 @@
 
 #include <editor/ConstantModels.h>
 
-ModelComponent::ModelComponent(Model *m) : IModelComponent() ,Component()
+ModelComponent::ModelComponent(Model *m) : Component(), IModelComponent()
 {
 	setModel(m);
 	numberOfMaterials = m->numOfMeshes;

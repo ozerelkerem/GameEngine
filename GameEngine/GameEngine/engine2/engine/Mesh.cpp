@@ -36,7 +36,7 @@ void Mesh::loadMesh()
 
 void Mesh::render()
 {
-	glDrawElements(GL_TRIANGLES, numberOfVertices * 3, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, numberOfIndices *3, GL_UNSIGNED_INT, 0);
 }
 
 void Mesh::createVAO()
