@@ -85,6 +85,7 @@ namespace ConstantTextures
 		static Texture * cameraTexture;
 		static Texture * noTexture;
 		static Texture * lightTexture;
+		static Texture * scriptTexture;
 		static Texture * animationTexture;
 		static void initTextures();
 	};

@@ -8,7 +8,7 @@ class ComponentManager;
 class AnimationSystem;
 class SystemManager;
 class PhysicSystem;
-
+class ScriptSystem;
 
 class Engine
 {
@@ -28,5 +28,8 @@ public:
 	ActorManager * actorManager;
 	ResourceManager * resourceManager;
 	ComponentManager* componentManager;
+	ScriptSystem* scriptSystem;
+
+	char *mainPath;
 };
 

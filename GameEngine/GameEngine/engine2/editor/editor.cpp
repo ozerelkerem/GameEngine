@@ -11,6 +11,10 @@ Editor::Editor(GLFWwindow *window) : isPlaying(false)
 	this->window = window;
 
 	projectManager = new ProjectManager("Kero Game 1", "C:\\GameEngine\\");
+	GE_Engine->mainPath = projectManager->path.data();
+	ScriptHelper::moveMainAssembly();
+
+
 	Scene *scene = new Scene("Taso", projectManager);
 	projectManager->add(scene);
 	gameBase = new GameBase(scene);
@@ -243,6 +247,39 @@ void Editor::ShowComponentList()
 		}
 
 	}
+	if (ScriptComponent *scriptcomp = actor->GetComponent<ScriptComponent>())
+	{
+		if (ImGui::CollapsingHeader("Script Component", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+
+			for (auto script : scriptcomp->scripts)
+			{
+				ImGui::Text((script->name).c_str());
+				ImGui::SameLine(ImGui::GetWindowWidth() -30);
+				if (ImGui::Button(("X##"+script->name).c_str()))
+				{
+					scriptcomp->remove(script);
+				}
+			}
+
+			ImGui::Separator();
+			static char scriptname[50];			
+			ImGui::InputText("##scriptname",scriptname,50);
+			ImGui::SameLine();
+			Script *s = new Script(scriptname);
+			if (ImGui::Button("Add New Script") && strlen(scriptname) > 5 && !projectManager->isExists(s))
+			{
+
+				projectManager->add(s);
+				scriptcomp->add(s);
+				ScriptHelper::createScript(s);
+				scriptname[0] = 0;
+			}
+			else
+				free(s);
+		}
+
+	}
 
 }
 
@@ -288,7 +325,7 @@ void Editor::ObjectProperties()
 				
 				ObjectPropertiesMaterials();
 				
-				const char *items[] = {"Light Component", "Animator Component", "SphereCollider Component", "CapsuleCollider Component", "CubeCollider Component","RigidBody Component" };
+				const char *items[] = {"Light Component", "Animator Component", "SphereCollider Component", "CapsuleCollider Component", "CubeCollider Component","RigidBody Component", "Script Component" };
 				if (ImGui::BeginCombo("##addcomponent", "Add Component", ImGuiComboFlags_NoArrowButton)) // The second parameter is the label previewed before opening the combo.
 				{
 					for (int n = 0; n < IM_ARRAYSIZE(items); n++)
@@ -320,6 +357,10 @@ void Editor::ObjectProperties()
 							case 5:
 							{
 								selectedActor->AddComponent<RigidBodyComponent>();
+							}break;
+							case 6:
+							{
+								selectedActor->AddComponent<ScriptComponent>();
 							}break;
 							default:
 								break;
@@ -442,12 +483,13 @@ void Editor::Render()
 	}
 	ImGui::End();
 
-	ImGui::Begin("ToolBar", NULL, ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoTitleBar);
+	ImGui::Begin("ToolBar", NULL, ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
 	{
 		if (ImGui::ButtonEx("Play", { 0,0 }, isPlaying ? ImGuiButtonFlags_Disabled : 0))
 		{
 			isPlaying = true;
 			GE_Engine->physicSystem->enabled = true;
+			GE_Engine->scriptSystem->initSystem();
 			
 		}
 		ImGui::SameLine();
@@ -455,7 +497,14 @@ void Editor::Render()
 		{
 			isPlaying = false;
 			GE_Engine->physicSystem->enabled = false;
+			GE_Engine->scriptSystem->freeSystem();
 		
+		}
+		ImGui::SameLine(ImGui::GetWindowWidth() - 90);
+		if (ImGui::ButtonEx("Compile", { 0,0 }, isPlaying ? ImGuiButtonFlags_Disabled : 0))
+		{
+			ScriptHelper::compile();
+
 		}
 	}
 	ImGui::End();
@@ -1046,6 +1095,7 @@ void Editor::DrawProjectExplorer()
 		count += projectManager->prefabs.size();
 		count += projectManager->materials.size();
 		count += projectManager->animations.size();
+		count += projectManager->scripts.size();
 		for (auto scene : projectManager->scenes)
 		{
 			if (DrawSingleProjectItem((void *)ConstantTextures::Textures::sceneTexture->gettextureID(), scene->name, i++, count))
@@ -1098,6 +1148,13 @@ void Editor::DrawProjectExplorer()
 			if (DrawSingleProjectItem((void *)ConstantTextures::Textures::animationTexture->gettextureID(), animation->name, i++, count))
 			{
 				ImGui::SetTooltip(("Animation -> " + animation->name).c_str() );
+			}
+		}
+		for (auto script : projectManager->scripts)
+		{
+			if (DrawSingleProjectItem((void *)ConstantTextures::Textures::scriptTexture->gettextureID(), script->name, i++, count))
+			{
+				ImGui::SetTooltip(("Script -> " + script->name).c_str());
 			}
 		}
 

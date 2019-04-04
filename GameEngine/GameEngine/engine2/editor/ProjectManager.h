@@ -6,7 +6,7 @@
 #include <engine/Material.h>
 #include <engine/Scene.h>
 #include <engine/Prefab.h>
-
+#include <engine/scripting/Script.h>
 class Animation;
 class Model;
 class Prefab;
@@ -27,8 +27,13 @@ public:
 	std::vector<Animation *> animations;
 	std::vector<Texture *> textures;
 	std::vector<Material *> materials;
+	std::vector<Script *> scripts;
 
 	std::vector<std::vector<TextureID>> materialTextureMap;
+
+	template <class T>
+	bool isExists(T *piece);
+
 
 	template <class T>
 	void add(T *piece);
@@ -45,6 +50,14 @@ public:
 };
 
 template<class T>
+inline bool ProjectManager::isExists(T * piece)
+{
+	return true;
+}
+
+template <> inline bool ProjectManager::isExists<Script>(Script * piece) { return std::find_if(scripts.begin(), scripts.end(), [piece](Script* script) {return script->name == piece->name; }) != scripts.end(); };
+
+template<class T>
 inline void ProjectManager::add(T *piece)
 {
 };
@@ -54,6 +67,8 @@ template<> inline void ProjectManager::add<Material>(Material *piece) { material
 template<> inline void ProjectManager::add<Prefab>(Prefab *piece) { prefabs.push_back(piece); };
 template<> inline void ProjectManager::add<Texture>(Texture *piece) { textures.push_back(piece); };
 template<> inline void ProjectManager::add<Animation>(Animation *piece) { animations.push_back(piece); };
+template<> inline void ProjectManager::add<Script>(Script *piece) { scripts.push_back(piece); };
+
 
 
 

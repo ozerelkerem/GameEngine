@@ -6,6 +6,7 @@
 #include <engine/resource/ResourceManager.h>
 #include <engine/systems/AnimationSystem.h>
 #include <engine/physx/PhysicSystem.h>
+#include <engine/scripting/ScriptSystem.h>
 #include <engine/systems/SystemManager.h>
 
 Engine::Engine()
@@ -16,6 +17,7 @@ Engine::Engine()
 	resourceManager = new ResourceManager();
 	animationSystem = new AnimationSystem();
 	sytemManager = new SystemManager(animationSystem,physicSystem);
+	scriptSystem = new ScriptSystem();
 	physicSystem->enabled = false;
 }
 

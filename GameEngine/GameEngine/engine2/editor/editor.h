@@ -19,8 +19,11 @@
 #include<engine/components/colliders/SphereColliderComponent.h>
 #include<engine/components/colliders/CapsuleColliderComponent.h>
 #include<engine/components/colliders/CubeColliderComponent.h>
+#include<engine/components/ScriptComponent.h>
 #include <engine/systems/SystemManager.h>
 #include <memory/Allocator/LinearAllocator.h>
+#include <util/ScriptingHelper.h>
+#include<engine/scripting/ScriptSystem.h>
 class Editor 
 {
 public:
