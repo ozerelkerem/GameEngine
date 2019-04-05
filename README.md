@@ -1,4 +1,4 @@
-# Sample Game Engine
+﻿# Sample Game Engine
 
 This project is a university project. We want to learn basis of game engines and shader programming.
 
@@ -7,6 +7,8 @@ This project is a university project. We want to learn basis of game engines and
 ### Installing
 
 ```
+Dlls for x86 version 
+
 SOON
 ```
 
@@ -15,6 +17,7 @@ SOON
 * [Nvidia Physx](https://github.com/NVIDIAGameWorks/PhysX) - The physic engine used
 * [Assimp](https://github.com/assimp/assimp/) - External Model Loading
 * [ImGUI](https://github.com/ocornut/imgui/) - For GUI
+* [Mono](https://www.mono-project.com/) - For Scripting
  
 
 ## Authors
