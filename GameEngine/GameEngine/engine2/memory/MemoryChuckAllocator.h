@@ -81,7 +81,7 @@ public:
 			return *this;
 		}
 
-		inline OBJECT_TYPE& operator*() const { return *m_CurrentObject; }
+		 OBJECT_TYPE* operator*() const { return *m_CurrentObject; }
 		inline OBJECT_TYPE* operator->() const { return *m_CurrentObject; }
 
 		inline bool operator==(iterator& other) {

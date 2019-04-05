@@ -1,8 +1,8 @@
 #include "ScriptingHelper.h"
 #include <Engine.h>
 #include <engine/Transform.h>
+#include<engine/Actor.h>
 namespace ScriptHelper {
-
 
 
 
@@ -11,13 +11,25 @@ namespace ScriptHelper {
 	template <typename R, typename C, typename... Args> struct ClassOf<R(C::*)(Args...)const > { using Type = C; };
 	template <typename R, typename C> struct ClassOf<R(C::*)> { using Type = C; };
 
-	template <typename Setter, Setter setter>
-	void csharp_setProperty(typename ClassOf<Setter>::Type* scene, int cmp)
+	template <typename T> struct TypeOf;
+	template <typename R, typename C, typename... Args> struct TypeOf<R(C::*)(Args...)> { using Type = R; };
+	template <typename R, typename C, typename... Args> struct TypeOf<R(C::*)(Args...)const > { using Type = R; };
+	template <typename R, typename C> struct TypeOf<R(C::*)> { using Type = R; };
+
+	template<typename Setter, Setter setter>
+	void csharp_setProperty(typename ClassOf<Setter>::Type* cls, typename TypeOf<Setter>::Type val)
 	{
-		//(scene->*setter)({ cmp }, fromCSharpValue(value));
+		cls->*setter = val;
 	}
 
+	template<typename Getter, Getter getter>
+	typename TypeOf<Getter>::Type csharp_getProperty(typename ClassOf<Getter>::Type* cls)
+	{
+		return cls->*getter;
+	}
 
+	
+	
 	void moveMainAssembly()
 	{
 		std::string from,to;
@@ -26,7 +38,11 @@ namespace ScriptHelper {
 		to = GE_Engine->mainPath;
 		to += "dlls\\engineassembly.dll";
 		std::filesystem::copy_file(from,to);
+
+		decltype(&Actor::transformation) a;
 	}
+
+	
 
 	void compile()
 	{
@@ -56,10 +72,20 @@ namespace ScriptHelper {
 		file << "\t\t}\n";
 		file << "\n\t}\n\n}";
 
-		auto x = &csharp_setProperty<decltype(&Transform::setLocalMatrix), &Transform::setLocalMatrix>;
-
 		
 	}
+
+	void loadMethods()
+	{
+		{
+			auto setter = &csharp_setProperty<decltype(&Transform::localPosition), &Transform::localPosition>;
+			auto getter = &csharp_getProperty<decltype(&Transform::localPosition), &Transform::localPosition>;
+			mono_add_internal_call("GameEngine.Transform::setLocalPosition", setter);
+			mono_add_internal_call("GameEngine.Transform::getLocalPosition", getter);
+		}
+	}
+
+	
 
 	
 

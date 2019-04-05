@@ -11,7 +11,7 @@
 #include <mono/utils/mono-logger.h>
 #include<mono/metadata/debug-helpers.h>
 
-
+class Actor;
 
 class ScriptSystem : public System<ScriptSystem>
 {
@@ -25,6 +25,8 @@ public:
 
 	void initSystem();
 	void freeSystem();
+	void startSytem();
+	
 
 private:
 	MonoDomain *domain;
@@ -32,4 +34,7 @@ private:
 	MonoAssembly *scriptassembly;
 	MonoImage *engineimage;
 	MonoImage *scriptimage;
+
+	void createSharpActor(Actor *actor);
+	
 };

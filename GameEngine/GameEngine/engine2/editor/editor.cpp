@@ -490,6 +490,7 @@ void Editor::Render()
 			isPlaying = true;
 			GE_Engine->physicSystem->enabled = true;
 			GE_Engine->scriptSystem->initSystem();
+			GE_Engine->scriptSystem->startSytem();
 			
 		}
 		ImGui::SameLine();
