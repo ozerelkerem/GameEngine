@@ -10,14 +10,16 @@
 *.userosscache
 *.sln.docstates
 
-# Custom
-!GameEngine/Debug/*.dll
+
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
 # Build results
-[Dd]ebug/
+**/[Dd]ebug/**
+!**/[Dd]ebug/*.dll
+
+
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
@@ -335,3 +337,5 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+
+
