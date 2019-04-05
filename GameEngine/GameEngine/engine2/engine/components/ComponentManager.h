@@ -111,14 +111,15 @@ public:
 	template<class T>
 	T* AddComponent(const ActorID actorid, T* other)
 	{
+
 		//	static constexpr std::hash<ComponentID> ACTOR_COMPONENT_ID_HASHER{ std::hash<ComponentID>() };
 
 		const ComponentTypeID CTID = T::STATIC_COMPONENT_TYPE_ID;
 
 		void *pObjectMemory = GetComponentContainer<T>()->CreateObject();
 
-		ComponentID componentid = this->AqcuireComponentId((T*)pObjectMemory);
-		
+		ComponentID componentid = this->AqcuireComponentId(static_cast<IComponent*>(pObjectMemory));
+
 
 		memcpy(pObjectMemory, other, sizeof(T));
 		((T*)pObjectMemory)->componentID = componentid;
