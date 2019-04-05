@@ -2,6 +2,7 @@
 #include <Engine.h>
 #include <engine/Transform.h>
 #include<engine/Actor.h>
+#include<Windows.h>
 namespace ScriptHelper {
 
 
@@ -64,15 +65,53 @@ namespace ScriptHelper {
 		file.open(std::string(GE_Engine->mainPath) + "scripts\\" + s->name + ".cs", std::ios::out);
 		if (!file)
 			throw std::exception("File error when scripting.");
-		file << "namespace GameEngine{\n\n";
-		file << "\tpublic class " << s->name << "{\n\n";
-		file << "\t\tpublic void Start(){\n";
-		file << "\t\t}\n";
-		file << "\t\tpublic void Update(){\n";
-		file << "\t\t}\n";
-		file << "\n\t}\n\n}";
 
+		file << "namespace GameEngine{\n\n"
+				 "\tpublic class " + s->name + " : Component {\n\n"
+				 "\t\tpublic void Start(){\n"
+				 "\t\t}\n"
+				 "\t\tpublic void Update(){\n"
+				 "\t\t}\n"
+				 "\n\t}\n\n}";
+
+		file.close();
+	}
+
+	void openCSProject()
+	{
+		ShellExecute(NULL,"open",("\""+ std::string(GE_Engine->mainPath) + "scripts\\project.csproj\"").c_str(),NULL,NULL,SW_NORMAL);
+
+	}
+
+	void createCSProject(ProjectManager *m)
+	{
+		std::ofstream file;
+		file.open(std::string(GE_Engine->mainPath) + "scripts\\project.csproj", std::ios::out);
+		if (!file)
+			throw std::exception("File error when cs project.");
+		file <<
+			"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<Project ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\r\n"
+			"<Import Project=\"$(MSBuildExtensionsPath)\\$(MSBuildToolsVersion)\\Microsoft.Common.props\" Condition=\"Exists('$(MSBuildExtensionsPath)\\$(MSBuildToolsVersion)\\Microsoft.Common.props')\" />\r\n  \r\n  "
+			"<ItemGroup>\r\n   "
+			" <Reference Include=\"GameEngineAssembly\">\r\n      <HintPath>" + std::string(GE_Engine->mainPath) + "dlls\\engineassembly.dll" + "</HintPath>\r\n    </Reference>\r\n  "
+			"</ItemGroup>\r\n  <ItemGroup>\r\n   "
+			+ getfilelist(m) +
+			" </ItemGroup>\r\n\r\n  <Import Project=\"$(MSBuildToolsPath)\\Microsoft.CSharp.targets\" />\r\n</Project>";
+	
+		file.close();
+
+
+	}
+
+	std::string getfilelist(ProjectManager * m)
+	{
+		std::string returnstr;
+		for (auto script : m->scripts)
+		{
+			returnstr += "  <Compile Include=\"" + script->name + ".cs\" />";
+		}
 		
+		return returnstr;
 	}
 
 	void loadMethods()

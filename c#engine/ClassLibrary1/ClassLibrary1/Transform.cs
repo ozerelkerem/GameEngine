@@ -5,16 +5,16 @@ namespace GameEngine
 {
     public class Transform
     {
-        internal UIntPtr _ptr;
+        internal IntPtr _ptr; //internal
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern static void setLocalPosition(UIntPtr _ptr, Vec3 a);
+        extern static void setLocalPosition(IntPtr _ptr, Vec3 a);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern static Vec3 getLocalPosition(UIntPtr _ptr);
+        extern static Vec3 getLocalPosition(IntPtr _ptr);
 
 
-        internal Transform(UIntPtr e) { _ptr = e; }
+        internal Transform(IntPtr e) { _ptr = e; }
 
         public Vec3 LocalPosition
         {

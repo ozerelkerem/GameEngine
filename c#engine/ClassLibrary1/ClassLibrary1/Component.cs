@@ -9,21 +9,22 @@ namespace GameEngine
    
     public class Component
     {
-        protected Actor entity_;
-        public Actor entity
+        private Actor actor_;
+        public Actor actor
         {
-            get { return entity_; }
+            get { return actor_; }
             set
             {
-                if (entity_ != null) throw new Exception("Component's entity can not be reset");
-                entity_ = value;
+                if (actor_ != null) throw new Exception("Component's actor can not be reset");
+                actor_ = value;
                
             }
         }
 
-        public Component(Actor _entity)
+        public Component(Actor _actor)
         {
-            entity_ = _entity;
+            actor_ = _actor;
         }
+        public Component() { }
     }
 }

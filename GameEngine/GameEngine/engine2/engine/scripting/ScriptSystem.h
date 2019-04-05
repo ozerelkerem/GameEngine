@@ -3,6 +3,7 @@
 
 #include <engine/systems/System.h>
 
+
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/exception.h>
@@ -26,15 +27,19 @@ public:
 	void initSystem();
 	void freeSystem();
 	void startSytem();
+
+	std::vector<MonoObject*> scriptobjects;
 	
 
 private:
 	MonoDomain *domain;
+	MonoDomain *domain_assembly;
 	MonoAssembly *engineassembly;
 	MonoAssembly *scriptassembly;
 	MonoImage *engineimage;
 	MonoImage *scriptimage;
 
-	void createSharpActor(Actor *actor);
+	MonoObject* createSharpActor(Actor *actor);
+	MonoObject* createObject(MonoImage *,const char *mclass);
 	
 };

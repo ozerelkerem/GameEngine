@@ -183,7 +183,7 @@ public:
 		if (componentId == IComponent::INVALID_COMPONENT_ID)
 			return nullptr;
 
-		return static_cast<T*>(this->componentLUT[componentId]);
+		return reinterpret_cast<T*>(this->componentLUT[componentId]);
 	}
 
 	template<class T>
@@ -220,5 +220,5 @@ const ComponentTypeID CTID = T::STATIC_COMPONENT_TYPE_ID;
 	{
 		GE_Engine->physicSystem->addComponent<T>(static_cast<T*>(component));
 	}
-	return static_cast<T*>(component);
+	return (T*)(component);
 }

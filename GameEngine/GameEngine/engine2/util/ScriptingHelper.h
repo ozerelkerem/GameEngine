@@ -1,5 +1,6 @@
 #pragma once
 #include<Api.h>
+#include <editor/ProjectManager.h>
 #include<engine/scripting/Script.h>
 #include<fstream>
 #include<filesystem>
@@ -15,6 +16,10 @@ namespace ScriptHelper{
 		 void moveMainAssembly();
 		 void compile();
 		 void createScript(Script *s);
+		 void loadMethods();
+		 void openCSProject();
+		 void createCSProject(ProjectManager *m);
+		 std::string getfilelist(ProjectManager *m);
 	
 
 }

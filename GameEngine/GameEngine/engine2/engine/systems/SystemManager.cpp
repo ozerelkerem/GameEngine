@@ -5,10 +5,11 @@
 
 
 
-SystemManager::SystemManager(AnimationSystem * m, PhysicSystem *p)
+SystemManager::SystemManager(AnimationSystem * m, PhysicSystem *p,ScriptSystem *s)
 {
 	this->m = m;
 	this->p = p;
+	this->s = s;
 }
 
 SystemManager::~SystemManager()

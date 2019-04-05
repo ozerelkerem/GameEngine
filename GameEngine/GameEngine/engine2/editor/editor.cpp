@@ -274,6 +274,7 @@ void Editor::ShowComponentList()
 				scriptcomp->add(s);
 				ScriptHelper::createScript(s);
 				scriptname[0] = 0;
+				ScriptHelper::createCSProject(projectManager);
 			}
 			else
 				free(s);
@@ -487,25 +488,49 @@ void Editor::Render()
 	{
 		if (ImGui::ButtonEx("Play", { 0,0 }, isPlaying ? ImGuiButtonFlags_Disabled : 0))
 		{
+			ifstream f(std::string(GE_Engine->mainPath)+"dlls\\scriptassembly.dll");
+			
 			isPlaying = true;
 			GE_Engine->physicSystem->enabled = true;
-			GE_Engine->scriptSystem->initSystem();
-			GE_Engine->scriptSystem->startSytem();
+			if (f.good())
+			{
+				GE_Engine->scriptSystem->initSystem();
+				GE_Engine->scriptSystem->startSytem();
+				GE_Engine->scriptSystem->enabled = true;
+			}
+			else
+				GE_Engine->scriptSystem->enabled = false;
 			
 		}
 		ImGui::SameLine();
 		if (ImGui::ButtonEx("Stop", { 0,0 }, !isPlaying ? ImGuiButtonFlags_Disabled : 0))
 		{
+			ifstream f(std::string(GE_Engine->mainPath) + "dlls\\scriptassembly.dll");
+
 			isPlaying = false;
 			GE_Engine->physicSystem->enabled = false;
-			GE_Engine->scriptSystem->freeSystem();
+			if (f.good())
+			{
+				GE_Engine->scriptSystem->enabled = false;
+				GE_Engine->scriptSystem->freeSystem();
+			}
 		
 		}
 		ImGui::SameLine(ImGui::GetWindowWidth() - 90);
 		if (ImGui::ButtonEx("Compile", { 0,0 }, isPlaying ? ImGuiButtonFlags_Disabled : 0))
 		{
-			ScriptHelper::compile();
+			if (projectManager->scripts.empty())
+				ImGui::OpenPopup("CompileError");
+			else
+				ScriptHelper::compile();
 
+		}
+		if (ImGui::BeginPopupModal("CompileError"))
+		{
+			ImGui::Text("There is nothing to compile");
+			if (ImGui::Button("Close"))
+				ImGui::CloseCurrentPopup();
+			ImGui::EndPopup();
 		}
 	}
 	ImGui::End();
@@ -1088,6 +1113,7 @@ void Editor::DrawProjectExplorer()
 	{
 		static Texture *selectedTexture;
 		static bool opentexture = true;
+		static bool scriptclicked = false;
 		int count = 0;
 		int i = 0;
 		count += projectManager->scenes.size();
@@ -1153,10 +1179,12 @@ void Editor::DrawProjectExplorer()
 		}
 		for (auto script : projectManager->scripts)
 		{
-			if (DrawSingleProjectItem((void *)ConstantTextures::Textures::scriptTexture->gettextureID(), script->name, i++, count))
+			if (DrawSingleProjectItem((void *)ConstantTextures::Textures::scriptTexture->gettextureID(), script->name, i++, count, &scriptclicked))
 			{
 				ImGui::SetTooltip(("Script -> " + script->name).c_str());
 			}
+			if (scriptclicked)
+				ScriptHelper::openCSProject();
 		}
 
 		

@@ -14,11 +14,13 @@ Engine::Engine()
 	componentManager = new ComponentManager();
 	actorManager = new ActorManager(componentManager);
 	physicSystem = new PhysicSystem();
+	scriptSystem = new ScriptSystem();
 	resourceManager = new ResourceManager();
 	animationSystem = new AnimationSystem();
-	sytemManager = new SystemManager(animationSystem,physicSystem);
-	scriptSystem = new ScriptSystem();
+	sytemManager = new SystemManager(animationSystem,physicSystem,scriptSystem);
+
 	physicSystem->enabled = false;
+	scriptSystem->enabled = false;
 }
 
 

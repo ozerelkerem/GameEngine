@@ -10,12 +10,13 @@ namespace GameEngine
     {
        
 
-        internal UIntPtr entityid;
+        internal IntPtr actorptr;//internal
 
         public Transform transform { get; }
 
-        private Actor(UIntPtr id, UIntPtr trptr)
+        private Actor(IntPtr id, IntPtr trptr)
         {
+            this.actorptr = id;
             this.transform = new Transform(trptr);
         }
 
