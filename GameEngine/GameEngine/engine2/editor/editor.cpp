@@ -714,6 +714,12 @@ void Editor::Render()
 
 	ImGui::Begin("Game", NULL);
 	{
+
+	}
+	ImGui::End();
+
+	ImGui::Begin("Animation", NULL);
+	{
 		std::vector<bool> isopen;
 		float test=0;
 		{
