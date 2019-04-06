@@ -126,6 +126,13 @@ namespace ScriptHelper {
 			mono_add_internal_call("GameEngine.Transform::setLocalPosition", setter);
 			mono_add_internal_call("GameEngine.Transform::getLocalPosition", getter);
 		}
+		{
+			auto setter = &csharp_setProperty<decltype(&Transform::localScale), &Transform::localScale>;
+			auto getter = &csharp_getProperty<decltype(&Transform::localScale), &Transform::localScale>;
+			mono_add_internal_call("GameEngine.Transform::setLocalScale", setter);
+			mono_add_internal_call("GameEngine.Transform::getLocalScale", getter);
+		}
+
 	}
 
 	
