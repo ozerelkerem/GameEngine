@@ -8,6 +8,8 @@ ScriptSystem::ScriptSystem()
 {
 	mono_set_dirs("C:\\Program Files (x86)\\Mono\\lib", "C:\\Program Files (x86)\\Mono\\etc");
 	domain = mono_jit_init("GameEngineDomain");
+	mono_thread_set_main(mono_thread_current());
+
 	ScriptHelper::loadMethods();
 }
 
@@ -23,10 +25,8 @@ void ScriptSystem::PreUpdate()
 void ScriptSystem::Update()
 {
 	for (auto sobject : scriptobjects)
-	{
-		MonoClass *mclass = mono_object_get_class(sobject);
-		MonoMethod *method = mono_class_get_method_from_name(mclass, "Update", 0);
-		mono_runtime_invoke(method, sobject, NULL, NULL);	
+	{		
+		mono_runtime_invoke(sobject.second->UpdateMethod, sobject.first, NULL, NULL);	
 	}
 }
 
@@ -45,10 +45,14 @@ void ScriptSystem::initSystem()
 	engineimage = mono_assembly_get_image(engineassembly);
 	scriptimage = mono_assembly_get_image(scriptassembly);
 
+	emptymethod =  mono_class_get_method_from_name(mono_class_from_name(engineimage, "GameEngine", "ScriptComponent"),"Start", 0);
+
+
 }
 
 void ScriptSystem::freeSystem()
 {
+	actorobjects.clear();
 	scriptobjects.clear();
 	if (mono_domain_get() != domain) mono_domain_set(domain, true);
 	MonoObject *exc = NULL;
@@ -71,13 +75,22 @@ void ScriptSystem::freeSystem()
 
 void ScriptSystem::startSytem()
 {
-		//create scripts objects
+	std::set<Script *> scriptstemp;
+	
+	//create scripts objects
 	auto end = GE_Engine->componentManager->end<ScriptComponent>();
 	for (auto scriptcompit = GE_Engine->componentManager->begin<ScriptComponent>(); scriptcompit.operator!=(end); scriptcompit.operator++())
 	{
 		MonoObject *actorobject = createSharpActor(GE_Engine->actorManager->GetActor(scriptcompit->owner));
+		int i = 0;
 		for (auto script : scriptcompit->scripts)
 		{
+			if (scriptstemp.find(script) == scriptstemp.end())
+			{
+				registerScriptFunctions(script);
+				scriptstemp.insert(script);
+			}
+
 			MonoObject *obj = createObject(scriptimage,script->name.c_str());
 			MonoClass *mclass = mono_class_from_name(engineimage, "GameEngine", "Component");
 			MonoMethod *method = mono_class_get_method_from_name(mclass, ".ctor", 1);
@@ -88,7 +101,8 @@ void ScriptSystem::startSytem()
 			mono_runtime_invoke(method, obj, params, NULL);
 			mclass = mono_class_from_name(scriptimage, "GameEngine", script->name.c_str());
 		//	obj = mono_object_castclass_mbyref(obj, mclass);
-			scriptobjects.push_back(obj);
+			scriptobjects.push_back(std::make_pair(obj, script));
+			scriptcompit->objects[i++] = obj;
 		}
 	}
 	return;
@@ -109,6 +123,7 @@ MonoObject* ScriptSystem::createSharpActor(Actor * actor)
 	MonoMethod *method = mono_class_get_method_from_name(mclass, ".ctor", 2);
 	mono_runtime_invoke(method, obj, params, NULL);
 	
+	actorobjects[actor->actorID] = obj;
 	
 	return obj;
 
@@ -120,4 +135,24 @@ MonoObject * ScriptSystem::createObject(MonoImage *img,const char * mclassname)
 	MonoClass *mclass = mono_class_from_name(img, "GameEngine", mclassname);
 	MonoObject *obj = mono_object_new(mono_domain_get(), mclass);
 	return obj;
+}
+
+void ScriptSystem::registerScriptFunctions(Script * s)
+{
+	{//Start
+		MonoClass *mclass = mono_class_from_name(scriptimage, "GameEngine", s->name.c_str());
+		MonoMethod *method = mono_class_get_method_from_name(mclass, "Start", 0);
+		s->StartMethod = method ? method : emptymethod;
+	}
+
+	{//Update
+		MonoClass *mclass = mono_class_from_name(scriptimage, "GameEngine", s->name.c_str());
+		MonoMethod *method = mono_class_get_method_from_name(mclass, "Update", 0);
+		s->UpdateMethod = method ? method : emptymethod;
+	}
+	{//OnCollisionEnter
+		MonoClass *mclass = mono_class_from_name(scriptimage, "GameEngine", s->name.c_str());
+		MonoMethod *method = mono_class_get_method_from_name(mclass, "onCollisionEnter", 1);
+		s->OnCollisionEnterMethod = method ? method : emptymethod;
+	}
 }

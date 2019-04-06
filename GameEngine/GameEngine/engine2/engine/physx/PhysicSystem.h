@@ -2,8 +2,7 @@
 
 #include <engine/systems/System.h>
 #include<physx/PxPhysicsAPI.h>
-
-
+#include<engine/physx/CustomPhysxEventCallBack.h>
 #include<util/MatConverter.h>
 #include <engine/components/RigidBodyComponent.h>
 #include <engine/components/colliders/CubeColliderComponent.h>
@@ -39,7 +38,7 @@ private:
 	physx::PxDefaultCpuDispatcher*	gDispatcher = NULL;
 	physx::PxScene*				gScene = NULL;
 	physx::PxPvd*                  gPvd = NULL;
-
+	CustomPhysxEventCallBack*      gEventManager;
 	void initPhysx();
 
 
@@ -88,7 +87,7 @@ void PhysicSystem::addComponent(T* component)
 	gScene->addActor(*objects[component->owner]);
 	tr->physicactor = objects[component->owner];
 
-
+	objects[component->owner]->userData = &component->owner;
 
 }
 

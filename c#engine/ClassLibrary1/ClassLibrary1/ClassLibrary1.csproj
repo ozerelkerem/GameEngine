@@ -44,6 +44,7 @@
     <Compile Include="Component.cs" />
     <Compile Include="Actor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScriptComponent.cs" />
     <Compile Include="Transform.cs" />
     <Compile Include="Vec.cs" />
   </ItemGroup>
