@@ -33,6 +33,28 @@ SOON
 
 
 ## Some Screenshots
+**Basic Scripting With C#**
+```C#
+namespace GameEngine
+{
+ public class PlayerScript : ScriptComponent
+ {
+  
+   private Vec3 startpos = new Vec3(0,0,0);
+  
+   public void Update()
+   {
+    actor.transform.LocalPosition = startpos;
+    startpos.x++;
+    if (startpos.x > 30)
+        startpos.x = 0;
+   }//update function
+
+ }//class
+}//namespace
+```
+![scripting](https://user-images.githubusercontent.com/19158321/55838958-dfa0ee80-5b2e-11e9-85bb-e55be51922c7.gif)
+
 **Basic Physic**
 
 ![Basic Physic](https://user-images.githubusercontent.com/19158321/55366209-64b55380-54f0-11e9-93df-01f38c44f1be.gif)
