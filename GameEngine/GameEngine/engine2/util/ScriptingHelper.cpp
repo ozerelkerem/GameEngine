@@ -21,6 +21,10 @@ namespace ScriptHelper {
 	void csharp_setProperty(typename ClassOf<Setter>::Type* cls, typename TypeOf<Setter>::Type val)
 	{
 		cls->*setter = val;
+		if constexpr (std::is_same<ClassOf<Setter>::Type, Transform>::value)
+		{
+			cls->applyPhysic();
+		}
 	}
 
 	template<typename Getter, Getter getter>
@@ -67,7 +71,7 @@ namespace ScriptHelper {
 			throw std::exception("File error when scripting.");
 
 		file << "namespace GameEngine{\n\n"
-				 "\tpublic class " + s->name + " : Component {\n\n"
+				 "\tpublic class " + s->name + " : ScriptComponent {\n\n"
 				 "\t\tpublic void Start(){\n"
 				 "\t\t}\n"
 				 "\t\tpublic void Update(){\n"

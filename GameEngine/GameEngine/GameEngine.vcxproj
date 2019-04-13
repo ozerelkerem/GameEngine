@@ -134,6 +134,7 @@
     <None Include="Debug\glew32.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="engine2\engine\physx\CustomPhysxEventCallBack.cpp" />
     <ClCompile Include="engine2\engine\components\colliders\CubeColliderComponent.cpp" />
     <ClCompile Include="engine2\engine\components\colliders\CapsuleColliderComponent.cpp" />
     <ClCompile Include="engine2\engine\components\ComponentManager.cpp" />
@@ -207,6 +208,7 @@
     <ClCompile Include="stb\stb_image.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine2\engine\physx\CustomPhysxEventCallBack.h" />
     <ClInclude Include="engine2\engine\components\colliders\CubeColliderComponent.h" />
     <ClInclude Include="engine2\engine\components\colliders\CapsuleColliderComponent.h" />
     <ClInclude Include="engine2\engine\components\ComponentManager.h" />

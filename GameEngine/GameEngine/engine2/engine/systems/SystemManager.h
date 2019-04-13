@@ -17,10 +17,11 @@ public:
 	void work() {
 		if (m->enabled)
 			m->Update();
-		if (p->enabled)
-			p->Update();
 		if (s->enabled)
 			s->Update();
+		if (p->enabled)
+			p->Update();
+		
 	};
 };
 
