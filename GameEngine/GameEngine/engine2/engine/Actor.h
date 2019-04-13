@@ -15,6 +15,7 @@ class Actor
 {
 public:
 	Actor(std::string, Scene *, ActorID);
+	Actor(ActorID aid) : actorID(aid) {};
 	~Actor();
 
 	ComponentManager* componentManagerInstance;

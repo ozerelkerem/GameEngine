@@ -27,7 +27,7 @@
 class Editor 
 {
 public:
-	Editor(GLFWwindow *);
+	Editor(GLFWwindow *, ProjectManager*);
 	~Editor();
 
 	GLFWwindow *window;

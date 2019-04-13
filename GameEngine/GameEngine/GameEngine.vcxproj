@@ -203,6 +203,7 @@
     <ClCompile Include="engine2\util\ScriptingHelper.cpp" />
     <ClCompile Include="engine2\engine\components\ScriptComponent.cpp" />
     <ClCompile Include="engine2\engine\scripting\Script.cpp" />
+    <ClCompile Include="engine2\editor\projectselect.cpp" />
     <ClCompile Include="stb\stb_image.c" />
   </ItemGroup>
   <ItemGroup>
@@ -283,6 +284,7 @@
     <ClInclude Include="engine2\util\ScriptingHelper.h" />
     <ClInclude Include="engine2\engine\components\ScriptComponent.h" />
     <ClInclude Include="engine2\engine\scripting\Script.h" />
+    <ClInclude Include="engine2\editor\projectselect.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

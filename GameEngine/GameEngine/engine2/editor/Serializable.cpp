@@ -1,5 +1,6 @@
 #include "Serializable.h"
-
+#include<engine/Scene.h>
+#include<engine/ActorManager.h>
 void Serializable::Save(ProjectManager *pm, const char *path)
 {
 	SaveProjectFile(pm, path);
@@ -21,6 +22,99 @@ void Serializable::SaveProjectFile(ProjectManager *pm, const char *path)
 	}
 	out.close();
 }
+
+void Serializable::SaveScene(std::string path,Scene *scene)
+{
+	ofstream file;
+	file.open(path + "scenes\\" + scene->name, ios::out | ios::binary);
+	if(!file)
+		throw std::exception("File error when saving scene.");
+	writefile(file, scene->name);
+
+	std::vector<Actor *> list;
+	Actor *actor;
+	list.push_back(GE_Engine->actorManager->GetActor(scene->rootActor));
+	while (!list.empty())
+	{
+
+		actor = list.back();
+		list.pop_back();
+
+		for (int i = 0; i < actor->numberOfChildren; i++)
+		{
+			list.push_back(GE_Engine->actorManager->GetActor(actor->children[i]));
+		}
+
+		SaveActor(file,actor);
+		
+	}
+	
+	file.close();
+}
+
+void Serializable::SaveActor(ofstream& file,Actor *actor)
+{
+	writefile(file, actor->name);
+	writefile(file, actor->actorID);
+	writefile(file, actor->parent);
+	writefile(file, actor->numberOfChildren);
+	for (int i = 0; i < actor->numberOfChildren; i++)
+	{
+		writefile(file, actor->children[i]);
+	}
+
+}
+
+Scene * Serializable::LoadScene(std::string fullpath)
+{
+	std::unordered_map<ActorID::value_type, ActorID::value_type> oldnewids;
+	ifstream file;
+	file.open(fullpath, ios::in | ios::binary);
+	if (!file)
+		throw std::exception("File error when reading scene.");
+	std::vector<Actor*> list;
+	Scene *scene = (Scene*)calloc(sizeof(Scene),1);
+	readfile(file, &scene->name);
+
+	while (file.peek() != EOF)
+		list.push_back(LoadActor(file,scene,oldnewids));
+
+	scene->rootActor = list[0]->actorID;
+	
+	file.close();
+	int i = 0;
+	for (auto actor : list)
+	{
+		actor->parent = actor->parent != ActorID::INVALID_HANDLE ? oldnewids[actor->parent] : ActorID::INVALID_HANDLE;
+		for (int i = 0; i < actor->numberOfChildren; i++)
+		{
+			actor->children[i] = oldnewids[actor->children[i]];
+		}
+		if(i++>0)
+			actor->transformation.parent = &GE_Engine->actorManager->GetActor(actor->parent)->transformation;
+	}
+	return scene;
+}
+
+Actor * Serializable::LoadActor(ifstream & file,Scene *scene, std::unordered_map<ActorID::value_type, ActorID::value_type>& oldnewids)
+{
+
+	ActorID aid = GE_Engine->actorManager->CreateActor();
+	Actor *actor = GE_Engine->actorManager->GetActor(aid);
+	actor->scene = scene;
+	readfile(file, &actor->name);
+	readfile(file, &aid);
+	readfile(file, &actor->parent);
+	readfile(file, &actor->numberOfChildren);
+	actor->children = (ActorID*)malloc(sizeof(ActorID)*(actor->numberOfChildren +1));
+	for (int i = 0; i < actor->numberOfChildren; i++)
+	{
+		readfile(file, &actor->children[i]);
+	}
+	oldnewids[aid] = actor->actorID;
+	return actor;
+}
+	
 
 void Serializable::WriteMaterials(ofstream & file, ProjectManager * pm)
 {

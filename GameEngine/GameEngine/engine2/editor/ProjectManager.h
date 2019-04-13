@@ -1,7 +1,6 @@
 #pragma once
 
 #include <direct.h>
-
 #include <engine/Model.h>
 #include <engine/Material.h>
 #include <engine/Scene.h>

@@ -5,6 +5,7 @@
 
 #include<Api.h>
 
+#include<editor/projectselect.h>
 #include <editor/editor.h>
 
 #include "ogl/GL/glew.h" 
@@ -25,6 +26,7 @@
 ImVec2 viewportSize = { 1280,720 };
 
 Editor *editor;
+projectselect * projectSelectWindow;
 
 
 
@@ -71,15 +73,15 @@ int main(int, char**)
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 #endif
 
-	GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
-	if (window == NULL)
+	GLFWwindow* window2 = glfwCreateWindow(1280, 720, "Select Project", NULL, NULL);
+	if (window2 == NULL)
 		return 1;
 
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(window2);
 	glfwSwapInterval(1); // Enable vsync
 
-	glfwSetWindowSizeCallback(window, resize_callback);
-	glfwSetDropCallback(window, drop_callback);
+	glfwSetWindowSizeCallback(window2, resize_callback);
+	glfwSetDropCallback(window2, drop_callback);
 
 	bool err = glewInit() != GLEW_OK;
 	if (err)
@@ -104,17 +106,66 @@ int main(int, char**)
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplGlfw_InitForOpenGL(window2, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 
-	
-	Initialize();
-	editor = new Editor(window);
+	projectSelectWindow = new projectselect();
 
-	
+	// Proje seçme
+	while (!glfwWindowShouldClose(window2) && !projectSelectWindow->isSelected())
+	{
+		glfwPollEvents();
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		// Rendering
+		projectSelectWindow->Render();
+		ImGui::Render();
+		
+
+		int display_w, display_h;
+		glfwGetFramebufferSize(window2, &display_w, &display_h);
+		glViewport(0, 0, display_w, display_h);
+		glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+		glClear(GL_COLOR_BUFFER_BIT);
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			GLFWwindow* backup_current_context = glfwGetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			glfwMakeContextCurrent(backup_current_context);
+		}
+
+		glfwSwapBuffers(window2);
+
+
+	}
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	glfwDestroyWindow(window2);
+
+	GLFWwindow* window = glfwCreateWindow(1280, 720, "Game Engine", NULL, NULL);
+	if (window == NULL)
+		return 1;
+
+	glfwMakeContextCurrent(window);
+
+	glfwSetWindowSizeCallback(window, resize_callback);
+	glfwSetDropCallback(window, drop_callback);
+
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init(glsl_version);
+
+	Initialize();
+	editor = new Editor(window, projectSelectWindow->projectManager);
 
 
 
@@ -127,7 +178,6 @@ int main(int, char**)
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		
 		/////
 		GE_Engine->Update();
 		editor->Render();
@@ -158,7 +208,7 @@ int main(int, char**)
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 
-	glfwDestroyWindow(window);
+	
 	glfwTerminate();
 
 	return 0;

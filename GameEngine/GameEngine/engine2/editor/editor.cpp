@@ -6,24 +6,23 @@
 
 #define StateSize 1000000
 
-Editor::Editor(GLFWwindow *window) : isPlaying(false)
+
+Editor::Editor(GLFWwindow *window, ProjectManager *pm) : isPlaying(false)
 {
 	this->window = window;
 
-	projectManager = new ProjectManager("Kero Game 1", "C:\\GameEngine\\");
+	projectManager = pm;
 	GE_Engine->mainPath = projectManager->path.data();
 	ScriptHelper::moveMainAssembly();
 
-
-	Scene *scene = new Scene("Taso", projectManager);
+	Scene *scene = new Scene(projectManager->name, projectManager);
 	projectManager->add(scene);
-	gameBase = new GameBase(scene);
+
+
+	gameBase = new GameBase(projectManager->scenes[0]);
 	sceneRenderer = new SceneRenderer(gameBase);
 
 	Serializable::Save(projectManager, projectManager->path.c_str());
-
-
-
 }
 
 void Editor::ShowComponentList()
@@ -472,11 +471,13 @@ void Editor::Render()
 	{
 		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::MenuItem("Flag: NoSplit", "", (opt_flags & ImGuiDockNodeFlags_NoSplit) != 0))                 opt_flags ^= ImGuiDockNodeFlags_NoSplit;
-			if (ImGui::MenuItem("Flag: NoDockingInCentralNode", "", (opt_flags & ImGuiDockNodeFlags_NoDockingInCentralNode) != 0))  opt_flags ^= ImGuiDockNodeFlags_NoDockingInCentralNode;
-			if (ImGui::MenuItem("Flag: NoResize", "", (opt_flags & ImGuiDockNodeFlags_NoResize) != 0))                opt_flags ^= ImGuiDockNodeFlags_NoResize;
-			if (ImGui::MenuItem("Flag: PassthruDockspace", "", (opt_flags & ImGuiDockNodeFlags_PassthruDockspace) != 0))       opt_flags ^= ImGuiDockNodeFlags_PassthruDockspace;
-			ImGui::Separator();
+			if (ImGui::MenuItem("Save Scene")){
+				Serializable::SaveScene(projectManager->path, gameBase->currentScene);
+			}
+			if (ImGui::MenuItem("Load Scene")) {
+				gameBase->currentScene = Serializable::LoadScene(projectManager->path+"scenes\\"+gameBase->currentScene->name);
+			}
+		
 			ImGui::EndMenu();
 		}
 

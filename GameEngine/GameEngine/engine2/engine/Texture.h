@@ -9,7 +9,7 @@
 #include <stb_image.h>
 #include <engine/Namable.h>
 #include<engine/resource/ResourceManager.h>
-using TextureID = uint16_t;
+
 
 class Texture : public Resource<Texture> , public Namable
 {
@@ -17,8 +17,8 @@ public:
 	Texture(std::string path);
 	Texture(std::string n, std::string path);
 	~Texture();
-
-	static const TextureID INVALID_TEXTURE_ID = std::numeric_limits<TextureID>::max();
+	
+	static const TextureID INVALID_TEXTURE_ID = 65535;//std::numeric_limits<TextureID>::max();
 	virtual void load() override;
 	virtual void unload() override;
 

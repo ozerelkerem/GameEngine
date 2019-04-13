@@ -7,7 +7,8 @@
 #include <editor/ProjectManager.h>
 #include<engine/SkinnedMesh.h>
 class ProjectManager;
-
+class Scene;
+class Actor;
 
 using namespace std;
 
@@ -20,9 +21,15 @@ public:
 	static void SaveModel(ProjectManager *, Model *);
 	static void ReadModel(Model *m);
 
+	static void SaveScene(std::string, Scene*);
+	static void SaveActor(ofstream& file, Actor*);
+	static Scene* LoadScene(std::string);
+	static Actor* LoadActor(ifstream& file, Scene*scene, std::unordered_map<ActorID::value_type, ActorID::value_type>&);
+
+
 private:
 	static void SaveProjectFile(ProjectManager *, const char *);
-	static void SaveComponents();
+
 
 	static void WriteMaterials(ofstream& file, ProjectManager *pm);
 	static void WriteTextures(ofstream& file, ProjectManager *pm);

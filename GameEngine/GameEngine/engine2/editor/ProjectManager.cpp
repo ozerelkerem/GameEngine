@@ -7,6 +7,7 @@ ProjectManager::ProjectManager(std::string n, std::string p) : name(n), path(p +
 	system(("mkdir \"" + p + n + "\\models\"").c_str());
 	system(("mkdir \"" + p + n + "\\scripts\"").c_str());
 	system(("mkdir \"" + p + n + "\\dlls\"").c_str());
+	system(("mkdir \"" + p + n + "\\scenes\"").c_str());
 	
 }
 

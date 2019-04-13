@@ -37,7 +37,7 @@
 
 
 using TypeID = uint16_t;
-
+using TextureID = uint16_t;
 using ActorID = GameEngine::Util::Handle64;
 
 #define SKINNED_MESH_MAX_WEIGHT_PER_VERTICES 4
