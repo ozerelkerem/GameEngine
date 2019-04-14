@@ -2,7 +2,7 @@
 #include <Engine.h>
 #include <engine/ActorManager.h>
 
-AnimatorComponent::AnimatorComponent() : Component()
+AnimatorComponent::AnimatorComponent() : Component(), currentAnimation(nullptr)
 {
 	state = false;
 }

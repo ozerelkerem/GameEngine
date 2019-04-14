@@ -15,14 +15,22 @@ Editor::Editor(GLFWwindow *window, ProjectManager *pm) : isPlaying(false)
 	GE_Engine->mainPath = projectManager->path.data();
 	ScriptHelper::moveMainAssembly();
 
-	Scene *scene = new Scene(projectManager->name, projectManager);
-	projectManager->add(scene);
+	Scene *scene;
+	if (projectManager->scenes.size() > 0)
+	{
+		scene = Serializable::LoadScene(projectManager, projectManager->scenes[0]);
+	}
+	else
+	{
+		scene = new Scene(projectManager->name, projectManager);
+		projectManager->add(scene);
+	}
 
 
-	gameBase = new GameBase(projectManager->scenes[0]);
+	gameBase = new GameBase(scene);
 	sceneRenderer = new SceneRenderer(gameBase);
 
-	Serializable::Save(projectManager, projectManager->path.c_str());
+	Serializable::Save(projectManager);
 }
 
 void Editor::ShowComponentList()
@@ -68,9 +76,11 @@ void Editor::ShowComponentList()
 			{
 				for (auto model : projectManager->models)
 				{
-					if (ImGui::Selectable(model->name.c_str()))
+					if (ImGui::Selectable(model.c_str()))
 					{
-						GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor)->GetComponent<ModelComponent>()->setModel(model);
+						std::string fullpath = projectManager->path + "models\\" + model + ".model";
+
+						GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor)->GetComponent<ModelComponent>()->setModel(GE_Engine->resourceManager->getResource<Model>(fullpath,model));
 					}
 				}
 				ImGui::EndCombo();
@@ -133,9 +143,12 @@ void Editor::ShowComponentList()
 			{
 				for (auto model : projectManager->models)
 				{
-					if (ImGui::Selectable(model->name.c_str()))
+					if (ImGui::Selectable(model.c_str()))
 					{
-						GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor)->GetComponent<SkinnedModelComponent>()->setModel(model);
+						std::string fullpath = projectManager->path + "models\\" + model + ".model";
+
+						GE_Engine->actorManager->GetActor(sceneRenderer->selectedActor)->GetComponent<ModelComponent>()->setModel(GE_Engine->resourceManager->getResource<Model>(fullpath,model));
+
 					}
 				}
 				ImGui::EndCombo();
@@ -472,10 +485,10 @@ void Editor::Render()
 		if (ImGui::BeginMenu("File"))
 		{
 			if (ImGui::MenuItem("Save Scene")){
-				Serializable::SaveScene(projectManager->path, gameBase->currentScene);
+				Serializable::SaveScene(projectManager,projectManager->path, gameBase->currentScene);
 			}
 			if (ImGui::MenuItem("Load Scene")) {
-				gameBase->currentScene = Serializable::LoadScene(projectManager->path+"scenes\\"+gameBase->currentScene->name);
+				gameBase->currentScene = Serializable::LoadScene(projectManager,projectManager->name);
 			}
 		
 			ImGui::EndMenu();
@@ -1132,16 +1145,16 @@ void Editor::DrawProjectExplorer()
 		count += projectManager->scripts.size();
 		for (auto scene : projectManager->scenes)
 		{
-			if (DrawSingleProjectItem((void *)ConstantTextures::Textures::sceneTexture->gettextureID(), scene->name, i++, count))
+			if (DrawSingleProjectItem((void *)ConstantTextures::Textures::sceneTexture->gettextureID(), scene, i++, count))
 			{
-				ImGui::SetTooltip(("Scene -> " + scene->name).c_str());
+				ImGui::SetTooltip(("Scene -> " + scene).c_str());
 			}
 		}
 		for (auto model : projectManager->models)
 		{
-			if(DrawSingleProjectItem((void *)sceneRenderer->GetTextureColorBuffer(), model->name, i++, count))
+			if(DrawSingleProjectItem((void *)sceneRenderer->GetTextureColorBuffer(), model, i++, count))
 			{
-				ImGui::SetTooltip(("Model -> " + model->name).c_str());
+				ImGui::SetTooltip(("Model -> " + model).c_str());
 			}
 		}
 		for (auto texture : projectManager->textures)

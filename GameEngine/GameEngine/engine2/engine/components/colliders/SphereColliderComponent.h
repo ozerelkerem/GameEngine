@@ -1,11 +1,11 @@
 #pragma once
 #include<engine/components/colliders/ICollider.h>
 #include<engine/components/Component.h>
-class SphereColliderComponent : public ICollider, public Component<SphereColliderComponent>
+class SphereColliderComponent :  public Component<SphereColliderComponent>, public ICollider
 {
 public:
 	SphereColliderComponent();
-	~SphereColliderComponent();
+	virtual ~SphereColliderComponent();
 
 	physx::PxSphereGeometry geometry;
 

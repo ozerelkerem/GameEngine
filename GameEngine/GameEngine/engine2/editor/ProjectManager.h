@@ -20,8 +20,8 @@ public:
 	std::string name;
 	std::string path;
 
-	std::vector<Model *> models;
-	std::vector<Scene *> scenes;
+	std::vector<std::string> models;
+	std::vector<std::string> scenes;
 	std::vector<Prefab *> prefabs;
 	std::vector<Animation *> animations;
 	std::vector<Texture *> textures;
@@ -38,13 +38,23 @@ public:
 	void add(T *piece);
 
 	inline int findIndexofTexture(Texture *t) {
-		if (!t)
-			return Texture::INVALID_TEXTURE_ID;
 		int i = 0;
-		while (i < textures.size() && textures[i++] == t);
-		if (i > textures.size())
-			return Texture::INVALID_TEXTURE_ID;
-		return --i;
+		for (;i<textures.size();i++)
+		{
+			if (textures[i] == t)
+				return i;
+		}
+		return Texture::INVALID_TEXTURE_ID;
+
+	}
+	inline int findIndexofMaterial(Material *t) {
+		int i = 0;
+		for (; i < materials.size(); i++)
+		{
+			if (materials[i] == t)
+				return i;
+		}
+		return -1;
 	}
 };
 
@@ -60,8 +70,8 @@ template<class T>
 inline void ProjectManager::add(T *piece)
 {
 };
-template<> inline void ProjectManager::add<Scene>(Scene *piece) { scenes.push_back(piece); };
-template<> inline void ProjectManager::add<Model>(Model *piece) { models.push_back(piece); };
+template<> inline void ProjectManager::add<Scene>(Scene *piece) { scenes.push_back(piece->name); };
+template<> inline void ProjectManager::add<Model>(Model *piece) { models.push_back(piece->name); };
 template<> inline void ProjectManager::add<Material>(Material *piece) { materials.push_back(piece); };
 template<> inline void ProjectManager::add<Prefab>(Prefab *piece) { prefabs.push_back(piece); };
 template<> inline void ProjectManager::add<Texture>(Texture *piece) { textures.push_back(piece); };

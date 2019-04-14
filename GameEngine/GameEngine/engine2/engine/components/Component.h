@@ -9,7 +9,7 @@ class Component : public IComponent
 {
 public:
 	Component() : IComponent() {}
-	~Component(){}
+	virtual ~Component(){}
 
 	static const ComponentTypeID STATIC_COMPONENT_TYPE_ID;
 

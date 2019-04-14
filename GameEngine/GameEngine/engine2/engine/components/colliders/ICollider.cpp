@@ -2,11 +2,3 @@
 
 
 
-ICollider::ICollider()
-{
-}
-
-
-ICollider::~ICollider()
-{
-}

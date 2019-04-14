@@ -2,11 +2,11 @@
 #include<engine/components/colliders/ICollider.h>
 #include<engine/components/Component.h>
 #include<physx/PxPhysicsAPI.h>
-class CubeColliderComponent : public ICollider, public Component<CubeColliderComponent>
+class CubeColliderComponent :  public Component<CubeColliderComponent>, public ICollider
 {
 public:
 	CubeColliderComponent();
-	~CubeColliderComponent();
+	virtual ~CubeColliderComponent();
 
 	physx::PxBoxGeometry geometry;
 

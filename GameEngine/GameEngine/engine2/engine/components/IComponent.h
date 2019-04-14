@@ -13,7 +13,7 @@ public:
 	friend class ComponentManager;
 
 	IComponent();
-	~IComponent();
+	virtual ~IComponent();
 
 	ComponentID componentID;
 	ActorID owner;

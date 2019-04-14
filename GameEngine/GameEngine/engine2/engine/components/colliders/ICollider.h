@@ -1,10 +1,9 @@
 #pragma once
 #include <editor/ConstantModels.h>
+
 class ICollider
 {
 public:
-	ICollider();
-	~ICollider();
 
 	physx::PxShape *shape;
 

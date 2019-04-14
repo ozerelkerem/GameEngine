@@ -2,12 +2,9 @@
 
 
 
-IModelComponent::IModelComponent()
-{
-
-}
 
 
 IModelComponent::~IModelComponent()
 {
+	GE_Engine->resourceManager->removeResource(this->model);
 }

@@ -7,12 +7,7 @@
 class IModelComponent
 {
 public:
-	IModelComponent();
-	~IModelComponent();
-
-
-
-
+	virtual ~IModelComponent();
 	int numberOfMaterials;
 	std::vector<Material*> materials;
 

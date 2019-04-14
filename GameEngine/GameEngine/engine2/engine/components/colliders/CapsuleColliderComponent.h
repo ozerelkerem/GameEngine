@@ -1,11 +1,11 @@
 #pragma once
 #include<engine/components/colliders/ICollider.h>
 #include<engine/components/Component.h>
-class CapsuleColliderComponent : public ICollider, public Component<CapsuleColliderComponent>
+class CapsuleColliderComponent : public Component<CapsuleColliderComponent>, public ICollider
 {
 public:
 	CapsuleColliderComponent();
-	~CapsuleColliderComponent();
+	virtual ~CapsuleColliderComponent();
 
 	int upp;
 	physx::PxVec3 up;

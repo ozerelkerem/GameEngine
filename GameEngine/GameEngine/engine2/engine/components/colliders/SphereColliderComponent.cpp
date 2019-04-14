@@ -1,5 +1,5 @@
 #include "SphereColliderComponent.h"
-
+#include<engine/physx/PhysicSystem.h>
 
 
 SphereColliderComponent::SphereColliderComponent()
@@ -11,4 +11,5 @@ SphereColliderComponent::SphereColliderComponent()
 
 SphereColliderComponent::~SphereColliderComponent()
 {
+	GE_Engine->physicSystem->removeComponent(this);
 }

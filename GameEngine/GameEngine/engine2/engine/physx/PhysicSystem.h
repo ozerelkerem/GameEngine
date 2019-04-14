@@ -25,6 +25,8 @@ public:
 	
 	template<class T>
 	 void addComponent(T* component);
+	 template<class T>
+	 void removeComponent(T* component);
 
 private:
 	/**/
@@ -89,6 +91,60 @@ void PhysicSystem::addComponent(T* component)
 
 	objects[component->owner]->userData = &component->owner;
 
+}
+
+template<class T>
+void PhysicSystem::removeComponent(T* component)
+{
+	auto it = objects.find((ActorID::value_type)component->owner);
+	Transform* tr = getfix(component->owner);
+	PxTransform t(glmMat4ToPhysxMat4(tr->getWorldMatrix()));
+
+	if constexpr (std::is_same<T, RigidBodyComponent>::value)
+	{//dynamic
+		
+		if (it->second->getNbShapes() > 0) //has staticcomponent
+		{
+			PxShape** shapes = (PxShape**)malloc(sizeof(PxShape*) * 1);
+			(it->second)->getShapes(shapes, 1);
+			it->second->detachShape(*shapes[0]);
+			gScene->removeActor(*(it->second));
+			objects[component->owner] = gPhysics->createRigidStatic(t);
+			objects[component->owner]->attachShape(*shapes[0]);
+			free(shapes);
+
+			gScene->addActor(*objects[component->owner]);
+			tr->physicactor = objects[component->owner];
+			objects[component->owner]->userData = &component->owner;
+		}
+		else
+		{
+			gScene->removeActor(*(it->second));
+			objects.erase(component->owner);
+		}
+	}
+	else
+	{//nodynamic
+		if (it->second->getNbShapes() > 0) //has rigidbody
+		{
+			physx::PxRigidDynamic* dynamic = gPhysics->createRigidDynamic(t);
+			dynamic->setAngularDamping(0.5f);
+			dynamic->setLinearVelocity({ 1,0,0 });
+			objects[component->owner] = dynamic;
+
+			gScene->addActor(*objects[component->owner]);
+			tr->physicactor = objects[component->owner];
+			objects[component->owner]->userData = &component->owner;
+
+		}
+		else
+		{
+			gScene->removeActor(*(it->second));
+			objects.erase(component->owner);
+		}
+
+	}
+	
 }
 
 

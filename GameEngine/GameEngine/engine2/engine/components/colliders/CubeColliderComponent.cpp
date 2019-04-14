@@ -1,5 +1,5 @@
 #include "CubeColliderComponent.h"
-
+#include<engine/physx/PhysicSystem.h>
 
 
 CubeColliderComponent::CubeColliderComponent() 
@@ -12,6 +12,8 @@ CubeColliderComponent::CubeColliderComponent()
 }
 
 
+
 CubeColliderComponent::~CubeColliderComponent()
 {
+	GE_Engine->physicSystem->removeComponent(this);
 }

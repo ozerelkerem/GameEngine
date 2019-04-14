@@ -1,8 +1,13 @@
 #pragma once
 
+
+
 #include <iostream>
 #include <fstream>
 #include <direct.h>
+
+#include<engine/components/ModelComponent.h>
+#include<engine/components/ScriptComponent.h>
 
 #include <editor/ProjectManager.h>
 #include<engine/SkinnedMesh.h>
@@ -15,25 +20,43 @@ using namespace std;
 class Serializable
 {
 public:
-	static void Save(ProjectManager *, const char *);
+	static void Save(ProjectManager *);
 	static ProjectManager *Load(const char *);
 
 	static void SaveModel(ProjectManager *, Model *);
 	static void ReadModel(Model *m);
 
-	static void SaveScene(std::string, Scene*);
-	static void SaveActor(ofstream& file, Actor*);
-	static Scene* LoadScene(std::string);
-	static Actor* LoadActor(ifstream& file, Scene*scene, std::unordered_map<ActorID::value_type, ActorID::value_type>&);
+	static void SaveScene(ProjectManager *, std::string, Scene*);
+	static void SaveActor(ProjectManager *, ofstream& file, Actor*);
+	static Scene* LoadScene(ProjectManager *, std::string);
+	static Actor* LoadActor(ProjectManager *, ifstream& file, Scene*scene, std::unordered_map<ActorID::value_type, ActorID::value_type>&);
 
+	//componets
+	template<class T>
+	static void SaveComponent(ProjectManager *,ofstream& file, T *component);
+	template<class T>
+	static void _SaveComponent(ProjectManager *, ofstream& file, T *component);
+	template<class T>
+	static void LoadComponent(ProjectManager *, ifstream& file, Actor *a);
+	template<class T>
+	static void _LoadComponent(ProjectManager *, ifstream& file, Actor *a);
+
+	static void SaveIModelComponent(ProjectManager *, ofstream& file, IModelComponent *component);
+	static void LoadIModelComponentMaterials(ProjectManager *, ifstream& file, IModelComponent *component);
 
 private:
-	static void SaveProjectFile(ProjectManager *, const char *);
+	static void SaveProjectFile(ProjectManager *);
 
 
 	static void WriteMaterials(ofstream& file, ProjectManager *pm);
 	static void WriteTextures(ofstream& file, ProjectManager *pm);
 	static void WriteModels(ofstream& file, ProjectManager *pm);
+	static void WriteScenes(ofstream& file, ProjectManager *pm);
+
+	static void ReadMaterials(ifstream& file, ProjectManager *pm);
+	static void ReadTextures(ifstream& file, ProjectManager *pm);
+	static void ReadModels(ifstream& file, ProjectManager *pm);
+	static void ReadScenes(ifstream& file, ProjectManager *pm);
 public:
 	template<typename T>
 	inline static void writefile(ofstream& file, T val, size_t size = 1)
@@ -67,3 +90,5 @@ public:
 	}
 
 };
+
+

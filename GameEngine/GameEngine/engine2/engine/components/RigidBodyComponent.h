@@ -4,6 +4,6 @@ class RigidBodyComponent : public Component<RigidBodyComponent>
 {
 public:
 	RigidBodyComponent();
-	~RigidBodyComponent();
+	virtual ~RigidBodyComponent();
 };
 

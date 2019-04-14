@@ -12,10 +12,7 @@ static const char * LightTypeNames[] = {"Point", "Directional" , "Spotlight"};
 
 class LightComponent : public Component <LightComponent>
 {
-private:
-	float constant;
-	float linear;
-	float quadratic;
+
 public:
 
 	LightComponent();
@@ -30,6 +27,9 @@ public:
 	//attenuation
 	float distance;
 	float intensity;
+	float constant;
+	float linear;
+	float quadratic;
 
 	void calculateAttenuation();
 	void passShader(Shader *s, Transform *, int);

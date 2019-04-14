@@ -1,4 +1,5 @@
 #include "CapsuleColliderComponent.h"
+#include<engine/physx/PhysicSystem.h>
 
 
 
@@ -14,4 +15,5 @@ CapsuleColliderComponent::CapsuleColliderComponent()
 
 CapsuleColliderComponent::~CapsuleColliderComponent()
 {
+	GE_Engine->physicSystem->removeComponent(this);
 }

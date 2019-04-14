@@ -42,7 +42,7 @@ namespace ScriptHelper {
 		from += "\\engineassembly.dll";
 		to = GE_Engine->mainPath;
 		to += "dlls\\engineassembly.dll";
-		std::filesystem::copy_file(from,to);
+		std::filesystem::copy_file(from,to,std::filesystem::copy_options::overwrite_existing);
 
 		decltype(&Actor::transformation) a;
 	}

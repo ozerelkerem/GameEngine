@@ -1,7 +1,7 @@
 #include "projectselect.h"
 
 #include<editor/ProjectManager.h>
-
+#include<editor/Serializable.h>
 projectselect::projectselect()
 {
 }
@@ -48,7 +48,7 @@ void projectselect::Render()
 				{ "Project Files", "*.project", }).result();
 			if (!selection.empty())
 			{
-				
+				projectManager = Serializable::Load(selection[0].c_str());
 			}
 		}
 
@@ -62,7 +62,7 @@ void projectselect::Render()
 
 			if (ImGui::Button("Create Project") && strlen(namebuffer) > 3)
 			{
-				projectManager = new ProjectManager(namebuffer, pathbuffer);
+				projectManager = new ProjectManager(namebuffer, std::string(pathbuffer) + namebuffer);
 			}
 
 			ImGui::EndChild();

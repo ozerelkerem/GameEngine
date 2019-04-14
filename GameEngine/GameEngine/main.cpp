@@ -147,6 +147,8 @@ int main(int, char**)
 
 
 	}
+	if (!projectSelectWindow->projectManager)
+		return 0;
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
