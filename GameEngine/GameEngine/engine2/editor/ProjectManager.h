@@ -39,12 +39,22 @@ public:
 
 	inline int findIndexofTexture(Texture *t) {
 		int i = 0;
-		for (;i<textures.size();i++)
+		for (; i < textures.size(); i++)
 		{
 			if (textures[i] == t)
 				return i;
 		}
 		return Texture::INVALID_TEXTURE_ID;
+
+	}
+	inline int findIndexofScript(Script *t) {
+		int i = 0;
+		for (; i < scripts.size(); i++)
+		{
+			if (scripts[i] == t)
+				return i;
+		}
+		return -1;
 
 	}
 	inline int findIndexofMaterial(Material *t) {

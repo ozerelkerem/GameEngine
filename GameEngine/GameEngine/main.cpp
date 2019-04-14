@@ -7,7 +7,7 @@
 
 #include<editor/projectselect.h>
 #include <editor/editor.h>
-
+#include<engine/InputManager.h>
 #include "ogl/GL/glew.h" 
 #include "ogl/GLFW/glfw3.h"
 #include "ogl/glm/glm.hpp"
@@ -169,6 +169,10 @@ int main(int, char**)
 	Initialize();
 	editor = new Editor(window, projectSelectWindow->projectManager);
 
+	glfwSetKeyCallback(window2, InputManager::key_Callback);
+	glfwSetMouseButtonCallback(window2, InputManager::mousebutton_Callback);
+	glfwSetCursorPosCallback(window2, InputManager::mouseposition_Callback);
+	glfwSetInputMode(window2, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 
 	// Main loop

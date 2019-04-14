@@ -191,6 +191,7 @@
     <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="engine2\memory\Allocator\LinearAllocator.cpp" />
+    <ClCompile Include="engine2\engine\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine2\engine\SpriteRenderer.cpp" />
     <ClCompile Include="engine2\memory\Allocator\StackAllocator.cpp" />
@@ -287,6 +288,7 @@
     <ClInclude Include="engine2\engine\components\ScriptComponent.h" />
     <ClInclude Include="engine2\engine\scripting\Script.h" />
     <ClInclude Include="engine2\editor\projectselect.h" />
+    <ClInclude Include="engine2\engine\InputManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

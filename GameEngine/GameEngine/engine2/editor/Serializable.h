@@ -52,11 +52,14 @@ private:
 	static void WriteTextures(ofstream& file, ProjectManager *pm);
 	static void WriteModels(ofstream& file, ProjectManager *pm);
 	static void WriteScenes(ofstream& file, ProjectManager *pm);
+	static void WriteScripts(ofstream& file, ProjectManager *pm);
 
 	static void ReadMaterials(ifstream& file, ProjectManager *pm);
 	static void ReadTextures(ifstream& file, ProjectManager *pm);
 	static void ReadModels(ifstream& file, ProjectManager *pm);
 	static void ReadScenes(ifstream& file, ProjectManager *pm);
+	static void ReadScripts(ifstream& file, ProjectManager *pm);
+
 public:
 	template<typename T>
 	inline static void writefile(ofstream& file, T val, size_t size = 1)

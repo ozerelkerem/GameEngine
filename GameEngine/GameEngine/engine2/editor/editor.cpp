@@ -485,6 +485,7 @@ void Editor::Render()
 		if (ImGui::BeginMenu("File"))
 		{
 			if (ImGui::MenuItem("Save Scene")){
+				Serializable::Save(projectManager);
 				Serializable::SaveScene(projectManager,projectManager->path, gameBase->currentScene);
 			}
 			if (ImGui::MenuItem("Load Scene")) {

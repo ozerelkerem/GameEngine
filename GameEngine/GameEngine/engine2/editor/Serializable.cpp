@@ -28,7 +28,7 @@ ProjectManager * Serializable::Load(const char *path)
 	ReadMaterials(file, pm);
 	ReadScenes(file, pm);
 	ReadModels(file, pm);
-
+	ReadScripts(file, pm);
 	return pm;
 
 }
@@ -51,11 +51,32 @@ void Serializable::SaveProjectFile(ProjectManager *pm)
 		WriteMaterials(out, pm);
 		WriteScenes(out, pm);
 		WriteModels(out, pm);
-		
+		WriteScripts(out, pm);
 	}
 	out.close();
 }
 
+void Serializable::WriteScripts(ofstream& file, ProjectManager *pm)
+{
+	Serializable::writefile(file, pm->scripts.size());
+	for (auto script : pm->scripts)
+	{
+		Serializable::writefile(file, script->name);
+	}
+}
+void Serializable::ReadScripts(ifstream & file, ProjectManager * pm)
+{
+	size_t size;
+	readfile(file, &size);
+	std::string name;
+	pm->scripts.resize(size);
+	for (int i = 0; i < size; i++)
+	{
+		readfile(file, &name);
+		Script *script = new Script(name);
+		pm->scripts[i] = script;
+	}
+}
 void Serializable::WriteTextures(ofstream& file, ProjectManager *pm)
 {
 	Serializable::writefile(file, pm->textures.size());
@@ -191,7 +212,8 @@ void Serializable::SaveActor(ProjectManager *pm, ofstream& file,Actor *actor)
 	SaveComponent(pm, file,actor->GetComponent<CameraComponent>());
 	SaveComponent(pm, file,actor->GetComponent<CapsuleColliderComponent>());
 	SaveComponent(pm, file,actor->GetComponent<CubeColliderComponent>());
-	SaveComponent(pm, file,actor->GetComponent<SphereColliderComponent>());
+	SaveComponent(pm, file, actor->GetComponent<SphereColliderComponent>());
+	SaveComponent(pm, file, actor->GetComponent<ScriptComponent>());
 
 }
 
@@ -273,6 +295,7 @@ Actor * Serializable::LoadActor(ProjectManager *pm, ifstream & file,Scene *scene
 	LoadComponent<CapsuleColliderComponent>(pm, file, actor);
 	LoadComponent<CubeColliderComponent>(pm, file, actor);
 	LoadComponent<SphereColliderComponent>(pm, file, actor);
+	LoadComponent<ScriptComponent>(pm, file, actor);
 
 	return actor;
 }
@@ -473,8 +496,23 @@ template<> inline void Serializable::_LoadComponent<CapsuleColliderComponent>(Pr
 template<> inline void Serializable::_LoadComponent<RigidBodyComponent>(ProjectManager *pm, ifstream & file, Actor *a)
 {
 	auto x = a->AddComponent<RigidBodyComponent>();
-
 }
+template<> inline void Serializable::_LoadComponent<ScriptComponent>(ProjectManager *pm, ifstream & file, Actor *a)
+{
+	auto x = a->AddComponent<ScriptComponent>();
+	size_t size;
+	readfile(file, &size);
+	x->scripts.resize(size);
+	int index;
+	for (int i = 0; i < size; i++)
+	{
+
+		readfile(file, &index);
+		x->scripts[i] = pm->scripts[index];
+	}
+}
+
+
 template<class T>
 inline void Serializable::SaveComponent(ProjectManager *pm, ofstream & file, T * component)
 {
@@ -543,6 +581,12 @@ template<> inline void Serializable::_SaveComponent<CapsuleColliderComponent>(Pr
 }
 template<> inline void Serializable::_SaveComponent<RigidBodyComponent>(ProjectManager *pm, ofstream & file, RigidBodyComponent * component)
 {
+}
+template<> inline void Serializable::_SaveComponent<ScriptComponent>(ProjectManager *pm, ofstream & file, ScriptComponent * component)
+{
+	writefile(file, component->scripts.size());
+	for (auto script : component->scripts)
+		writefile(file, pm->findIndexofScript(script));
 }
 
 void Serializable::SaveIModelComponent(ProjectManager *pm, ofstream & file, IModelComponent * component)

@@ -1,6 +1,7 @@
 #include "ScriptingHelper.h"
 #include <Engine.h>
 #include <engine/Transform.h>
+#include<engine/InputManager.h>
 #include<engine/Actor.h>
 #include<Windows.h>
 namespace ScriptHelper {
@@ -32,6 +33,25 @@ namespace ScriptHelper {
 	{
 		return cls->*getter;
 	}
+
+	template <typename F> struct csharp_methodproxy;
+	template <typename F> struct csharp_functionproxy;
+
+	template<typename R, typename... Args>
+	struct csharp_functionproxy<R(Args...)>
+	{
+		using F = R (Args...);
+
+		template<F fnc>
+		static typename R call(Args ...args ){
+			return fnc(args...);
+		}
+	};
+	
+	
+
+	
+
 
 	
 	
@@ -131,6 +151,12 @@ namespace ScriptHelper {
 			auto getter = &csharp_getProperty<decltype(&Transform::localScale), &Transform::localScale>;
 			mono_add_internal_call("GameEngine.Transform::setLocalScale", setter);
 			mono_add_internal_call("GameEngine.Transform::getLocalScale", getter);
+		}
+		{
+			
+			
+			auto x = &csharp_functionproxy<decltype(InputManager::getKeyState)>::call<&InputManager::getKeyState>;
+			mono_add_internal_call("GameEngine.InputManager::getKeyState", x);
 		}
 
 	}
