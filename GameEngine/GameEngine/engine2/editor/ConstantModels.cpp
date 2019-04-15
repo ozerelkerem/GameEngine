@@ -9,6 +9,7 @@ namespace ConstantTextures
 	Texture * Textures::sceneTexture = nullptr;
 	Texture * Textures::scriptTexture = nullptr;
 	Texture * Textures::animationTexture = nullptr;
+	Texture * Textures::modelTexture = nullptr;
 	void Textures::initTextures()
 	{
 		Textures::lightTexture = GE_Engine->resourceManager->getResource<Texture>("ConstantIcons\\light.png");
@@ -16,6 +17,7 @@ namespace ConstantTextures
 		Textures::sceneTexture = GE_Engine->resourceManager->getResource<Texture>("ConstantIcons\\scene.png");
 		Textures::animationTexture = GE_Engine->resourceManager->getResource<Texture>("ConstantIcons\\animation.png");
 		Textures::scriptTexture = GE_Engine->resourceManager->getResource<Texture>("ConstantIcons\\script.png");
+		Textures::modelTexture = GE_Engine->resourceManager->getResource<Texture>("ConstantIcons\\model.png");
 		//Textures::cameraTexture->loadTexture();
 	}
 }

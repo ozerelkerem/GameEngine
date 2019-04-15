@@ -36,6 +36,7 @@ void SceneRenderer::renderLights()
 
 void SceneRenderer::renderSelectedLight()
 {
+	colorShader->setMat4("modelMatrix", glm::mat4(1));
 	colorShader->setInt("hasBones", 0);
 	colorShader->setVec3("color", glm::vec3(0.6f, 0.6f, 0.6f));
 

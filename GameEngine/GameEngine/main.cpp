@@ -81,7 +81,7 @@ int main(int, char**)
 	glfwSwapInterval(1); // Enable vsync
 
 	glfwSetWindowSizeCallback(window2, resize_callback);
-	glfwSetDropCallback(window2, drop_callback);
+
 
 	bool err = glewInit() != GLEW_OK;
 	if (err)
@@ -169,13 +169,13 @@ int main(int, char**)
 	Initialize();
 	editor = new Editor(window, projectSelectWindow->projectManager);
 	GE_Engine->projectManager = projectSelectWindow->projectManager;
-	glfwSetKeyCallback(window2, InputManager::key_Callback);
+	//glfwSetKeyCallback(window2, InputManager::key_Callback);
 	glfwSetMouseButtonCallback(window2, InputManager::mousebutton_Callback);
 	static double x, y;
 	glfwGetCursorPos(window2, &x, &y);
 	InputManager::mouseposition_Callback(window2, x, y);
-	glfwSetInputMode(window2, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
+	//glfwSetInputMode(window2, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetDropCallback(window2, drop_callback);
 
 	// Main loop
 	while (!glfwWindowShouldClose(window))

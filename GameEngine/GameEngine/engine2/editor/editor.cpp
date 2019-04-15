@@ -33,6 +33,15 @@ Editor::Editor(GLFWwindow *window, ProjectManager *pm) : isPlaying(false)
 	Serializable::Save(projectManager);
 }
 
+template<class T>
+void Editor::removeComponentContext(Actor *a)
+{
+	if (ImGui::Button("Delete"))
+	{
+		a->RemoveComponent<T>();
+	}
+}
+
 void Editor::ShowComponentList()
 {
 	
@@ -43,6 +52,7 @@ void Editor::ShowComponentList()
 	{
 		if (ImGui::CollapsingHeader("Light Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			
 			if (ImGui::BeginCombo("##lighttype", LightTypeNames[lightcomp->lightType])) // The second parameter is the label previewed before opening the combo.
 			{
 				for (int n = 0; n < IM_ARRAYSIZE(LightTypeNames); n++)
@@ -64,14 +74,16 @@ void Editor::ShowComponentList()
 				if (ImGui::DragFloat("Distance##LightComponent", &lightcomp->distance, 0.05f, 0,10000.f))
 					lightcomp->calculateAttenuation();
 			}
+			removeComponentContext<LightComponent>(actor);
 		}
+		
 	}
 
 	if (ModelComponent *modelcomp = actor->GetComponent<ModelComponent>())
 	{
 		if (ImGui::CollapsingHeader("Model Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-
+			
 			if (ImGui::BeginCombo(("Select Model##selectmodel"), modelcomp->getModel()->name.c_str())) // The second parameter is the label previewed before opening the combo.
 			{
 				for (auto model : projectManager->models)
@@ -106,14 +118,16 @@ void Editor::ShowComponentList()
 				}
 
 			}
+			removeComponentContext<ModelComponent>(actor);
 		}
-
+	
 	}
 
 	if (SkinnedModelComponent *modelcomp = actor->GetComponent<SkinnedModelComponent>())
 	{
 		if (ImGui::CollapsingHeader("Skinned Model Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
+		
 			Actor *root = GE_Engine->actorManager->GetActor(modelcomp->rootBone);
 			if (ImGui::BeginCombo(("Select RootBone##selectbone"), root ? root->name.c_str() : "Select RootBone")) // The second parameter is the label previewed before opening the combo.
 			{
@@ -174,12 +188,14 @@ void Editor::ShowComponentList()
 				}
 
 			}
+			removeComponentContext<SkinnedModelComponent>(actor);
 		}
 
 	}
 
 	if (AnimatorComponent *animator = actor->GetComponent<AnimatorComponent>())
 	{
+
 		if (ImGui::CollapsingHeader("Animator Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			if (ImGui::BeginCombo(("Select Animation##selectanimation"), !animator->currentAnimation ? "" : animator->currentAnimation->name.c_str())) // The second parameter is the label previewed before opening the combo.
@@ -209,6 +225,8 @@ void Editor::ShowComponentList()
 				if (animator->currentAnimation)
 					animator->state = false;
 			}
+
+			removeComponentContext<AnimatorComponent>(actor);
 		}
 
 	}
@@ -217,8 +235,10 @@ void Editor::ShowComponentList()
 	{
 		if (ImGui::CollapsingHeader("SphereCollider Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
+		
 			if (ImGui::DragFloat("Radius##SphereColliderRadius", &spherecollider->geometry.radius, 0.1, 0.1, 100.f))
 				spherecollider->update();
+			removeComponentContext<SphereColliderComponent>(actor);
 		}
 
 	}
@@ -227,12 +247,14 @@ void Editor::ShowComponentList()
 	{
 		if (ImGui::CollapsingHeader("CapsuleCollider Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
+		
 			if (ImGui::SliderInt("Up",&capsulecollider->upp,0,2))
 				capsulecollider->update();
 			if (ImGui::DragFloat("Radius##CapsuleColliderRadiues", &capsulecollider->geometry.radius, 0.1, 0.1, 100.f))
 				capsulecollider->update();
 			if (ImGui::DragFloat("HalfHeight##CapsuleColliderRadiues", &capsulecollider->geometry.halfHeight, 0.1, 0.1, 100.f))
 				capsulecollider->update();
+			removeComponentContext<CapsuleColliderComponent>(actor);
 		}
 
 	}
@@ -241,12 +263,14 @@ void Editor::ShowComponentList()
 	{
 		if (ImGui::CollapsingHeader("CubeCollider Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
+		
 			if (ImGui::DragFloat("X##CubeColliderX", &cubecollider->geometry.halfExtents.x, 0.1, 0.1, 100.f))
 				cubecollider->update();
 			if(ImGui::DragFloat("Y##CubeColliderY", &cubecollider->geometry.halfExtents.y, 0.1, 0.1, 100.f))
 				cubecollider->update();
 			if(ImGui::DragFloat("Z##CubeColliderZ", &cubecollider->geometry.halfExtents.z, 0.1, 0.1, 100.f))
 				cubecollider->update();
+			removeComponentContext<CubeColliderComponent>(actor);
 		}
 
 	}
@@ -255,7 +279,7 @@ void Editor::ShowComponentList()
 	{
 		if (ImGui::CollapsingHeader("RigidBody Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			
+			removeComponentContext<RigidBodyComponent>(actor);
 		}
 
 	}
@@ -263,7 +287,7 @@ void Editor::ShowComponentList()
 	{
 		if (ImGui::CollapsingHeader("Script Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-
+			
 			for (auto script : scriptcomp->scripts)
 			{
 				ImGui::Text((script->name).c_str());
@@ -307,6 +331,7 @@ void Editor::ShowComponentList()
 			}
 			else
 				free(s);
+			removeComponentContext<ScriptComponent>(actor);
 		}
 
 	}
@@ -1186,14 +1211,14 @@ void Editor::DrawProjectExplorer()
 		}
 		for (auto prefab : projectManager->actorprefab)
 		{
-			if (DrawSingleProjectItem((void *)ConstantTextures::Textures::sceneTexture->gettextureID(), prefab, i++, count))
+			if (DrawSingleProjectItem((void *)ConstantTextures::Textures::modelTexture->gettextureID(), prefab, i++, count))
 			{
 				ImGui::SetTooltip(("Prefab -> " + prefab).c_str());
 			}
 		}
 		for (auto model : projectManager->models)
 		{
-			if(DrawSingleProjectItem((void *)sceneRenderer->GetTextureColorBuffer(), model, i++, count))
+			if(DrawSingleProjectItem((void *)ConstantTextures::Textures::modelTexture->gettextureID(), model, i++, count))
 			{
 				ImGui::SetTooltip(("Model -> " + model).c_str());
 			}

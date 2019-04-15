@@ -48,6 +48,8 @@ public:
 	void Render();
 	void DrawHierarchy(ActorID);
 
+	template<class T>
+	void removeComponentContext(Actor *);
 	void ShowComponentList();
 	void ObjectProperties();
 	void ObjectPropertiesMaterials();
