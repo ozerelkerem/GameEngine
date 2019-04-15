@@ -20,7 +20,7 @@ public:
 	static void mouseposition_Callback(GLFWwindow *window, double xpos, double ypos);
 
 	static uint8_t getKeyState(uint16_t key) { return keys[key]; }
-	static uint8_t getMouseButtonState(int button) { return mousebuttons[button]; }
+	static uint8_t getMouseButtonState(uint8_t button) { return mousebuttons[button]; }
 	static glm::tvec2<double> getMouseDeltaPosition() { return glm::tvec2<double>(deltamouseposition[0],deltamouseposition[1]); };
 };
 

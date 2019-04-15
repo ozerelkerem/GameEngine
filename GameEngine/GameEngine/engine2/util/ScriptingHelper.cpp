@@ -2,11 +2,26 @@
 #include <Engine.h>
 #include <engine/Transform.h>
 #include<engine/InputManager.h>
+#include<editor/ProjectManager.h>
 #include<engine/Actor.h>
 #include<Windows.h>
+#include<engine/ActorManager.h>
 namespace ScriptHelper {
 
+	template<typename T> struct CSharpTypeConvertor
+	{
+		using Type = T;
 
+		static Type convert(Type val) { return val; }
+		static Type convertRet(Type val) { return val; }
+	};
+	template<> struct CSharpTypeConvertor<const char*>
+	{
+		using Type = MonoString * ;
+
+		static const char* convert(MonoString* val) { return mono_string_to_utf8(val); }
+		static MonoString* convertRet(const char* val) { return mono_string_new(mono_domain_get(), val); }
+	};
 
 	template <typename T> struct ClassOf;
 	template <typename R, typename C, typename... Args> struct ClassOf<R(C::*)(Args...)> { using Type = C; };
@@ -41,14 +56,42 @@ namespace ScriptHelper {
 	struct csharp_functionproxy<R(Args...)>
 	{
 		using F = R (Args...);
-
 		template<F fnc>
-		static typename R call(Args ...args ){
-			return fnc(args...);
+		static typename R call(typename CSharpTypeConvertor<Args>::Type... args ){
+			return CSharpTypeConvertor<R>::convert(fnc(CSharpTypeConvertor<Args>::convert(args)...));
 		}
 	};
-	
-	
+	template<typename... Args>
+	struct csharp_functionproxy<void(Args...)>
+	{
+		using F = void(Args...);
+		template<F fnc>
+		static void call(typename CSharpTypeConvertor<Args>::Type... args) {
+			fnc(CSharpTypeConvertor<Args>::convert(args)...);
+		}
+	};
+
+	template<typename R, typename T,typename... Args>
+	struct csharp_methodproxy<R(T::*)(Args...)>
+	{
+		using F = R(T::*)(Args...);
+
+		template<F fnc>
+		static typename R call(T *ins,typename CSharpTypeConvertor<Args>::Type... args) {
+			return CSharpTypeConvertor<R>::convert((ins->*fnc)(CSharpTypeConvertor<Args>::convert(args)...));
+		}
+	};
+	template<typename T, typename... Args>
+	struct csharp_methodproxy<void(T::*)(Args...)>
+	{
+		using F = void(T::*)(Args...);
+
+		template<F fnc>
+		static void call(T *ins, typename CSharpTypeConvertor<Args>::Type... args) {
+			(ins->*fnc)(CSharpTypeConvertor<Args>::convert(args)...);
+		}
+	};
+
 
 	
 
@@ -92,10 +135,12 @@ namespace ScriptHelper {
 
 		file << "namespace GameEngine{\n\n"
 				 "\tpublic class " + s->name + " : ScriptComponent {\n\n"
-				 "\t\tpublic void Start(){\n"
-				 "\t\t}\n"
-				 "\t\tpublic void Update(){\n"
-				 "\t\t}\n"
+				 "\t\tpublic void Start()\n\t\t{\n\n"
+				 "\t\t}\n\n"
+				 "\t\tpublic void Update()\n\t\t{\n\n"
+				 "\t\t}\n\n"
+				"\t\tpublic void onCollisionEnter(Actor other)\n\t\t{\n\n"
+				"\t\t}\n"
 				 "\n\t}\n\n}";
 
 		file.close();
@@ -138,6 +183,14 @@ namespace ScriptHelper {
 		return returnstr;
 	}
 
+
+	void * hasComponent(Actor *actor, const char *name)
+	{
+		if (strcmp(name,"animatorcomponent")==0)
+			return actor->GetComponent<AnimatorComponent>();
+	}
+
+
 	void loadMethods()
 	{
 		{
@@ -153,13 +206,51 @@ namespace ScriptHelper {
 			mono_add_internal_call("GameEngine.Transform::getLocalScale", getter);
 		}
 		{
-			
-			
 			auto x = &csharp_functionproxy<decltype(InputManager::getKeyState)>::call<&InputManager::getKeyState>;
 			mono_add_internal_call("GameEngine.InputManager::getKeyState", x);
 		}
+		{
+			auto x = &csharp_functionproxy<decltype(InputManager::getMouseButtonState)>::call<&InputManager::getMouseButtonState>;
+			mono_add_internal_call("GameEngine.InputManager::getMouseButtonState", x);
+		}
+		{
+			auto x = &csharp_functionproxy<decltype(InputManager::getMouseDeltaPosition)>::call<&InputManager::getMouseDeltaPosition>;
+			mono_add_internal_call("GameEngine.InputManager::getMouseDeltaPosition", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&ProjectManager::getAnimationByName)>::call<&ProjectManager::getAnimationByName>;
+			mono_add_internal_call("GameEngine.Animation::getAnimationByName", x);
+		}
+		{
+			auto x = &csharp_functionproxy<decltype(hasComponent)>::call<&hasComponent>;
+			mono_add_internal_call("GameEngine.Component::hasComponent", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&AnimatorComponent::PlayLoop)>::call<&AnimatorComponent::PlayLoop>;
+			mono_add_internal_call("GameEngine.AnimatorComponent::playLoop", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&AnimatorComponent::PlayOnce)>::call<&AnimatorComponent::PlayOnce>;
+			mono_add_internal_call("GameEngine.AnimatorComponent::playOnce", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&AnimatorComponent::Stop)>::call<&AnimatorComponent::Stop>;
+			mono_add_internal_call("GameEngine.AnimatorComponent::Stop", x);
+		}
+		{
+			auto getter = &csharp_getProperty<decltype(&AnimatorComponent::state), &AnimatorComponent::state>;
+			mono_add_internal_call("GameEngine.AnimatorComponent::getState", getter);
+		}
+		{
+			
+			auto x = &csharp_methodproxy<decltype(&Actor::RemoveActor)>::call<&Actor::RemoveActor>;
+			mono_add_internal_call("GameEngine.GameManager::destroyActor", x);	
+		}
+
 
 	}
+
+	
 
 	
 

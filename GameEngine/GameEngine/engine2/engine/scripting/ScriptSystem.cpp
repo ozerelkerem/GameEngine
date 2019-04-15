@@ -94,6 +94,8 @@ void ScriptSystem::startSytem()
 			MonoObject *obj = createObject(scriptimage,script->name.c_str());
 			MonoClass *mclass = mono_class_from_name(engineimage, "GameEngine", "Component");
 			MonoMethod *method = mono_class_get_method_from_name(mclass, ".ctor", 1);
+			MonoClassField *field = mono_class_get_field_from_name(mclass, "_projectmanagerptr");
+			mono_field_set_value(obj, field, &GE_Engine->projectManager);
 			
 			
 			void *params[1];
@@ -105,7 +107,11 @@ void ScriptSystem::startSytem()
 			scriptcompit->objects[i++] = obj;
 		}
 	}
-	return;
+	
+	for (auto sobject : scriptobjects)
+	{
+		mono_runtime_invoke(sobject.second->StartMethod, sobject.first, NULL, NULL);
+	}
 		
 	
 }

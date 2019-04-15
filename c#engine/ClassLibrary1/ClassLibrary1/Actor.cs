@@ -20,6 +20,8 @@ namespace GameEngine
             this.transform = new Transform(trptr);
         }
 
+        
+
     }
     
 

@@ -29,6 +29,8 @@ ProjectManager * Serializable::Load(const char *path)
 	ReadScenes(file, pm);
 	ReadModels(file, pm);
 	ReadScripts(file, pm);
+	ReadPrefabs(file, pm);
+	ReadAnimations(file, pm);
 	return pm;
 
 }
@@ -52,10 +54,31 @@ void Serializable::SaveProjectFile(ProjectManager *pm)
 		WriteScenes(out, pm);
 		WriteModels(out, pm);
 		WriteScripts(out, pm);
+		WritePrefabs(out, pm);
+		WriteAnimations(out, pm);
 	}
 	out.close();
 }
 
+void Serializable::WritePrefabs(ofstream& file, ProjectManager *pm)
+{
+	Serializable::writefile(file, pm->actorprefab.size());
+	for (auto prefab : pm->actorprefab)
+	{
+		Serializable::writefile(file, prefab);
+	}
+}
+void Serializable::ReadPrefabs(ifstream & file, ProjectManager * pm)
+{
+	size_t size;
+	readfile(file, &size);
+	std::string name;
+	for (int i = 0; i < size; i++)
+	{
+		readfile(file, &name);
+		pm->actorprefab.push_back(name);
+	}
+}
 void Serializable::WriteScripts(ofstream& file, ProjectManager *pm)
 {
 	Serializable::writefile(file, pm->scripts.size());
@@ -77,6 +100,67 @@ void Serializable::ReadScripts(ifstream & file, ProjectManager * pm)
 		pm->scripts[i] = script;
 	}
 }
+void Serializable::WriteAnimations(ofstream& file, ProjectManager *pm)
+{
+	Serializable::writefile(file, pm->animations.size());
+	for (auto animation : pm->animations)
+	{
+		Serializable::writefile(file, animation->name);
+		Serializable::writefile(file, animation->duration);
+		Serializable::writefile(file, animation->ticksPerSecond);
+		Serializable::writefile(file, animation->animationNodeMap.size());
+		for (auto node : animation->animationNodeMap)
+		{
+			Serializable::writefile(file, node.first);
+			Serializable::writefile(file, node.second->positionKeys.size());
+			Serializable::writefile(file, node.second->positionKeys.data(), node.second->positionKeys.size());
+			Serializable::writefile(file, node.second->rotationKeys.size());
+			Serializable::writefile(file, node.second->rotationKeys.data(), node.second->rotationKeys.size());
+			Serializable::writefile(file, node.second->scaleKeys.size());
+			Serializable::writefile(file, node.second->scaleKeys.data(), node.second->scaleKeys.size());
+		}
+	}
+}
+void Serializable::ReadAnimations(ifstream & file, ProjectManager * pm)
+{
+	size_t size;
+	readfile(file, &size);
+	pm->animations.resize(size);
+	for (int i = 0; i < size; i++)
+	{
+		std::string animname;
+		AnimationTimeType ticksPerSecond;
+		AnimationTimeType duration;
+		AnimationNodeMap map;
+		size_t nodesize;
+		readfile(file, &animname);
+		readfile(file, &duration);
+		readfile(file, &ticksPerSecond);
+		readfile(file, &nodesize);
+		for (int j = 0; j < nodesize; j++)
+		{
+			std::string name;
+			readfile(file, &name);
+			size_t vecsize;
+
+			readfile(file, &vecsize);
+			std::vector<animPairVec3> positions(vecsize);
+			readfile(file, positions.data(), vecsize);
+
+			readfile(file, &vecsize);
+			std::vector<animPairQuat> rotations(vecsize);
+			readfile(file, rotations.data(), vecsize);
+
+			readfile(file, &vecsize);
+			std::vector<animPairVec3> scales(vecsize);
+			readfile(file, scales.data(), vecsize);
+			
+			map[name] = new AnimationNode(name, positions, scales, rotations);
+		}
+		pm->animations[i] = new Animation(animname,map,duration,ticksPerSecond);
+
+	}
+}
 void Serializable::WriteTextures(ofstream& file, ProjectManager *pm)
 {
 	Serializable::writefile(file, pm->textures.size());
@@ -92,7 +176,7 @@ void Serializable::ReadTextures(ifstream & file, ProjectManager * pm)
 	readfile(file, &size);
 	std::string name;
 	std::string fullpath;
-	pm->materials.resize(size);
+	pm->textures.resize(size);
 	for (int i = 0; i < size; i++)
 	{
 		readfile(file, &name);
@@ -143,7 +227,7 @@ void Serializable::ReadMaterials(ifstream & file, ProjectManager * pm)
 		Material *m = new Material(name);
 		readfile(file, &m->ambientColor);
 		readfile(file, &textureid);
-		m->ambientTexture = pm->textures[textureid];
+		m->ambientTexture = textureid == Texture::INVALID_TEXTURE_ID ? nullptr : pm->textures[textureid];
 		pm->materials[i] = m;
 	}
 }
@@ -158,14 +242,51 @@ void Serializable::ReadModels(ifstream & file, ProjectManager * pm)
 		pm->models.push_back(name);
 	}
 }
+void Serializable::WriteModels(ofstream & file, ProjectManager * pm)
+{
+	Serializable::writefile(file, pm->models.size());
+	for (auto model : pm->models)
+	{
+		Serializable::writefile(file, model);
+	}
+}
 
-
-
-
-void Serializable::SaveScene(ProjectManager *pm, std::string path,Scene *scene)
+void Serializable::SaveActorasaPrefab(ProjectManager *pm, Actor * rootactor)
 {
 	ofstream file;
-	file.open(path + "scenes\\" + scene->name + ".scene", ios::out | ios::binary);
+	file.open(pm->path + "prefabs\\" + rootactor->name + ".prefab", ios::out | ios::binary | ios::ate);
+	if (!file)
+		throw std::exception("File error when saving prefab actor.");
+	//writefile(file, scene->name);
+
+	std::vector<Actor *> list;
+	Actor *actor;
+	list.push_back(GE_Engine->actorManager->GetActor(rootactor->actorID));
+	while (!list.empty())
+	{
+
+		actor = list.back();
+		list.pop_back();
+
+		for (int i = 0; i < actor->numberOfChildren; i++)
+		{
+			list.push_back(GE_Engine->actorManager->GetActor(actor->children[i]));
+		}
+
+		SaveActor(pm, file, actor);
+
+	}
+
+	file.close();
+
+	pm->actorprefab.push_back(rootactor->name);
+}
+
+
+void Serializable::SaveScene(ProjectManager *pm,Scene *scene)
+{
+	ofstream file;
+	file.open(pm->path + "scenes\\" + scene->name + ".scene", ios::out | ios::binary);
 	if(!file)
 		throw std::exception("File error when saving scene.");
 	writefile(file, scene->name);
@@ -216,6 +337,51 @@ void Serializable::SaveActor(ProjectManager *pm, ofstream& file,Actor *actor)
 	SaveComponent(pm, file, actor->GetComponent<ScriptComponent>());
 
 }
+
+void Serializable::AddPrefab(ProjectManager *pm, std::string name, Actor *targetactor)
+{
+
+
+	std::vector<SkinnedModelComponent*> smclist;
+	std::unordered_map<ActorID::value_type, ActorID::value_type> oldnewids;
+	ifstream file;
+	file.open(pm->path + "prefabs\\" + name + ".prefab", ios::in | ios::binary);
+	if (!file)
+		throw std::exception("File error when reading prefab.");
+	std::vector<Actor*> list;
+	
+	while (file.peek() != EOF)
+		list.push_back(LoadActor(pm, file, targetactor->scene, oldnewids));
+
+	list[0]->AddParent(targetactor->actorID);
+
+	file.close();
+	int i = 0;
+	for (auto actor : list)
+	{
+		
+		for (int i = 0; i < actor->numberOfChildren; i++)
+		{
+			actor->children[i] = oldnewids[actor->children[i]];
+		}
+		if (i++ > 0)
+		{
+			actor->parent = actor->parent != ActorID::INVALID_HANDLE ? oldnewids[actor->parent] : ActorID::INVALID_HANDLE;
+			actor->transformation.parent = &GE_Engine->actorManager->GetActor(actor->parent)->transformation;
+		}
+			
+		if (auto x = actor->GetComponent<SkinnedModelComponent>())
+		{
+			x->rootBone = x->rootBone != ActorID::INVALID_HANDLE ? oldnewids[x->rootBone] : ActorID::INVALID_HANDLE;
+			smclist.push_back(x);
+		}
+	}
+
+	for (auto cmp : smclist)
+		if (cmp->rootBone != ActorID::INVALID_HANDLE) cmp->matchBones();
+
+}
+
 
 Scene * Serializable::LoadScene(ProjectManager *pm, std::string name)
 {
@@ -305,15 +471,7 @@ Actor * Serializable::LoadActor(ProjectManager *pm, ifstream & file,Scene *scene
 
 
 
-void Serializable::WriteModels(ofstream & file, ProjectManager * pm)
-{
-	Serializable::writefile(file, pm->models.size());
-	for (auto model : pm->models)
-	{
-		Serializable::writefile(file, model);
-		Serializable::writefile(file, pm->path + "/models/" + model + ".model");
-	}
-}
+
 void Serializable::SaveModel(ProjectManager *pm, Model *m)
 {
 	ofstream file;
@@ -503,6 +661,7 @@ template<> inline void Serializable::_LoadComponent<ScriptComponent>(ProjectMana
 	size_t size;
 	readfile(file, &size);
 	x->scripts.resize(size);
+	x->objects.resize(size);
 	int index;
 	for (int i = 0; i < size; i++)
 	{

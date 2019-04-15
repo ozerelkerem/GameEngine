@@ -29,6 +29,11 @@ void AnimatorComponent::PlayOnce(Animation * anim)
 	matchAnimation();
 }
 
+void AnimatorComponent::Stop()
+{
+	state = false;
+}
+
 void AnimatorComponent::matchAnimation()
 {
 	if (!currentAnimation)

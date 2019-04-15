@@ -275,6 +275,23 @@ void Editor::ShowComponentList()
 			}
 
 			ImGui::Separator();
+
+			const char *name = "Add Existing Script";
+		
+
+			if (ImGui::BeginCombo("##choicescript", name)) // The second parameter is the label previewed before opening the combo.
+			{
+				for (auto script : projectManager->scripts)
+				{//projedeki bütün materialyerlleri göster
+					if(std::find(scriptcomp->scripts.begin(), scriptcomp->scripts.end(), script)==scriptcomp->scripts.end())
+						if (ImGui::Selectable(script->name.c_str()))
+						{
+							scriptcomp->add(script);						
+						}
+				}
+				ImGui::EndCombo();
+			}
+
 			static char scriptname[50];			
 			ImGui::InputText("##scriptname",scriptname,50);
 			ImGui::SameLine();
@@ -443,9 +460,7 @@ Editor::~Editor()
 void Editor::Render()
 {
 	GE_Engine->sytemManager->work();
-	Actor *root = GE_Engine->actorManager->GetActor(gameBase->currentScene->rootActor);
-	for (int i = 0; i < root->numberOfChildren; i++)
-		GE_Engine->actorManager->GetActor(root->children[i])->processTransformation();
+	gameBase->currentScene->calcWorldMatricies();
 
 
 	static bool opt_fullscreen_persistant = true;
@@ -486,7 +501,7 @@ void Editor::Render()
 		{
 			if (ImGui::MenuItem("Save Scene")){
 				Serializable::Save(projectManager);
-				Serializable::SaveScene(projectManager,projectManager->path, gameBase->currentScene);
+				Serializable::SaveScene(projectManager, gameBase->currentScene);
 			}
 			if (ImGui::MenuItem("Load Scene")) {
 				gameBase->currentScene = Serializable::LoadScene(projectManager,projectManager->name);
@@ -503,6 +518,8 @@ void Editor::Render()
 	{
 		if (ImGui::ButtonEx("Play", { 0,0 }, isPlaying ? ImGuiButtonFlags_Disabled : 0))
 		{
+			Serializable::SaveScene(projectManager, gameBase->currentScene);
+
 			ifstream f(std::string(GE_Engine->mainPath)+"dlls\\scriptassembly.dll");
 			
 			isPlaying = true;
@@ -529,6 +546,8 @@ void Editor::Render()
 				GE_Engine->scriptSystem->enabled = false;
 				GE_Engine->scriptSystem->freeSystem();
 			}
+
+			gameBase->currentScene = Serializable::LoadScene(projectManager,gameBase->currentScene->name);
 		
 		}
 		ImGui::SameLine(ImGui::GetWindowWidth() - 90);
@@ -1056,7 +1075,20 @@ void Editor::DrawHierarchy(ActorID rootid)
 			}
 			if (ImGui::MenuItem("Camera")) {
 			}
+			if (ImGui::BeginMenu("From Prefab")) {
+				for (auto prefab : projectManager->actorprefab)
+				{
+					if (ImGui::MenuItem(("Prefab:" + prefab).c_str())) {
+						Serializable::AddPrefab(projectManager, prefab, root);
+					}
+				}
+				ImGui::EndMenu();
+			}
 
+			ImGui::Separator();
+			if (ImGui::MenuItem("Save As Prefab")) {
+				Serializable::SaveActorasaPrefab(projectManager, root);
+			}
 			ImGui::EndPopup();
 		}
 		ImGui::PopID();
@@ -1144,11 +1176,19 @@ void Editor::DrawProjectExplorer()
 		count += projectManager->materials.size();
 		count += projectManager->animations.size();
 		count += projectManager->scripts.size();
+		count += projectManager->actorprefab.size();
 		for (auto scene : projectManager->scenes)
 		{
 			if (DrawSingleProjectItem((void *)ConstantTextures::Textures::sceneTexture->gettextureID(), scene, i++, count))
 			{
 				ImGui::SetTooltip(("Scene -> " + scene).c_str());
+			}
+		}
+		for (auto prefab : projectManager->actorprefab)
+		{
+			if (DrawSingleProjectItem((void *)ConstantTextures::Textures::sceneTexture->gettextureID(), prefab, i++, count))
+			{
+				ImGui::SetTooltip(("Prefab -> " + prefab).c_str());
 			}
 		}
 		for (auto model : projectManager->models)

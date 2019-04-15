@@ -58,15 +58,22 @@ void Scene::recursionPrefab(PrefabNode *node, glm::mat4 parent, ActorID actorNod
 		}
 
 	
-	
+	a->AddParent(actorNode);
 	a->transformation.setLocalMatrix(glm::transpose(node->transformation));
 	a->transformation.decomposeLocalMatrix();
-	a->AddParent(actorNode);
+	
 //	componentSystem->addActor(actorid);
 	for (int i = 0; i < node->numofChildren; i++)
 	{
 		recursionPrefab(node->children[i], glm::mat4(1), actorid);
 	}
+}
+
+void Scene::calcWorldMatricies()
+{
+	Actor *root = GE_Engine->actorManager->GetActor(rootActor);
+	for (int i = 0; i < root->numberOfChildren; i++)
+		GE_Engine->actorManager->GetActor(root->children[i])->processTransformation();
 }
 
 Scene::~Scene()

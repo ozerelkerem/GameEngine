@@ -9,6 +9,7 @@ class AnimationSystem;
 class SystemManager;
 class PhysicSystem;
 class ScriptSystem;
+class ProjectManager;
 
 class Engine
 {
@@ -29,6 +30,7 @@ public:
 	ResourceManager * resourceManager;
 	ComponentManager* componentManager;
 	ScriptSystem* scriptSystem;
+	ProjectManager* projectManager;
 
 	char *mainPath;
 };

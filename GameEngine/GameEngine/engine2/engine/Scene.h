@@ -28,4 +28,6 @@ public:
 	
 	void addActor(Prefab *, glm::vec3);
 	void recursionPrefab(PrefabNode *, glm::mat4 , ActorID);
+
+	void calcWorldMatricies();
 };

@@ -22,6 +22,7 @@ public:
 
 	std::vector<std::string> models;
 	std::vector<std::string> scenes;
+	std::vector<std::string> actorprefab;
 	std::vector<Prefab *> prefabs;
 	std::vector<Animation *> animations;
 	std::vector<Texture *> textures;
@@ -66,6 +67,8 @@ public:
 		}
 		return -1;
 	}
+
+	Animation *getAnimationByName(const char*);
 };
 
 template<class T>

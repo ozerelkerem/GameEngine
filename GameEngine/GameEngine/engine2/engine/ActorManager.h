@@ -69,7 +69,7 @@ public:
 		void* pObjectMemory = GetActorContainer()->CreateObject();
 		ActorID actorid = this->AqcuireActorID((Actor*)pObjectMemory);
 		Actor* actor = new (pObjectMemory)Actor(std::forward<ARGS>(args)...,actorid);
-
+		actor->transformation = Transform();
 	
 
 //		actor->actorID = actorid;

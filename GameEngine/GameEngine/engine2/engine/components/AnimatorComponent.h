@@ -18,6 +18,7 @@ public:
 
 	void PlayLoop(Animation * anim);
 	void PlayOnce(Animation *);
+	void Stop();
 
 	Animation *currentAnimation;
 	std::unordered_map<std::string, ActorID::value_type> effectlist;

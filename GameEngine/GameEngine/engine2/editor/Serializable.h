@@ -26,7 +26,10 @@ public:
 	static void SaveModel(ProjectManager *, Model *);
 	static void ReadModel(Model *m);
 
-	static void SaveScene(ProjectManager *, std::string, Scene*);
+	static void SaveActorasaPrefab(ProjectManager *, Actor*);
+	static void AddPrefab(ProjectManager *pm, std::string name, Actor *targetactor);
+
+	static void SaveScene(ProjectManager *, Scene*);
 	static void SaveActor(ProjectManager *, ofstream& file, Actor*);
 	static Scene* LoadScene(ProjectManager *, std::string);
 	static Actor* LoadActor(ProjectManager *, ifstream& file, Scene*scene, std::unordered_map<ActorID::value_type, ActorID::value_type>&);
@@ -53,12 +56,17 @@ private:
 	static void WriteModels(ofstream& file, ProjectManager *pm);
 	static void WriteScenes(ofstream& file, ProjectManager *pm);
 	static void WriteScripts(ofstream& file, ProjectManager *pm);
+	static void WritePrefabs(ofstream& file, ProjectManager *pm);
+	static void WriteAnimations(ofstream& file, ProjectManager *pm);
+
 
 	static void ReadMaterials(ifstream& file, ProjectManager *pm);
 	static void ReadTextures(ifstream& file, ProjectManager *pm);
 	static void ReadModels(ifstream& file, ProjectManager *pm);
 	static void ReadScenes(ifstream& file, ProjectManager *pm);
 	static void ReadScripts(ifstream& file, ProjectManager *pm);
+	static void ReadPrefabs(ifstream& file, ProjectManager *pm);
+	static void ReadAnimations(ifstream& file, ProjectManager *pm);
 
 public:
 	template<typename T>
