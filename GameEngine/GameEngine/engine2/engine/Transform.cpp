@@ -2,7 +2,7 @@
 
 #define GLM_FORCE_
 
-#define pi (float)3.14159
+
 
 Transform::Transform() : localPosition(0,0,0), localScale(1,1,1), localeulerRotation(0,0,0), worldMatrix(1), localMatrix(1), physicactor(nullptr)
 {
@@ -14,19 +14,19 @@ void Transform::decomposeLocalMatrix()
 	glm::vec3 skew(1);
 	glm::vec4 perspective(1);
 	glm::decompose(localMatrix, localScale, localquatRotation, localPosition, skew, perspective);
-	calcEulerFromQuat();
+	//calcEulerFromQuat(); check it
 }
 
 void Transform::calcEulerFromQuat()
 {
+	
 	localeulerRotation = glm::eulerAngles(localquatRotation);
-	localeulerRotation = (180 / pi) * localeulerRotation;
 
 }
 
 void Transform::calcQuatFromEuler()
 {
-	localquatRotation = glm::toQuat((glm::orientate3(glm::radians(glm::vec3(localeulerRotation.x, localeulerRotation.z, localeulerRotation.y)))));
+	localquatRotation = glm::quat(glm::radians(glm::vec3(localeulerRotation.x, localeulerRotation.z, localeulerRotation.y)));
 }
 
 

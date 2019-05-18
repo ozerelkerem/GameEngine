@@ -69,6 +69,9 @@ public:
 	}
 
 	Animation *getAnimationByName(const char*);
+
+
+	void loadTexturesForDisplay();
 };
 
 template<class T>

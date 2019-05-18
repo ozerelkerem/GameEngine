@@ -765,11 +765,14 @@ void Serializable::SaveIModelComponent(ProjectManager *pm, ofstream & file, IMod
 void Serializable::LoadIModelComponentMaterials(ProjectManager *pm, ifstream & file, IModelComponent * component)
 {
 	readfile(file, &component->numberOfMaterials);
+	component->materials.resize(component->numberOfMaterials);
 	for (int i = 0; i < component->numberOfMaterials; i++)
 	{
 		int index;
 		readfile(file, &index);
 		component->materials[i] = (index!= -1)  ? pm->materials[index] : ConstantMaterials::Materials::defaultMaterial;
+		if (Texture *t = component->materials[i]->ambientTexture; t)
+			component->materials[i]->ambientTexture->textureID=GE_Engine->resourceManager->getResource<Texture>(t->fullpath)->textureID;
 	}
 }
 

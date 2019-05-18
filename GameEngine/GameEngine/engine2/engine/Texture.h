@@ -26,7 +26,7 @@ public:
 
 	void operator delete(void *a) { };
 
-private:
+
 	unsigned int textureID = INVALID_TEXTURE_ID;
 
 };

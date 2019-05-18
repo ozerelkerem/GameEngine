@@ -32,6 +32,9 @@ Editor::Editor(GLFWwindow *window, ProjectManager *pm) : isPlaying(false)
 
 	Serializable::Save(projectManager);
 	Serializable::SaveScene(projectManager, scene);
+
+
+	projectManager->loadTexturesForDisplay();
 }
 
 template<class T>
@@ -110,6 +113,8 @@ void Editor::ShowComponentList()
 
 				if (ImGui::BeginCombo(("Material" + std::to_string(i) + "##choicematerial").c_str(), name)) // The second parameter is the label previewed before opening the combo.
 				{
+					if (ImGui::Selectable(ConstantMaterials::Materials::defaultMaterial->name.c_str()))
+						modelcomp->materials.insert(modelcomp->materials.begin(), 1, ConstantMaterials::Materials::defaultMaterial);
 					for (auto material : projectManager->materials)
 					{//projedeki bütün materialyerlleri göster
 						if (ImGui::Selectable(material->name.c_str()))
@@ -371,6 +376,9 @@ void Editor::ObjectProperties()
 				}
 				if (ImGui::DragFloat3("Scale", &selectedActor->transformation.localScale[0], 1.f, -30000.f, 30000.f))
 				{
+					selectedActor->transformation.localScale.x = selectedActor->transformation.localScale.x == 0 ? 0.000001 : selectedActor->transformation.localScale.x;
+					selectedActor->transformation.localScale.y = selectedActor->transformation.localScale.y == 0 ? 0.000001 : selectedActor->transformation.localScale.y;
+					selectedActor->transformation.localScale.z = selectedActor->transformation.localScale.z == 0 ? 0.000001 : selectedActor->transformation.localScale.z;
 					selectedActor->processTransformation();
 					//selectedActor->transformation.applyPhysic();
 				}
@@ -544,6 +552,7 @@ void Editor::Render()
 	{
 		if (ImGui::ButtonEx("Play", { 0,0 }, isPlaying ? ImGuiButtonFlags_Disabled : 0))
 		{
+			Serializable::Save(projectManager);
 			Serializable::SaveScene(projectManager, gameBase->currentScene);
 
 			ifstream f(std::string(GE_Engine->mainPath)+"dlls\\scriptassembly.dll");
@@ -1039,6 +1048,7 @@ void Editor::DrawHierarchy(ActorID rootid)
 					actor->AddParent(rootid);
 
 					actor->AddComponent<ModelComponent>(ConstantModels::getCubeModel());
+
 				}
 				if (ImGui::MenuItem("Sphere")) {
 					ActorID newactor = GE_Engine->actorManager->CreateActor("Sphere", sceneRenderer->gamebase->currentScene);
@@ -1177,12 +1187,10 @@ void Editor::handle_dropped_file(const char * path)
 	if (extension == "fbx")
 	{
 		Prefab *p = ModelLoader::loadPrefab(path, projectManager);
-		int a = 3;
-		a = 5;
-
 		gameBase->currentScene->addActor(p, glm::vec3(1));
 
-		a = 5;
+		Serializable::Save(projectManager);
+		Serializable::SaveScene(projectManager, gameBase->currentScene);
 	}
 }
 
@@ -1298,6 +1306,7 @@ void Editor::DrawProjectExplorer()
 								selectedTexture->fullpath = selection[0];
 								selectedTexture->load();
 								selectedTexture->name = selection[0];
+								
 							}
 							
 						}

@@ -27,4 +27,12 @@ Animation * ProjectManager::getAnimationByName(const char *name)
 	return nullptr;
 }
 
+void ProjectManager::loadTexturesForDisplay()
+{
+	for (Texture *t : textures)
+	{
+		t->textureID = GE_Engine->resourceManager->getResource<Texture>(t->fullpath)->textureID;
+	}
+}
+
 

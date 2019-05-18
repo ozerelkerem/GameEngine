@@ -58,9 +58,12 @@ public:
 		{
 			TypeID CID = T::STATIC_RESOURCE_TYPE_ID;
 			auto it = resourcelist[CID].find(oldpath);
-
-			resourcelist[CID][newpath] = (*it).second;
-			resourcelist[CID].erase(oldpath);
+			if (it != resourcelist[CID].end())
+			{
+				resourcelist[CID][newpath] = (*it).second;
+				resourcelist[CID].erase(oldpath);
+			}
+			
 		}
 	}
 
