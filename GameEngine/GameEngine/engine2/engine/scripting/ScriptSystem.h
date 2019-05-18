@@ -42,6 +42,8 @@ public:
 		}
 	}
 
+	inline bool hasScripts() { return scriptimage != nullptr; };
+
 private:
 	MonoDomain *domain;
 	MonoDomain *domain_assembly;

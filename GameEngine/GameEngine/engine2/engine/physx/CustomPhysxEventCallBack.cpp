@@ -25,6 +25,12 @@ void CustomPhysxEventCallBack::onTrigger(physx::PxTriggerPair * pairs, physx::Px
 
 void CustomPhysxEventCallBack::safeupdate()
 {
+	if (!GE_Engine->scriptSystem->hasScripts())
+	{
+		contacts.clear();
+		return;
+	}
+		
 	for (auto contact : contacts)
 	{
 		Actor *a1 = GE_Engine->actorManager->GetActor(*(ActorID*)(contact.first->userData));

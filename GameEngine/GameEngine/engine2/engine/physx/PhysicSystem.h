@@ -50,8 +50,9 @@ void PhysicSystem::addComponent(T* component)
 {
 	auto it = objects.find((ActorID::value_type)component->owner);
 	Transform* tr = getfix(component->owner);
-	PxTransform t(glmMat4ToPhysxMat4(tr->getWorldMatrix()));
-
+	PxTransform t(glmMat4ToPhysxMat4(tr->getWorldPose()));
+	
+	
 	if constexpr (std::is_same<T, RigidBodyComponent>::value)
 	{//dynamic
 		if (it == objects.end()) //new one
@@ -74,7 +75,7 @@ void PhysicSystem::addComponent(T* component)
 		}
 	}
 	else
-	{//nodynamic
+	{//nodynamic so we gonna add "collider"
 		if (it == objects.end()) //new one
 		{
 			objects[component->owner] = gPhysics->createRigidStatic(t);
@@ -124,9 +125,10 @@ void PhysicSystem::removeComponent(T* component)
 		}
 	}
 	else
-	{//nodynamic
-		if (it->second->getNbShapes() > 0) //has rigidbody
+	{//nodynamic we gonna delete collider
+		if (it->second->getType() == PxActorType::eRIGID_DYNAMIC) //has rigidbody
 		{
+			gScene->removeActor(*(it->second));
 			physx::PxRigidDynamic* dynamic = gPhysics->createRigidDynamic(t);
 			dynamic->setAngularDamping(0.5f);
 			dynamic->setLinearVelocity({ 1,0,0 });

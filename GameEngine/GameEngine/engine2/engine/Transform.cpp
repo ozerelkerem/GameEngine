@@ -81,6 +81,11 @@ glm::vec3 Transform::getWorldRightVector()
 	return Right;
 }
 
+glm::mat4 Transform::getWorldPose()
+{
+	return glm::translate(glm::mat4(1), localPosition) * (glm::toMat4(localquatRotation));
+}
+
 void Transform::calcLocalMatrix()
 {
 	localMatrix = glm::scale(glm::translate(glm::mat4(1), localPosition) * (glm::toMat4(localquatRotation)), localScale);

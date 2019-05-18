@@ -33,6 +33,9 @@ public:
 	glm::vec3 getWorldRightVector();
 	glm::vec3 getWorldForwardVector();
 
+	//only pos and rot
+	glm::mat4 getWorldPose();
+
 	void calcLocalMatrix();
 
 	Transform *parent;

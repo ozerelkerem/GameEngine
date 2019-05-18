@@ -638,11 +638,13 @@ template<> inline void Serializable::_LoadComponent<SphereColliderComponent>(Pro
 {
 	auto x = a->AddComponent<SphereColliderComponent>();
 	readfile(file, &x->geometry);
+	x->update();
 }
 template<> inline void Serializable::_LoadComponent<CubeColliderComponent>(ProjectManager *pm, ifstream & file, Actor *a)
 {
 	auto x = a->AddComponent<CubeColliderComponent>();
 	readfile(file, &x->geometry);
+	x->update();
 }
 template<> inline void Serializable::_LoadComponent<CapsuleColliderComponent>(ProjectManager *pm, ifstream & file, Actor *a)
 {
@@ -650,6 +652,7 @@ template<> inline void Serializable::_LoadComponent<CapsuleColliderComponent>(Pr
 	readfile(file, &x->up);
 	readfile(file, &x->upp);
 	readfile(file, &x->geometry);
+	x->update();
 }
 template<> inline void Serializable::_LoadComponent<RigidBodyComponent>(ProjectManager *pm, ifstream & file, Actor *a)
 {

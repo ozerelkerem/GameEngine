@@ -31,6 +31,7 @@ Editor::Editor(GLFWwindow *window, ProjectManager *pm) : isPlaying(false)
 	sceneRenderer = new SceneRenderer(gameBase);
 
 	Serializable::Save(projectManager);
+	Serializable::SaveScene(projectManager, scene);
 }
 
 template<class T>
@@ -371,7 +372,7 @@ void Editor::ObjectProperties()
 				if (ImGui::DragFloat3("Scale", &selectedActor->transformation.localScale[0], 1.f, -30000.f, 30000.f))
 				{
 					selectedActor->processTransformation();
-					selectedActor->transformation.applyPhysic();
+					//selectedActor->transformation.applyPhysic();
 				}
 
 				ShowComponentList();
@@ -571,7 +572,7 @@ void Editor::Render()
 				GE_Engine->scriptSystem->enabled = false;
 				GE_Engine->scriptSystem->freeSystem();
 			}
-
+			sceneRenderer->selectedActor = ActorID::INVALID_HANDLE;
 			gameBase->currentScene = Serializable::LoadScene(projectManager,gameBase->currentScene->name);
 		
 		}
