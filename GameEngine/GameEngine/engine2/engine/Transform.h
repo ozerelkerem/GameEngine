@@ -9,6 +9,9 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 #include<util/MatConverter.h>
+
+
+
 class Transform
 {
 public:
@@ -80,3 +83,4 @@ private:
 	glm::mat4 localMatrix;
 	glm::mat4 worldMatrix;
 };
+

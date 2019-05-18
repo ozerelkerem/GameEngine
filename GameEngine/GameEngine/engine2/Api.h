@@ -1,4 +1,5 @@
 #pragma once
+
 #define _HAS_STD_BYTE 0
 #include <iostream>
 #include <stdlib.h>
@@ -24,6 +25,8 @@
 
 #include <chrono>
 #include <util/Handle.h>
+
+#include<physx/PxPhysicsAPI.h>
 
 #define PROJECTDIRECTORY "C:\\Users\\mustafa rasimoðlu\\source\\repos\\ge_test"
 

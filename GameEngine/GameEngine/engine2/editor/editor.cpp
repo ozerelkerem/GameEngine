@@ -366,12 +366,12 @@ void Editor::ObjectProperties()
 					selectedActor->transformation.applyPhysic();
 				}
 
-				if (ImGui::DragFloat4("Rotation Quat", &selectedActor->transformation.localquatRotation[0], 1.f, -30000.f, 30000.f))
+				/*if (ImGui::DragFloat4("Rotation Quat", &selectedActor->transformation.localquatRotation[0], 1.f, -30000.f, 30000.f))
 				{
 					selectedActor->transformation.calcEulerFromQuat();
 					selectedActor->processTransformation();
 					selectedActor->transformation.applyPhysic();
-				}
+				}*/
 				if (ImGui::DragFloat3("Scale", &selectedActor->transformation.localScale[0], 1.f, -30000.f, 30000.f))
 				{
 					selectedActor->transformation.localScale.x = selectedActor->transformation.localScale.x == 0 ? 0.000001 : selectedActor->transformation.localScale.x;
@@ -946,9 +946,6 @@ void Editor::Render()
 	{
 		DrawHierarchy(gameBase->currentScene->rootActor);
 	}
-	ImGui::End();
-
-	ImGui::Begin("Create Object", NULL);
 	ImGui::End();
 
 }

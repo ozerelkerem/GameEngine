@@ -181,7 +181,8 @@ public:
 	T* GetComponent(const ActorID actorid)
 	{
 		const ComponentTypeID CTID = T::STATIC_COMPONENT_TYPE_ID;
-
+		if (actorid.index >= this->actorComponentMap.size())
+			return nullptr;
 		const ComponentID componentId = this->actorComponentMap[actorid.index][CTID];
 
 		// entity has no component of type T

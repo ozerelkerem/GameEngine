@@ -14,10 +14,10 @@ public:
 	projectselect();
 	~projectselect();
 
-	ProjectManager *projectManager;
+	ProjectManager *projectManager=nullptr;
 
 	void Render();
 
-	inline bool isSelected(){ return (projectManager != NULL); };
+	inline bool isSelected(){ return (projectManager != nullptr); };
 };
 

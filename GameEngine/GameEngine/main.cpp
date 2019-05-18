@@ -177,6 +177,10 @@ int main(int, char**)
 	//glfwSetInputMode(window2, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetDropCallback(window2, drop_callback);
 
+	
+	glfwSetMouseButtonCallback(window, InputManager::mousebutton_Callback);
+
+	//glfwSetMouseButtonCallback(window, InputManager::mousebutton_Callback);
 	// Main loop
 	while (!glfwWindowShouldClose(window))
 	{

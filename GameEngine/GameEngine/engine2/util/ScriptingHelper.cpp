@@ -6,6 +6,9 @@
 #include<engine/Actor.h>
 #include<Windows.h>
 #include<engine/ActorManager.h>
+
+#include<engine/components/RigidBodyComponent.h>
+
 namespace ScriptHelper {
 
 	template<typename T> struct CSharpTypeConvertor
@@ -188,6 +191,8 @@ namespace ScriptHelper {
 	{
 		if (strcmp(name,"animatorcomponent")==0)
 			return actor->GetComponent<AnimatorComponent>();
+		else if (strcmp(name, "rigidbodycomponent") == 0)
+			return actor->GetComponent<RigidBodyComponent>();
 	}
 
 
@@ -245,6 +250,12 @@ namespace ScriptHelper {
 			
 			auto x = &csharp_methodproxy<decltype(&Actor::RemoveActor)>::call<&Actor::RemoveActor>;
 			mono_add_internal_call("GameEngine.GameManager::destroyActor", x);	
+		}
+
+		//physx
+		{	
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::addForce)>::call<&RigidBodyComponent::addForce>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::addForce", x);
 		}
 
 

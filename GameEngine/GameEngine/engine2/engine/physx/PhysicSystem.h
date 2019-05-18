@@ -1,7 +1,8 @@
 #pragma once
 
+#include<Api.h>
 #include <engine/systems/System.h>
-#include<physx/PxPhysicsAPI.h>
+
 #include<engine/physx/CustomPhysxEventCallBack.h>
 #include<util/MatConverter.h>
 #include <engine/components/RigidBodyComponent.h>
@@ -22,7 +23,9 @@ public:
 	virtual void PostUpdate() override;
 
 	Transform* getfix(ActorID actorid); // to solve circuler depency problem
-	
+	RigidBodyComponent* getrigidbody(ActorID actorid); // to solve circuler depency problem
+
+
 	template<class T>
 	 void addComponent(T* component);
 	 template<class T>
@@ -73,6 +76,7 @@ void PhysicSystem::addComponent(T* component)
 			it->second->attachShape(*shapes[0]);
 			free(shapes);
 		}
+		component->pxactor = (PxRigidDynamic*)objects[component->owner];
 	}
 	else
 	{//nodynamic so we gonna add "collider"
@@ -84,6 +88,8 @@ void PhysicSystem::addComponent(T* component)
 		{
 			gScene->removeActor(*(it->second));
 			it->second = gPhysics->createRigidDynamic(t);
+			getrigidbody(component->owner)->pxactor = (PxRigidDynamic *)it->second;
+			
 		}
 		objects[component->owner]->attachShape(*component->shape);
 	}

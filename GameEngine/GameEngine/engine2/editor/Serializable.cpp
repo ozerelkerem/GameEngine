@@ -354,6 +354,7 @@ void Serializable::AddPrefab(ProjectManager *pm, std::string name, Actor *target
 	while (file.peek() != EOF)
 		list.push_back(LoadActor(pm, file, targetactor->scene, oldnewids));
 
+	list[0]->parent = ActorID::INVALID_HANDLE;
 	list[0]->AddParent(targetactor->actorID);
 
 	file.close();
@@ -387,11 +388,14 @@ void Serializable::AddPrefab(ProjectManager *pm, std::string name, Actor *target
 Scene * Serializable::LoadScene(ProjectManager *pm, std::string name)
 {
 	
-	auto endd= GE_Engine->actorManager->actorContainer->end();
-	for (auto it = GE_Engine->actorManager->actorContainer->begin(); it != endd; it.operator++())
+	for (auto chunk : GE_Engine->actorManager->actorContainer->m_Chunks)
 	{
-		GE_Engine->actorManager->DestroyActor(it->actorID);
+		for (auto object : chunk->objects)
+		{
+			GE_Engine->actorManager->DestroyActor(object->actorID);
+		}
 	}
+
 	
 
 	std::vector<SkinnedModelComponent*> smclist;

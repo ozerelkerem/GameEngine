@@ -168,8 +168,7 @@ public:
 			{
 				// note: no need to call d'tor since it was called already by 'delete'
 
-				std::cout << object << std::endl;
-				std::cout << (OBJECT_TYPE*)object << std::endl;
+				
 				chunk->objects.remove((OBJECT_TYPE*)object);
 				chunk->allocator->free(object);
 				return;

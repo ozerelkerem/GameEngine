@@ -84,6 +84,8 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(ProjectDir)ogl\libs\glew32.lib;$(ProjectDir)ogl\libs\glfw3.lib;opengl32.lib;$(ProjectDir)assimp\assimp\assimp-vc140-mt.lib;%(AdditionalDependencies);PhysX_32.lib;PhysXFoundation_32.lib;PhysXExtensions_static_32.lib;PhysXCommon_32.lib;PhysXPvdSDK_static_32.lib;mono-2.0-sgen.lib</AdditionalDependencies>

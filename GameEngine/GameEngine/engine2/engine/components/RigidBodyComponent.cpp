@@ -11,3 +11,8 @@ RigidBodyComponent::~RigidBodyComponent()
 {
 	GE_Engine->physicSystem->removeComponent(this);
 }
+
+void RigidBodyComponent::addForce(PxVec3 forceVec)
+{
+	pxactor->addForce(forceVec);
+}

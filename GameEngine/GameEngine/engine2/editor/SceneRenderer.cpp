@@ -366,6 +366,8 @@ bool SceneRenderer::RenderForObjectTools(GLint x, GLint y)
 
 void SceneRenderer::focusActor(ActorID actorid)
 {
+	if (actorid == ActorID::INVALID_HANDLE)
+		return;
 	//@TODO CALC MÝN MAX FOR EACH MESH AND CHECK MAYBE THERE IS NO MODEL
 	Actor * actor = GE_Engine->actorManager->GetActor(actorid);
 	if (!actor->GetComponent<ModelComponent>())

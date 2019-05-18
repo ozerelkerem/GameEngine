@@ -1,8 +1,9 @@
 #include "Transform.h"
 
+
 #define GLM_FORCE_
 #define M_SQRT2 1.41421356237309504880 
-
+#include <engine/physx/PhysicSystem.h>
 #include<math.h>
 
 Transform::Transform() : localPosition(0,0,0), localScale(1,1,1), localeulerRotation(0,0,0), worldMatrix(1), localMatrix(1), physicactor(nullptr)
@@ -15,7 +16,11 @@ void Transform::decomposeLocalMatrix()
 	glm::vec3 skew(1);
 	glm::vec4 perspective(1);
 	glm::decompose(localMatrix, localScale, localquatRotation, localPosition, skew, perspective);
-	calcEulerFromQuat();
+	
+
+		
+	if(GE_Engine->physicSystem->enabled)
+		calcEulerFromQuat();
 }
 
 glm::vec3 ConvertMatToEulerAnglesXYZ(const glm::mat3& mat)
@@ -31,7 +36,7 @@ glm::vec3 ConvertMatToEulerAnglesXYZ(const glm::mat3& mat)
 
 	return glm::vec3(xEuler, yEuler, zEuler);
 }
-static void quat_to_mat3_no_error(glm::mat3 &m,glm::quat q)
+static void quat_to_mat3_no_error(glm::mat3 &m,glm::quat &q)
 {
 	double q0, q1, q2, q3, qda, qdb, qdc, qaa, qab, qac, qbb, qbc, qcc;
 	
@@ -116,9 +121,32 @@ void Transform::calcEulerFromQuat()
 	//localeulerRotation = test;
 	
 }
+void eul_to_quat(glm::quat &quat, const float eul[3])
+{
+	float ti, tj, th, ci, cj, ch, si, sj, sh, cc, cs, sc, ss;
 
+	ti = eul[0] * 0.5f;
+	tj = eul[1] * 0.5f;
+	th = eul[2] * 0.5f;
+	ci = cosf(ti);
+	cj = cosf(tj);
+	ch = cosf(th);
+	si = sinf(ti);
+	sj = sinf(tj);
+	sh = sinf(th);
+	cc = ci * ch;
+	cs = ci * sh;
+	sc = si * ch;
+	ss = si * sh;
+
+	quat.w = cj * cc + sj * ss;
+	quat.x = cj * sc - sj * cs;
+	quat.y = cj * ss + sj * cc;
+	quat.x = cj * cs - sj * sc;
+}
 void Transform::calcQuatFromEuler()
 {
+
 	localquatRotation = glm::quat(glm::radians(localeulerRotation));
 }
 

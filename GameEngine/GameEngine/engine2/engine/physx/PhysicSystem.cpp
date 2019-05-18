@@ -91,6 +91,11 @@ Transform * PhysicSystem::getfix(ActorID actorid)
 	return &GE_Engine->actorManager->GetActor(actorid)->transformation;
 }
 
+RigidBodyComponent * PhysicSystem::getrigidbody(ActorID actorid)
+{
+	return GE_Engine->actorManager->GetActor(actorid)->GetComponent<RigidBodyComponent>();
+}
+
 void PhysicSystem::initPhysx()
 {
 	gEventManager = new CustomPhysxEventCallBack();
