@@ -40,7 +40,7 @@ Editor::Editor(GLFWwindow *window, ProjectManager *pm) : isPlaying(false)
 template<class T>
 void Editor::removeComponentContext(Actor *a)
 {
-	if (ImGui::Button("Delete"))
+	if (ImGui::Button((std::string("Delete###") + std::string(typeid(T).name())).c_str()))
 	{
 		a->RemoveComponent<T>();
 	}
@@ -194,7 +194,6 @@ void Editor::ShowComponentList()
 				}
 
 			}
-			removeComponentContext<SkinnedModelComponent>(actor);
 		}
 
 	}
@@ -234,7 +233,6 @@ void Editor::ShowComponentList()
 
 			removeComponentContext<AnimatorComponent>(actor);
 		}
-
 	}
 
 	if (SphereColliderComponent *spherecollider = actor->GetComponent<SphereColliderComponent>())
@@ -408,15 +406,18 @@ void Editor::ObjectProperties()
 							}break;
 							case 2:
 							{
-								selectedActor->AddComponent<SphereColliderComponent>();
+								if(!selectedActor->GetComponent<CapsuleColliderComponent>() && !selectedActor->GetComponent<CubeColliderComponent>())
+									selectedActor->AddComponent<SphereColliderComponent>();
 							}break;
 							case 3:
 							{
-								selectedActor->AddComponent<CapsuleColliderComponent>();
+								if (!selectedActor->GetComponent<SphereColliderComponent>() && !selectedActor->GetComponent<CubeColliderComponent>())
+									selectedActor->AddComponent<CapsuleColliderComponent>();
 							}break;
 							case 4:
 							{
-								selectedActor->AddComponent<CubeColliderComponent>();
+								if (!selectedActor->GetComponent<CapsuleColliderComponent>() && !selectedActor->GetComponent<SphereColliderComponent>())
+									selectedActor->AddComponent<CubeColliderComponent>();
 							}break;
 							case 5:
 							{
@@ -1192,12 +1193,30 @@ void Editor::handle_dropped_file(const char * path)
 		Serializable::Save(projectManager);
 		Serializable::SaveScene(projectManager, gameBase->currentScene);
 	}
+	else if (extension == "png")
+	{
+		projectManager->add(GE_Engine->resourceManager->getResource<Texture>(str));
+
+		Serializable::Save(projectManager);
+		Serializable::SaveScene(projectManager, gameBase->currentScene);
+	}
 }
 
 void Editor::DrawProjectExplorer()
 {
 	ImGui::Begin("Project Explorer", NULL);
 	{
+		if (ImGui::BeginPopupContextItem())
+		{
+			if (ImGui::MenuItem("New Material"))
+			{
+				projectManager->add(new Material("New Material " + projectManager->materials.size()));
+			}
+			ImGui::EndPopup();
+		}
+		
+
+
 		static Texture *selectedTexture;
 		static bool opentexture = true;
 		static bool scriptclicked = false;

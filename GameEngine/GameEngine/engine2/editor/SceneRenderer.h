@@ -55,7 +55,7 @@ public:
 	void focusActor(ActorID);
 
 	void renderSphere(const glm::vec3 &pos, float radius, int sensivity=36);
-	void renderCapsule(const glm::vec3 &pos, float radius, float halfheight,int sensivity = 36);
+	void renderCapsule(int, float radius, float halfheight,int sensivity = 36);
 	void renderCube(const glm::vec3 &pos, float x, float y, float z);
 
 };

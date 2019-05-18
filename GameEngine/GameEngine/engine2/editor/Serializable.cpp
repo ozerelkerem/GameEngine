@@ -316,6 +316,7 @@ void Serializable::SaveActor(ProjectManager *pm, ofstream& file,Actor *actor)
 {
 	writefile(file, actor->name);
 	writefile(file, actor->actorID);
+	actor->transformation.physicactor = nullptr;
 	writefile(file, actor->transformation);
 	writefile(file, actor->parent);
 	writefile(file, actor->numberOfChildren);

@@ -140,12 +140,16 @@ public:
 
 		IComponent* component = this->componentLUT[componentId];
 
+		if constexpr (std::is_same<T, RigidBodyComponent>::value || std::is_same<T, CubeColliderComponent>::value || std::is_same<T, SphereColliderComponent>::value || std::is_same<T, CapsuleColliderComponent>::value)
+		{
+			GE_Engine->physicSystem->removeComponent<T>(static_cast<T*>(component));
+		}
+
 		assert(component != nullptr && "FATAL: Trying to remove a component which is not used by this entity!");
 
 		GetComponentContainer<T>()->DestroyObject(component);
 		
 		UnmapActorComponent(actorid, componentId, CTID);
-
 	}
 
 	void RemoveAllComponents(const ActorID actorid)

@@ -75,6 +75,8 @@ void PhysicSystem::Update()
 		Actor *actor = GE_Engine->actorManager->GetActor(obje.first);
 		glm::mat4 temp;
 		PhysXMat4ToglmMat4(obje.second->getGlobalPose(), temp);
+
+		
 		temp = glm::scale(temp, actor->transformation.getWorldScale());
 		actor->transformation.setWorldMatrix(static_cast<glm::mat4>(temp));
 	}

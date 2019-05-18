@@ -115,7 +115,7 @@ void SceneRenderer::renderSelectedCollider()
 {
 	Actor * selectedactor = GE_Engine->actorManager->GetActor(selectedActor);
 	colorShader->setVec3("color", glm::vec3(0,0.9,1));
-	colorShader->setMat4("modelMatrix", glm::scale(selectedactor->transformation.getWorldMatrix(), 1.f/ selectedactor->transformation.getWorldScale()));
+	colorShader->setMat4("modelMatrix", selectedactor->transformation.getWorldPose());
 	glBegin(GL_LINES);
 	
 	if (SphereColliderComponent *spherecollider = selectedactor->GetComponent<SphereColliderComponent>(); spherecollider)
@@ -131,13 +131,21 @@ void SceneRenderer::renderSelectedCollider()
 	if (CapsuleColliderComponent *capsulecollider = selectedactor->GetComponent<CapsuleColliderComponent>(); capsulecollider)
 	{
 		glm::vec3 t(0,0,1);
-		if (capsulecollider->upp == 0)
-			t = { 0,1,0 };
+		
+	/*	if (capsulecollider->upp == 0)
+			t = { 0,0,1 };
 		else if (capsulecollider->upp == 1)
+		{
+			t = { 0,1,0 };
+			colorShader->setMat4("modelMatrix", glm::rotate(glm::mat4(1), glm::radians(90.f), t));
+		}
+		else if (capsulecollider->upp == 2)
+		{
 			t = { 1,0,0 };
 			colorShader->setMat4("modelMatrix", glm::rotate(glm::mat4(1), glm::radians(90.f), t));
+		}*/
 		glBegin(GL_LINES);
-		renderCapsule(selectedactor->transformation.getWorldPosition(), capsulecollider->geometry.radius, capsulecollider->geometry.halfHeight);
+		renderCapsule(capsulecollider->upp, capsulecollider->geometry.radius, capsulecollider->geometry.halfHeight);
 		glEnd();
 		colorShader->setMat4("modelMatrix",glm::mat4(1));
 	}
@@ -450,15 +458,43 @@ void SceneRenderer::renderSphere(const glm::vec3 &pos, float radius, int sensivi
 	}
 }
 
-void SceneRenderer::renderCapsule(const glm::vec3 & pos, float radius, float halfheight, int sensivity)
+void SceneRenderer::renderCapsule(int up, float radius, float halfheight, int sensivity)
 {
 	const float degree = 360 / sensivity;
 
 	glm::vec3 startup[4],startdown[4];
 
-	glm::vec3 circlepos = pos + (sceneCamera->worldUpVector * halfheight);
-	glm::vec3 startpos = circlepos + (sceneCamera->worldRightVector *radius);
-	glm::vec3 endpos = glm::rotate((startpos - circlepos), glm::radians(degree), sceneCamera->worldUpVector);
+	/*
+	if (upp == 0)
+			up = { 0,0,1 };
+		else if (upp == 1)
+			up = { 1,0,0 };
+		else
+			up = { 0,1,0 };
+	*/
+	glm::vec3 twup,twright,twfront;
+	switch (up)
+	{
+	case 0:
+		twright = { 1,0,0 };
+		twup = { 0,0,1 };
+		twfront = { 0,1,0 };
+		break;
+	case 1:
+		twright = { 0,0,1 };
+		twfront = { 0,1,0 };
+		twup = { 1,0,0 };
+		break;
+	case 2:
+		twright = { 1,0,0 };
+		twfront = { 0,0,1 };
+		twup = { 0,1,0 };
+		break;
+	}
+
+	glm::vec3 circlepos = /*pos + */(twup * halfheight);
+	glm::vec3 startpos = circlepos + (twright *radius);
+	glm::vec3 endpos = glm::rotate((startpos - circlepos), glm::radians(degree), twup);
 	endpos += circlepos;
 	for (int i = 0; i < sensivity; i++)
 	{
@@ -467,13 +503,13 @@ void SceneRenderer::renderCapsule(const glm::vec3 & pos, float radius, float hal
 		glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
 
 		startpos = endpos;
-		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), sceneCamera->worldUpVector);
+		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), twup);
 		endpos += circlepos;
 	}
-	startpos = circlepos + (sceneCamera->worldUpVector *radius);
-	endpos = glm::rotate((startpos - circlepos), glm::radians(-sensivity/4*degree), sceneCamera->worldRightVector);
+	startpos = circlepos + (twup *radius);
+	endpos = glm::rotate((startpos - circlepos), glm::radians(-sensivity/4*degree), twright);
 	endpos += circlepos;
-	startpos = glm::rotate((endpos - circlepos), glm::radians(-degree), sceneCamera->worldRightVector);
+	startpos = glm::rotate((endpos - circlepos), glm::radians(-degree), twright);
 	startpos += circlepos;
 	startup[0] = startpos;
 
@@ -484,15 +520,15 @@ void SceneRenderer::renderCapsule(const glm::vec3 & pos, float radius, float hal
 		glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
 
 		startpos = endpos;
-		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), sceneCamera->worldRightVector);
+		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), twright);
 		endpos += circlepos;
 	}
 	startup[1] = startpos;
 
-	startpos = circlepos + (sceneCamera->worldUpVector *radius);
-	endpos = glm::rotate((startpos - circlepos), glm::radians(-sensivity / 4 * degree), sceneCamera->worldFrontVector);
+	startpos = circlepos + (twup *radius);
+	endpos = glm::rotate((startpos - circlepos), glm::radians(-sensivity / 4 * degree), twfront);
 	endpos += circlepos;
-	startpos = glm::rotate((endpos - circlepos), glm::radians(-degree), sceneCamera->worldFrontVector);
+	startpos = glm::rotate((endpos - circlepos), glm::radians(-degree), twfront);
 	startpos += circlepos;
 	startup[2] = startpos;
 
@@ -503,16 +539,16 @@ void SceneRenderer::renderCapsule(const glm::vec3 & pos, float radius, float hal
 		glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
 
 		startpos = endpos;
-		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), sceneCamera->worldFrontVector);
+		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), twfront);
 		endpos += circlepos;
 	}
 	startup[3] = startpos;
 
 
 
-	circlepos = pos - (sceneCamera->worldUpVector * halfheight);
-	startpos = circlepos + (sceneCamera->worldRightVector *radius);
-	endpos = glm::rotate((startpos - circlepos), glm::radians(degree), sceneCamera->worldUpVector);
+	circlepos = /*pos*/ - (twup * halfheight);
+	startpos = circlepos + (twright *radius);
+	endpos = glm::rotate((startpos - circlepos), glm::radians(degree), twup);
 	endpos += circlepos;
 	for (int i = 0; i < sensivity; i++)
 	{
@@ -521,15 +557,15 @@ void SceneRenderer::renderCapsule(const glm::vec3 & pos, float radius, float hal
 		glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
 
 		startpos = endpos;
-		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), sceneCamera->worldUpVector);
+		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), twup);
 		endpos += circlepos;
 	}
 
 	/**/
-	startpos = circlepos - (sceneCamera->worldUpVector *radius);
-	endpos = glm::rotate((startpos - circlepos), glm::radians(-sensivity / 4 * degree), sceneCamera->worldRightVector);
+	startpos = circlepos - (twup *radius);
+	endpos = glm::rotate((startpos - circlepos), glm::radians(-sensivity / 4 * degree), twright);
 	endpos += circlepos;
-	startpos = glm::rotate((endpos - circlepos), glm::radians(-degree), sceneCamera->worldRightVector);
+	startpos = glm::rotate((endpos - circlepos), glm::radians(-degree), twright);
 	startpos += circlepos;
 	startdown[0] = startpos;
 
@@ -540,15 +576,15 @@ void SceneRenderer::renderCapsule(const glm::vec3 & pos, float radius, float hal
 		glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
 
 		startpos = endpos;
-		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), sceneCamera->worldRightVector);
+		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), twright);
 		endpos += circlepos;
 	}
 	startdown[1] = startpos;
 
-	startpos = circlepos - (sceneCamera->worldUpVector *radius);
-	endpos = glm::rotate((startpos - circlepos), glm::radians(-sensivity / 4 * degree), sceneCamera->worldFrontVector);
+	startpos = circlepos - (twup *radius);
+	endpos = glm::rotate((startpos - circlepos), glm::radians(-sensivity / 4 * degree), twfront);
 	endpos += circlepos;
-	startpos = glm::rotate((endpos - circlepos), glm::radians(-degree), sceneCamera->worldFrontVector);
+	startpos = glm::rotate((endpos - circlepos), glm::radians(-degree), twfront);
 	startpos += circlepos;
 	startdown[2] = startpos;
 
@@ -559,7 +595,7 @@ void SceneRenderer::renderCapsule(const glm::vec3 & pos, float radius, float hal
 		glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
 
 		startpos = endpos;
-		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), sceneCamera->worldFrontVector);
+		endpos = glm::rotate((endpos - circlepos), glm::radians(degree), twfront);
 		endpos += circlepos;
 	}
 	startdown[3] = startpos;

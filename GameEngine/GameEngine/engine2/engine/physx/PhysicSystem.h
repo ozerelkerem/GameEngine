@@ -99,7 +99,7 @@ void PhysicSystem::removeComponent(T* component)
 {
 	auto it = objects.find((ActorID::value_type)component->owner);
 	Transform* tr = getfix(component->owner);
-	PxTransform t(glmMat4ToPhysxMat4(tr->getWorldMatrix()));
+	PxTransform t(glmMat4ToPhysxMat4(tr->getWorldPose()));
 
 	if constexpr (std::is_same<T, RigidBodyComponent>::value)
 	{//dynamic

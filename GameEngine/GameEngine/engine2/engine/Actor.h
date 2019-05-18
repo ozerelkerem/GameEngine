@@ -56,13 +56,15 @@ public:
 	template<class T, class ...P>
 	T* AddComponent(P&&... param)
 	{
-		return this->componentManagerInstance->AddComponent<T>(this->actorID, std::forward<P>(param)...);
+		if(!GetComponent<T>())
+			return this->componentManagerInstance->AddComponent<T>(this->actorID, std::forward<P>(param)...);
 	}
 
 	template<class T>
 	T* AddComponent(T* other)
 	{
-		return this->componentManagerInstance->AddComponent<T>(this->actorID, other);
+		if (!GetComponent<T>())
+			return this->componentManagerInstance->AddComponent<T>(this->actorID, other);
 	}
 
 	template<class T>

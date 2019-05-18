@@ -25,7 +25,7 @@
 #include <chrono>
 #include <util/Handle.h>
 
-#define PROJECTDIRECTORY "C:\\Users\\KeremPC\\Documents\\GitHub\\ge_test"
+#define PROJECTDIRECTORY "C:\\Users\\mustafa rasimoðlu\\source\\repos\\ge_test"
 
 #define ACTOR_LUT_GROW 1024
 #define COMPONENT_LUT_GROW 1024
