@@ -1,6 +1,7 @@
 #pragma once
 #include "Grid.h"
 
+
 #include "../ogl/GL/glew.h"
 
 Grid::Grid(int lineCount, float spaceLength, unsigned int programID)

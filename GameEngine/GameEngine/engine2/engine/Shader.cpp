@@ -36,7 +36,6 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 		throw std::exception("Cannot Read From ShaderFile");
 	}
 	
-	
 	const char * fragmentCode = s_fragmentCode.c_str();
 	const char * vertexCode = s_vertexCode.c_str();
 	
@@ -56,10 +55,12 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	glGetShaderInfoLog(fragment, 1024, NULL, infoLog);
 	if (infoLog[0])
 		throw std::exception("Shader Error");
+	std::cout << infoLog << std::endl;
 	glGetShaderInfoLog(vertex, 1024, NULL, infoLog);
 	if (infoLog[0])
 		throw std::exception("Shader Error");
-
+	
+	std::cout << infoLog << std::endl;
 	programID = glCreateProgram();
 	glAttachShader(programID, vertex);
 	glAttachShader(programID, fragment);

@@ -71,11 +71,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)stb;$(ProjectDir)engine2;$(ProjectDir)imgui;$(ProjectDir)assimp;$(ProjectDir)ogl;$(ProjectDir)physx\include;$(ProjectDir)mono\include</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(ProjectDir)physx\lib;$(ProjectDir)mono\lib</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(ProjectDir)physx\lib;$(ProjectDir)mono\lib;$(ProjectDir)releaseogl\libs</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)physx\include;$(ProjectDir)mono\include</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(ProjectDir)physx\lib;$(ProjectDir)mono\lib;</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)releasephysx\include;$(ProjectDir)mono\include;$(ProjectDir)engine2;$(ProjectDir)ogl;$(ProjectDir)stb;$(ProjectDir)assimp;$(ProjectDir)imgui</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(ProjectDir)physx\lib;$(ProjectDir)mono\lib;$(ProjectDir)ogl\libs</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -86,9 +86,10 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(ProjectDir)ogl\libs\glew32.lib;$(ProjectDir)ogl\libs\glfw3.lib;opengl32.lib;$(ProjectDir)assimp\assimp\assimp-vc140-mt.lib;%(AdditionalDependencies);PhysX_32.lib;PhysXFoundation_32.lib;PhysXExtensions_static_32.lib;PhysXCommon_32.lib;PhysXPvdSDK_static_32.lib;mono-2.0-sgen.lib</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;glfw3.lib;opengl32.lib;$(ProjectDir)assimp\assimp\assimp-vc140-mt.lib;%(AdditionalDependencies);PhysX_32.lib;PhysXFoundation_32.lib;PhysXExtensions_static_32.lib;PhysXCommon_32.lib;PhysXPvdSDK_static_32.lib;mono-2.0-sgen.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -106,15 +107,19 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FunctionLevelLinking>
+      </FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);PhysX_32.lib;PhysXFoundation_32.lib;PhysXExtensions_static_32.lib;PhysXCommon_32.lib;PhysXPvdSDK_static_32.lib;;libmono-static-sgen.lib;mono-2.0-sgen.lib;libmono-static-boehm.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);PhysX_32.lib;PhysXFoundation_32.lib;PhysXExtensions_static_32.lib;PhysXCommon_32.lib;PhysXPvdSDK_static_32.lib;mono-2.0-sgen.lib;glew32.lib;glfw3.lib;opengl32.lib;$(ProjectDir)assimp\assimp\assimp-vc140-mt.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -136,6 +141,7 @@
     <None Include="Debug\glew32.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="engine2\engine\GameRenderer.cpp" />
     <ClCompile Include="engine2\engine\physx\CustomPhysxEventCallBack.cpp" />
     <ClCompile Include="engine2\engine\components\colliders\CubeColliderComponent.cpp" />
     <ClCompile Include="engine2\engine\components\colliders\CapsuleColliderComponent.cpp" />
@@ -211,6 +217,7 @@
     <ClCompile Include="stb\stb_image.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine2\engine\GameRenderer.h" />
     <ClInclude Include="engine2\engine\physx\CustomPhysxEventCallBack.h" />
     <ClInclude Include="engine2\engine\components\colliders\CubeColliderComponent.h" />
     <ClInclude Include="engine2\engine\components\colliders\CapsuleColliderComponent.h" />

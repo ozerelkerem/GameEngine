@@ -19,6 +19,212 @@ SceneRenderer::SceneRenderer(GameBase *b) : Renderer(b)
 	spriteRenderer = new SpriteRenderer();
 }
 
+void SceneRenderer::renderSelectedCamera()
+{
+	if (Actor *cameraActor = GE_Engine->actorManager->GetActor(selectedActor); cameraActor && cameraActor->GetComponent<CameraComponent>())
+	{
+		CameraComponent *cc = cameraActor->GetComponent<CameraComponent>();
+
+		colorShader->setMat4("modelMatrix", glm::mat4(1));
+		colorShader->setInt("hasBones", 0);
+		colorShader->setVec3("color", glm::vec3(0.6f, 0.6f, 0.6f));
+
+		glBegin(GL_LINES);
+
+		float fov = glm::radians(cc->fov);
+		glm::vec3 pos = cameraActor->transformation.getWorldPosition();
+		glm::vec3 up = cameraActor->transformation.getWorldUpVector()*sceneSize.y;
+		glm::vec3 forward = cameraActor->transformation.getWorldForwardVector();
+		glm::vec3 right = cameraActor->transformation.getWorldRightVector() *sceneSize.x;
+
+		if(cc->Perspective)
+		{
+			glm::vec3 nearPosition = pos + forward * cc->m_near;
+
+			glm::vec3 near1 = glm::rotate(nearPosition - pos, fov, glm::normalize(right + up)) + pos;
+			glm::vec3 near2 = glm::rotate(nearPosition - pos, fov, glm::normalize(right - up)) + pos;
+			glm::vec3 near3 = glm::rotate(nearPosition - pos, fov, glm::normalize(-right - up)) + pos;
+			glm::vec3 near4 = glm::rotate(nearPosition - pos, fov, glm::normalize(-right + up)) + pos;
+
+
+			glVertexAttrib3f(0, near1.x, near1.y, near1.z);
+			glVertexAttrib3f(0, near2.x, near2.y, near2.z);
+
+			glVertexAttrib3f(0, near2.x, near2.y, near2.z);
+			glVertexAttrib3f(0, near3.x, near3.y, near3.z);
+
+			glVertexAttrib3f(0, near3.x, near3.y, near3.z);
+			glVertexAttrib3f(0, near4.x, near4.y, near4.z);
+
+			glVertexAttrib3f(0, near4.x, near4.y, near4.z);
+			glVertexAttrib3f(0, near1.x, near1.y, near1.z);
+		
+			glm::vec3 farPosition = pos + forward * cc->m_far;
+
+			glm::vec3 far1 = glm::rotate(farPosition - pos, fov, glm::normalize(right + up)) + pos;
+			glm::vec3 far2 = glm::rotate(farPosition - pos, fov, glm::normalize(right - up)) + pos;
+			glm::vec3 far3 = glm::rotate(farPosition - pos, fov, glm::normalize(-right - up)) + pos;
+			glm::vec3 far4 = glm::rotate(farPosition - pos, fov, glm::normalize(-right + up)) + pos;
+
+
+			glVertexAttrib3f(0, far1.x, far1.y, far1.z);
+			glVertexAttrib3f(0, far2.x, far2.y, far2.z);
+
+			glVertexAttrib3f(0, far2.x, far2.y, far2.z);
+			glVertexAttrib3f(0, far3.x, far3.y, far3.z);
+
+			glVertexAttrib3f(0, far3.x, far3.y, far3.z);
+			glVertexAttrib3f(0, far4.x, far4.y, far4.z);
+
+			glVertexAttrib3f(0, far4.x, far4.y, far4.z);
+			glVertexAttrib3f(0, far1.x, far1.y, far1.z);
+
+
+
+			glVertexAttrib3f(0, near1.x, near1.y, near1.z);
+			glVertexAttrib3f(0, far1.x, far1.y, far1.z);
+
+			glVertexAttrib3f(0, near2.x, near2.y, near2.z);
+			glVertexAttrib3f(0, far2.x, far2.y, far2.z);
+
+			glVertexAttrib3f(0, near3.x, near3.y, near3.z);
+			glVertexAttrib3f(0, far3.x, far3.y, far3.z);
+
+			glVertexAttrib3f(0, near4.x, near4.y, near4.z);
+			glVertexAttrib3f(0, far4.x, far4.y, far4.z);
+		}
+		else
+		{
+			glm::vec3 nearPosition = pos + forward * cc->m_near;
+
+			glm::vec3 near1 = nearPosition + cc->size * glm::normalize(right + up);
+			glm::vec3 near2 = nearPosition + cc->size * glm::normalize(right - up);
+			glm::vec3 near3 = nearPosition + cc->size * glm::normalize(-right - up);
+			glm::vec3 near4 = nearPosition + cc->size * glm::normalize(-right + up);
+
+
+			glVertexAttrib3f(0, near1.x, near1.y, near1.z);
+			glVertexAttrib3f(0, near2.x, near2.y, near2.z);
+
+			glVertexAttrib3f(0, near2.x, near2.y, near2.z);
+			glVertexAttrib3f(0, near3.x, near3.y, near3.z);
+
+			glVertexAttrib3f(0, near3.x, near3.y, near3.z);
+			glVertexAttrib3f(0, near4.x, near4.y, near4.z);
+
+			glVertexAttrib3f(0, near4.x, near4.y, near4.z);
+			glVertexAttrib3f(0, near1.x, near1.y, near1.z);
+
+			glm::vec3 farPosition = pos + forward * cc->m_far;
+
+			glm::vec3 far1 = farPosition + cc->size * glm::normalize(right + up);
+			glm::vec3 far2 = farPosition + cc->size * glm::normalize(right - up);
+			glm::vec3 far3 = farPosition + cc->size * glm::normalize(-right - up);
+			glm::vec3 far4 = farPosition + cc->size * glm::normalize(-right + up);
+
+
+			glVertexAttrib3f(0, far1.x, far1.y, far1.z);
+			glVertexAttrib3f(0, far2.x, far2.y, far2.z);
+
+			glVertexAttrib3f(0, far2.x, far2.y, far2.z);
+			glVertexAttrib3f(0, far3.x, far3.y, far3.z);
+
+			glVertexAttrib3f(0, far3.x, far3.y, far3.z);
+			glVertexAttrib3f(0, far4.x, far4.y, far4.z);
+
+			glVertexAttrib3f(0, far4.x, far4.y, far4.z);
+			glVertexAttrib3f(0, far1.x, far1.y, far1.z);
+
+
+
+			glVertexAttrib3f(0, near1.x, near1.y, near1.z);
+			glVertexAttrib3f(0, far1.x, far1.y, far1.z);
+
+			glVertexAttrib3f(0, near2.x, near2.y, near2.z);
+			glVertexAttrib3f(0, far2.x, far2.y, far2.z);
+
+			glVertexAttrib3f(0, near3.x, near3.y, near3.z);
+			glVertexAttrib3f(0, far3.x, far3.y, far3.z);
+
+			glVertexAttrib3f(0, near4.x, near4.y, near4.z);
+			glVertexAttrib3f(0, far4.x, far4.y, far4.z);
+		}
+		
+		glEnd();
+	}
+
+
+	
+
+	if (Actor *lightActor = GE_Engine->actorManager->GetActor(selectedActor); lightActor && lightActor->GetComponent<LightComponent>())
+	{
+
+		LightComponent *lightcomponent = lightActor->GetComponent<LightComponent>();
+
+
+		const glm::vec3 lightpos = lightActor->transformation.getWorldPosition();
+		float dist = lightcomponent->distance;
+
+		const int sensivity = 36;
+		float constexpr degree = 360 / sensivity;
+
+		if (lightcomponent->lightType == LightType::Point)
+		{
+			renderSphere(lightpos, dist, 18);
+		}
+		else if (lightcomponent->lightType == LightType::Spotlight)
+		{
+			glm::vec3 circlepos = lightpos + (lightActor->transformation.getWorldForwardVector() * dist);
+			glm::vec3 startpos = circlepos + (lightActor->transformation.getWorldUpVector() * dist *std::tan(glm::radians(lightcomponent->angle)));
+			glm::vec3 endpos = glm::rotate((startpos - circlepos), glm::radians(degree), lightActor->transformation.getWorldForwardVector());
+			endpos += circlepos;
+			for (int i = 0; i < sensivity; i++)
+			{
+				if (!(i % 4))
+				{
+					glVertexAttrib3f(0, lightpos.x, lightpos.y, lightpos.z);
+					glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+				}
+
+				glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+				glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+				startpos = endpos;
+				endpos = glm::rotate((endpos - circlepos), glm::radians(degree), lightActor->transformation.getWorldForwardVector());
+				endpos += circlepos;
+			}
+		}
+		else if (lightcomponent->lightType == LightType::Directional)
+		{
+			dist = glm::distance(sceneCamera->position, lightpos) / 10.f;
+			glm::vec3 startpos = lightpos + (lightActor->transformation.getWorldUpVector() * dist);
+			glm::vec3 endpos = glm::rotate((startpos - lightpos), glm::radians(degree), lightActor->transformation.getWorldForwardVector());
+			endpos += lightpos;
+			glm::vec3 target;
+			for (int i = 0; i < sensivity; i++)
+			{
+				if (!(i % 3))
+				{
+					glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+					target = endpos + lightActor->transformation.getWorldForwardVector() *dist *3.f;
+					glVertexAttrib3f(0, target.x, target.y, target.z);
+
+				}
+
+				glVertexAttrib3f(0, startpos.x, startpos.y, startpos.z);
+				glVertexAttrib3f(0, endpos.x, endpos.y, endpos.z);
+
+				startpos = endpos;
+				endpos = glm::rotate((endpos - lightpos), glm::radians(degree), lightActor->transformation.getWorldForwardVector());
+				endpos += lightpos;
+			}
+		}
+
+	}
+
+	
+}
+
 void SceneRenderer::renderLights()
 {
 	auto begin = GE_Engine->componentManager->begin<LightComponent>();
@@ -178,6 +384,7 @@ void SceneRenderer::render()
 	
 	if (selectedactor)
 	{
+		renderSelectedCamera();
 		renderSelectedCollider();
 		renderSelectedLight(); //first light because color shader is still identity 
 		RenderOutlined(selectedactor);
@@ -209,32 +416,6 @@ void SceneRenderer::render()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-
-void SceneRenderer::GenerateBuffers()
-{
-	// framebuffer configuration
-	glGenFramebuffers(1, &framebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-
-	// create a color attachment texture
-	glGenTextures(1, &textureColorbuffer);
-	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, sceneMaxWidth, sceneMaxHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
-
-	// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
-	unsigned int rbo;
-	glGenRenderbuffers(1, &rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, sceneMaxWidth, sceneMaxHeight); // use a single renderbuffer object for both a depth AND stencil buffer.
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
-
-	// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
 inline void SceneRenderer::RenderOutlined(Actor * o)
 {
 	glEnable(GL_STENCIL_TEST);
@@ -323,6 +504,8 @@ void SceneRenderer::renderModelsColored()
 
 ActorID SceneRenderer::RenderForObjectPicker(GLint x, GLint y)
 {
+	if(x < 0 || y < 0)
+		return ActorID::INVALID_HANDLE;
 	colorShader->Use();
 	glViewport(0, 0, sceneSize.x, sceneSize.y);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);

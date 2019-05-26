@@ -59,6 +59,7 @@ class ComponentManager : GlobalMemoryUser
 	using ComponentContainerRegistry = std::unordered_map<ComponentTypeID, IComponentContainer*>;
 	ComponentContainerRegistry componentContainerRegistry;
 
+public:
 	template<class T>
 	inline ComponentContainer<T>* GetComponentContainer()
 	{
@@ -80,6 +81,7 @@ class ComponentManager : GlobalMemoryUser
 
 		return cc;
 	}
+private:
 
 	using ComponentLookupTable = std::vector<IComponent*>;
 	ComponentLookupTable	componentLUT;
@@ -191,6 +193,9 @@ public:
 
 		return reinterpret_cast<T*>(this->componentLUT[componentId]);
 	}
+
+
+
 
 	template<class T>
 	inline TComponentIterator<T> begin()

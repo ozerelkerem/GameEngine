@@ -1,5 +1,5 @@
 #pragma once
-
+#define GLM_ENABLE_EXPERIMENTAL
 #define _HAS_STD_BYTE 0
 #include <iostream>
 #include <stdlib.h>
@@ -28,7 +28,7 @@
 
 #include<physx/PxPhysicsAPI.h>
 
-#define PROJECTDIRECTORY "C:\\Users\\mustafa rasimoðlu\\source\\repos\\ge_test"
+#define PROJECTDIRECTORY "C:\\Users\\KeremPC\\Documents\\GitHub\\ge_test"
 
 #define ACTOR_LUT_GROW 1024
 #define COMPONENT_LUT_GROW 1024

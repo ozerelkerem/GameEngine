@@ -207,6 +207,12 @@ glm::mat4 Transform::getWorldPose()
 	return glm::translate(glm::mat4(1), localPosition) * (glm::toMat4(localquatRotation));
 }
 
+void Transform::applyToRigidBody()
+{
+	if(this->physicactor)
+		this->physicactor->setGlobalPose(PxTransform(glmMat4ToPhysxMat4(getWorldPose())));
+}
+
 void Transform::calcLocalMatrix()
 {
 	glm::mat4 rot = glm::toMat4(localquatRotation);

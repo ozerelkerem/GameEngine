@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..//ogl/glm/glm.hpp"
+#include <glm/glm.hpp>
 
 #include <string>
 

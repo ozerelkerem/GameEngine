@@ -1,8 +1,8 @@
 #include "Serializable.h"
 #include<engine/Scene.h>
 #include<engine/ActorManager.h>
-
-
+#include <engine/scripting/ScriptSystem.h>
+#include<engine/GameBase.h>
 
 void Serializable::Save(ProjectManager *pm)
 {
@@ -290,6 +290,7 @@ void Serializable::SaveScene(ProjectManager *pm,Scene *scene)
 	if(!file)
 		throw std::exception("File error when saving scene.");
 	writefile(file, scene->name);
+	writefile(file, scene->cameraActor);
 
 	std::vector<Actor *> list;
 	Actor *actor;
@@ -339,7 +340,7 @@ void Serializable::SaveActor(ProjectManager *pm, ofstream& file,Actor *actor)
 
 }
 
-void Serializable::AddPrefab(ProjectManager *pm, std::string name, Actor *targetactor)
+ActorID Serializable::AddPrefab(ProjectManager *pm, std::string name, Actor *targetactor)
 {
 
 
@@ -377,11 +378,33 @@ void Serializable::AddPrefab(ProjectManager *pm, std::string name, Actor *target
 			x->rootBone = x->rootBone != ActorID::INVALID_HANDLE ? oldnewids[x->rootBone] : ActorID::INVALID_HANDLE;
 			smclist.push_back(x);
 		}
+		if (auto x = actor->GetComponent<RigidBodyComponent>())
+		{
+			x->updateFlags();
+			x->clearForces();
+		}
+		if (auto x = actor->GetComponent<ScriptComponent>())
+		{
+			GE_Engine->scriptSystem->addObjectRuntime(x);
+		}
 	}
 
 	for (auto cmp : smclist)
 		if (cmp->rootBone != ActorID::INVALID_HANDLE) cmp->matchBones();
 
+	return list[0]->actorID;
+
+}
+
+MonoObject* Serializable::AddPrefabCS(ProjectManager * pm, const char * name, Actor * targetactor)
+{
+	ActorID aid;
+	if (targetactor)
+		aid =AddPrefab(pm, name, targetactor);
+	else
+		aid = AddPrefab(pm, name, GE_Engine->actorManager->GetActor(GE_Engine->gameBase->currentScene->rootActor));
+	
+	return GE_Engine->scriptSystem->getActorObject(aid);
 }
 
 
@@ -407,12 +430,12 @@ Scene * Serializable::LoadScene(ProjectManager *pm, std::string name)
 	std::vector<Actor*> list;
 	Scene *scene = (Scene*)calloc(sizeof(Scene),1);
 	readfile(file, &scene->name);
-
+	readfile(file, &scene->cameraActor);
 	while (file.peek() != EOF)
 		list.push_back(LoadActor(pm,file,scene,oldnewids));
 
 	scene->rootActor = list[0]->actorID;
-	
+	scene->cameraActor = scene->cameraActor==ActorID::INVALID_HANDLE ? ActorID::INVALID_HANDLE : oldnewids[scene->cameraActor];
 	file.close();
 	int i = 0;
 	for (auto actor : list)
@@ -617,7 +640,8 @@ template<> inline void Serializable::_LoadComponent<SkinnedModelComponent>(Proje
 		string path, name;
 		readfile(file, &name);
 		readfile(file, &path);
-		auto x = a->AddComponent<SkinnedModelComponent>(GE_Engine->resourceManager->getResource<Model>(path, name));
+		SkinnedModelComponent*x = nullptr;
+		x = a->AddComponent<SkinnedModelComponent>(GE_Engine->resourceManager->getResource<Model>(path, name));
 		LoadIModelComponentMaterials(pm, file, x);
 		readfile(file, &x->rootBone);
 	}
@@ -653,7 +677,8 @@ template<> inline void Serializable::_LoadComponent<CubeColliderComponent>(Proje
 }
 template<> inline void Serializable::_LoadComponent<CapsuleColliderComponent>(ProjectManager *pm, ifstream & file, Actor *a)
 {
-	auto x = a->AddComponent<CapsuleColliderComponent>();
+	CapsuleColliderComponent *x = nullptr;
+	 x = a->AddComponent<CapsuleColliderComponent>();
 	readfile(file, &x->up);
 	readfile(file, &x->upp);
 	readfile(file, &x->geometry);
@@ -662,6 +687,15 @@ template<> inline void Serializable::_LoadComponent<CapsuleColliderComponent>(Pr
 template<> inline void Serializable::_LoadComponent<RigidBodyComponent>(ProjectManager *pm, ifstream & file, Actor *a)
 {
 	auto x = a->AddComponent<RigidBodyComponent>();
+	readfile(file, &x->LLX);
+	readfile(file, &x->LLY);
+	readfile(file, &x->LLZ);
+	readfile(file, &x->LRX);
+	readfile(file, &x->LRY);
+	readfile(file, &x->LRZ);
+
+	readfile(file, &x->Kinematic);
+	readfile(file, &x->Gravity);
 }
 template<> inline void Serializable::_LoadComponent<ScriptComponent>(ProjectManager *pm, ifstream & file, Actor *a)
 {
@@ -678,7 +712,14 @@ template<> inline void Serializable::_LoadComponent<ScriptComponent>(ProjectMana
 		x->scripts[i] = pm->scripts[index];
 	}
 }
-
+template<> inline void Serializable::_LoadComponent<CameraComponent>(ProjectManager *pm, ifstream & file, Actor *a)
+{
+	auto x = a->AddComponent<CameraComponent>();
+	readfile(file, &x->fov);
+	readfile(file, &x->m_far);
+	readfile(file, &x->m_near);
+	readfile(file, &x->Perspective);
+}
 
 template<class T>
 inline void Serializable::SaveComponent(ProjectManager *pm, ofstream & file, T * component)
@@ -748,12 +789,28 @@ template<> inline void Serializable::_SaveComponent<CapsuleColliderComponent>(Pr
 }
 template<> inline void Serializable::_SaveComponent<RigidBodyComponent>(ProjectManager *pm, ofstream & file, RigidBodyComponent * component)
 {
+	writefile(file, component->LLX);
+	writefile(file, component->LLY);
+	writefile(file, component->LLZ);
+	writefile(file, component->LRX);
+	writefile(file, component->LRY);
+	writefile(file, component->LRZ);
+
+	writefile(file, component->Kinematic);
+	writefile(file, component->Gravity);
 }
 template<> inline void Serializable::_SaveComponent<ScriptComponent>(ProjectManager *pm, ofstream & file, ScriptComponent * component)
 {
 	writefile(file, component->scripts.size());
 	for (auto script : component->scripts)
 		writefile(file, pm->findIndexofScript(script));
+}
+template<> inline void Serializable::_SaveComponent<CameraComponent>(ProjectManager *pm, ofstream & file, CameraComponent * component)
+{
+	writefile(file, component->fov);
+	writefile(file, component->m_far);
+	writefile(file, component->m_near);
+	writefile(file, component->Perspective);
 }
 
 void Serializable::SaveIModelComponent(ProjectManager *pm, ofstream & file, IModelComponent * component)

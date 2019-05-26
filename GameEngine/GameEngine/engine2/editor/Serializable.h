@@ -11,6 +11,7 @@
 
 #include <editor/ProjectManager.h>
 #include<engine/SkinnedMesh.h>
+
 class ProjectManager;
 class Scene;
 class Actor;
@@ -27,7 +28,8 @@ public:
 	static void ReadModel(Model *m);
 
 	static void SaveActorasaPrefab(ProjectManager *, Actor*);
-	static void AddPrefab(ProjectManager *pm, std::string name, Actor *targetactor);
+	static ActorID AddPrefab(ProjectManager *pm, std::string name, Actor *targetactor);
+	static MonoObject* AddPrefabCS(ProjectManager *pm, const char *name, Actor *targetactor);
 
 	static void SaveScene(ProjectManager *, Scene*);
 	static void SaveActor(ProjectManager *, ofstream& file, Actor*);

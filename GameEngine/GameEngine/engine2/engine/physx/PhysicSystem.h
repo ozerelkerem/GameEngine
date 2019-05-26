@@ -22,6 +22,8 @@ public:
 	virtual void Update() override;
 	virtual void PostUpdate() override;
 
+	void Start();
+
 	Transform* getfix(ActorID actorid); // to solve circuler depency problem
 	RigidBodyComponent* getrigidbody(ActorID actorid); // to solve circuler depency problem
 

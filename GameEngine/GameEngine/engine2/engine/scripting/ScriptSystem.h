@@ -30,7 +30,13 @@ public:
 	void freeSystem();
 	void startSytem();
 
+
+	std::set<Script *> scriptstemp;
+	void addObjectRuntime(ScriptComponent *s);
+	void addWaitings();
+
 	std::vector<std::pair<MonoObject*, Script *>> scriptobjects;
+	std::vector<ScriptComponent *> waitinglist;
 	
 	inline MonoObject *getActorObject(ActorID id) {
 		auto it = actorobjects.find(id);

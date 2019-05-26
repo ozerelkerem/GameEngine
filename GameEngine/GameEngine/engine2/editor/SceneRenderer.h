@@ -12,19 +12,13 @@
 #include<engine/components/colliders/CapsuleColliderComponent.h>
 #include<engine/components/colliders/CubeColliderComponent.h>
 
-#define sceneMaxWidth 2000
-#define sceneMaxHeight 2000
+
 
 class SceneTools;
 
 class SceneRenderer :
 	public Renderer
 {
-private:
-	unsigned int textureColorbuffer;
-	unsigned int framebuffer;
-	void GenerateBuffers();
-
 public:
 	SceneRenderer(GameBase *b);
 	~SceneRenderer();
@@ -40,6 +34,7 @@ public:
 	ActorID selectedActor;
 	ActorID hoveredActor;
 
+	void renderSelectedCamera();
 	void renderLights();
 	void renderSelectedLight();
 	void renderSelectedCollider();
@@ -49,8 +44,6 @@ public:
 	void RenderOutlined(Actor * o);
 	ActorID RenderForObjectPicker(GLint x, GLint y);
 	bool RenderForObjectTools(GLint x, GLint y);
-
-	inline unsigned int GetTextureColorBuffer() { return textureColorbuffer; }
 
 	void focusActor(ActorID);
 

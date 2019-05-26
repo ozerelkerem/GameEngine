@@ -1,10 +1,9 @@
 #pragma once
-#define GLM_ENABLE_EXPERIMENTAL
+#include<Api.h>
 #include "../ogl/glm/glm.hpp"
 #include "../ogl/glm/gtx/euler_angles.hpp"
 #include "../ogl/glm/gtx/quaternion.hpp"
 #include "../ogl/glm/gtx/transform.hpp"
-
 #include <physx/PxPhysicsAPI.h>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
@@ -39,6 +38,8 @@ public:
 	//only pos and rot
 	glm::mat4 getWorldPose();
 
+
+	void applyToRigidBody();
 	void calcLocalMatrix();
 
 	Transform *parent;

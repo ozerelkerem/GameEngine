@@ -24,6 +24,7 @@
 #include <memory/Allocator/LinearAllocator.h>
 #include <util/ScriptingHelper.h>
 #include<engine/scripting/ScriptSystem.h>
+#include <engine/GameRenderer.h>
 class Editor 
 {
 public:
@@ -37,9 +38,10 @@ public:
 	bool travelMode = false, travelMode2 = false, toolMode = false;
 
 	SceneRenderer * sceneRenderer;
+	GameRenderer * gameRenderer;
 
 	ProjectManager *projectManager;
-
+	
 	GameBase *gameBase;
 
 	bool isPlaying;

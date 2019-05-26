@@ -10,7 +10,7 @@ Scene::Scene(std::string name, ProjectManager *pm) : projectManager(pm)
 
 	actorCounter = 1;
 	rootActor = GE_Engine->actorManager->CreateActor(this->name, this);
-
+	cameraActor = ActorID::INVALID_HANDLE;
 }
 
 

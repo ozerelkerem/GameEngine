@@ -1,5 +1,5 @@
 #pragma once
-
+#include<Api.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
@@ -61,13 +61,13 @@ namespace ModelLoader
 	{
 		Prefab * prefab = new Prefab(name);
 		
-		for (int i = 0; i < scene->mNumLights; i++)
+		for (unsigned int i = 0; i < scene->mNumLights; i++)
 			prefab->addLight(generateLight(scene->mLights[i]));
 
-		for (int i = 0; i < scene->mNumCameras; i++)
+		for (unsigned int i = 0; i < scene->mNumCameras; i++)
 			prefab->addCamera(generateCamera(scene->mCameras[i]));
 
-		for (int i = 0; i < scene->mNumAnimations; i++)
+		for (unsigned int i = 0; i < scene->mNumAnimations; i++)
 		{
 			Animation *a = generateAnimation(scene->mAnimations[i]);
 			if (project)
@@ -75,7 +75,7 @@ namespace ModelLoader
 		}
 		//;prefab->addAnimation(generateAnimation(scene->mAnimations[i]));
 
-		for (int i = 0; i < scene->mNumMaterials; i++)
+		for (unsigned int i = 0; i < scene->mNumMaterials; i++)
 		{
 			Material *m = generateMaterial(scene->mMaterials[i], prefab->name + " Material " + std::to_string(i), project);
 			if (project)
@@ -89,7 +89,7 @@ namespace ModelLoader
 		}
 
 		Mesh *(*meshes) = (Mesh **)calloc(scene->mNumMeshes,sizeof(Mesh *));
-		for (int i = 0; i < scene->mNumMeshes; i++)
+		for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 		{
 			meshes[i] = generateMesh(scene->mMeshes[i]);
 		//	meshes[i]->material = prefab->materials[scene->mMeshes[i]->mMaterialIndex];
@@ -98,7 +98,7 @@ namespace ModelLoader
 		
 		startingNode(meshes, prefab, prefab->rootNode, scene->mRootNode, scene, project);
 
-		for (int i = 0; i < prefab->numberOfModels; i++)
+		for (unsigned int i = 0; i < prefab->numberOfModels; i++)
 		{
 			if (project)
 				project->add(prefab->models[i]);
@@ -117,7 +117,7 @@ namespace ModelLoader
 	
 		prefab->rootNode = new PrefabNode(new Object(prefab->name), glm::mat4(aiamat4tomat4(node->mTransformation)));
 
-		for (int i = 0; i < node->mNumChildren; i++)
+		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
 			processNode(meshes, prefab, prefab->rootNode, node->mChildren[i], scene,pm);
 		}
@@ -144,7 +144,7 @@ namespace ModelLoader
 				o->componentObject->addComponent<ModelComponent>((ModelComponent *)mc);
 			}
 			mc->numberOfMaterials = node->mNumMeshes;
-			for (int i = 0; i < node->mNumMeshes; i++)
+			for (unsigned int i = 0; i < node->mNumMeshes; i++)
 			{
 				m->addMesh(meshes[node->mMeshes[i]]);
 				mc->materials.insert(mc->materials.begin(), 1, prefab->materials[scene->mMeshes[node->mMeshes[i]]->mMaterialIndex]);
@@ -168,7 +168,7 @@ namespace ModelLoader
 		PrefabNode *tmpprefabNode = new PrefabNode(o, glm::make_mat4(node->mTransformation[0]));
 		rootPNode->addChild(tmpprefabNode);
 
-		for (int i = 0; i < node->mNumChildren; i++)
+		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
 			processNode(meshes,prefab, tmpprefabNode, node->mChildren[i], scene, pm);
 		}
@@ -196,12 +196,12 @@ namespace ModelLoader
 		maxx = maxy = maxz = std::numeric_limits<float>::min();
 
 		unsigned int *indices = (unsigned int *)calloc(mesh->mNumFaces * mesh->mFaces[0].mNumIndices, sizeof(unsigned int));
-		for (int i = 0; i < mesh->mNumFaces; i++)
+		for (unsigned int i = 0; i < mesh->mNumFaces; i++)
 			for(int j = 0; j < mesh->mFaces[i].mNumIndices; j++)
 				indices[i * mesh->mFaces[0].mNumIndices + j] = mesh->mFaces[i].mIndices[j];
 
 		float *vertices = (float *)calloc(mesh->mNumVertices * 3, sizeof(float));
-		for (int i = 0; i < mesh->mNumVertices; i++)
+		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
 			vertices[i * 3 + 0] = mesh->mVertices[i][0];
 			vertices[i * 3 + 1] = mesh->mVertices[i][1];
@@ -219,13 +219,13 @@ namespace ModelLoader
 				
 
 		float *normals = (float *)calloc(mesh->mNumVertices * 3, sizeof(float));
-		for (int i = 0; i < mesh->mNumVertices; i++)
+		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 			for (int j = 0; j < 3; j++)
 				normals[i * 3 + j] = mesh->mNormals[i][j];
 
 		float *textureCoords = (float *)calloc(mesh->mNumVertices * 2, sizeof(float));
 	
-		for (int i = 0; i < mesh->mNumVertices; i++)
+		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
 			if (mesh->mTextureCoords[0] > 0)
 			{
@@ -247,7 +247,7 @@ namespace ModelLoader
 			BonesList bones;
 			std::vector<std::vector<std::pair<float, BoneIdType >>> weightsboneids(mesh->mNumVertices);
 
-			for (int i = 0; i < mesh->mNumBones; i++)
+			for (unsigned int i = 0; i < mesh->mNumBones; i++)
 			{
 				auto bone = mesh->mBones[i];
 
@@ -259,7 +259,7 @@ namespace ModelLoader
 				bones.push_back(std::make_pair(bone->mName.C_Str(),glm::mat4(aiamat4tomat4(bone->mOffsetMatrix))));
 			}
 
-			for (int i = 0; i < mesh->mNumVertices; i++)
+			for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 			{
 
 				std::sort(weightsboneids[i].begin(), weightsboneids[i].end(), [](auto a, auto b)
@@ -316,7 +316,7 @@ namespace ModelLoader
 	static Object * generateCamera(const aiCamera *camera)
 	{
 		Object *c = new Object(camera->mName.C_Str());
-		c->componentObject->addComponent(new CameraComponent(camera->mHorizontalFOV, camera->mAspect, camera->mClipPlaneNear, camera->mClipPlaneFar));
+		c->componentObject->addComponent(new CameraComponent());
 		return c;
 	}
 
@@ -333,11 +333,11 @@ namespace ModelLoader
 			scale.reserve(channel->mNumScalingKeys);
 			rot.reserve(channel->mNumRotationKeys);
 
-			for (int j = 0; j < channel->mNumPositionKeys; j++)
+			for (unsigned int j = 0; j < channel->mNumPositionKeys; j++)
 				pos.push_back(std::make_pair(static_cast<AnimationTimeType>(channel->mPositionKeys[j].mTime), aivec3tovec3(channel->mPositionKeys[j].mValue)));
-			for (int j = 0; j < channel->mNumScalingKeys; j++)
+			for (unsigned int j = 0; j < channel->mNumScalingKeys; j++)
 				scale.push_back(std::make_pair(static_cast<AnimationTimeType>(channel->mScalingKeys[j].mTime), aivec3tovec3(channel->mScalingKeys[j].mValue)));
-			for (int j = 0; j < channel->mNumRotationKeys; j++)
+			for (unsigned int j = 0; j < channel->mNumRotationKeys; j++)
 				rot.push_back(std::make_pair(static_cast<AnimationTimeType>(channel->mRotationKeys[j].mTime), aiquattoquat(channel->mRotationKeys[j].mValue)));
 			map[channel->mNodeName.C_Str()] = new AnimationNode(channel->mNodeName.C_Str(), pos, scale, rot);
 		}

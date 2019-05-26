@@ -2,6 +2,7 @@
 #include<Api.h>
 #include<engine/ActorManager.h>
 #include<stack>
+#include <engine/InputManager.h>
 #define stringify( name ) # name
 
 #define StateSize 1000000
@@ -29,7 +30,9 @@ Editor::Editor(GLFWwindow *window, ProjectManager *pm) : isPlaying(false)
 
 	gameBase = new GameBase(scene);
 	sceneRenderer = new SceneRenderer(gameBase);
+	gameRenderer = new GameRenderer(gameBase);
 
+	GE_Engine->gameBase = gameBase;
 	Serializable::Save(projectManager);
 	Serializable::SaveScene(projectManager, scene);
 
@@ -283,7 +286,41 @@ void Editor::ShowComponentList()
 	{
 		if (ImGui::CollapsingHeader("RigidBody Component", ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			ImGui::Checkbox("Use Gravity##gravity", &rigidbody->Gravity);
+			ImGui::Checkbox("Is Kinematic##kinematic", &rigidbody->Kinematic);
+			ImGui::Text("Freeze Position");
+			{
+				ImGui::Checkbox("X##FPX", &rigidbody->LLX); ImGui::SameLine();
+				ImGui::Checkbox("Y##FPY", &rigidbody->LLY); ImGui::SameLine();
+				ImGui::Checkbox("Z##FPZ", &rigidbody->LLZ);
+			}
+			ImGui::Text("Freeze Rotation");
+			{
+				ImGui::Checkbox("X##FRX", &rigidbody->LRX); ImGui::SameLine();
+				ImGui::Checkbox("Y##FRY", &rigidbody->LRY); ImGui::SameLine();
+				ImGui::Checkbox("Z##FRZ", &rigidbody->LRZ);
+			}
+
+			
 			removeComponentContext<RigidBodyComponent>(actor);
+		}
+
+	}
+	if (CameraComponent *cameracomp = actor->GetComponent<CameraComponent>())
+	{
+		if (ImGui::CollapsingHeader("Camera Component", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::Checkbox("Is Perspective##persective", &cameracomp->Perspective);
+			ImGui::DragFloat("Near##camnear", &cameracomp->m_near, 0.5f, 0.001f, 1000.f);
+			ImGui::DragFloat("Far##camfar", &cameracomp->m_far, 1.f, cameracomp->m_near, 10000.f);
+			if (cameracomp->Perspective)				
+				ImGui::DragFloat("Field of View##camfov", &cameracomp->fov, 0.5f, 0.001f, 179.f);
+			else
+				ImGui::DragFloat("Size##camsize", &cameracomp->size, 0.5f, 1.f, 100.f);
+
+			
+			
+			//removeComponentContext<CameraComponent>(actor);
 		}
 
 	}
@@ -387,7 +424,9 @@ void Editor::ObjectProperties()
 				
 				ObjectPropertiesMaterials();
 				
-				const char *items[] = {"Light Component", "Animator Component", "SphereCollider Component", "CapsuleCollider Component", "CubeCollider Component","RigidBody Component", "Script Component" };
+				const char *items[] = {"Light Component", "Animator Component", "SphereCollider Component", 
+					"CapsuleCollider Component", "CubeCollider Component","RigidBody Component", "Script Component",
+				"Camera Component",};
 				if (ImGui::BeginCombo("##addcomponent", "Add Component", ImGuiComboFlags_NoArrowButton)) // The second parameter is the label previewed before opening the combo.
 				{
 					for (int n = 0; n < IM_ARRAYSIZE(items); n++)
@@ -426,6 +465,10 @@ void Editor::ObjectProperties()
 							case 6:
 							{
 								selectedActor->AddComponent<ScriptComponent>();
+							}break;
+							case 7:
+							{
+								selectedActor->AddComponent<CameraComponent>();
 							}break;
 							default:
 								break;
@@ -553,12 +596,15 @@ void Editor::Render()
 	{
 		if (ImGui::ButtonEx("Play", { 0,0 }, isPlaying ? ImGuiButtonFlags_Disabled : 0))
 		{
+			
+			glfwSetKeyCallback(window, InputManager::key_Callback);
 			Serializable::Save(projectManager);
 			Serializable::SaveScene(projectManager, gameBase->currentScene);
 
 			ifstream f(std::string(GE_Engine->mainPath)+"dlls\\scriptassembly.dll");
 			
 			isPlaying = true;
+			GE_Engine->physicSystem->Start();
 			GE_Engine->physicSystem->enabled = true;
 			if (f.good())
 			{
@@ -573,6 +619,7 @@ void Editor::Render()
 		ImGui::SameLine();
 		if (ImGui::ButtonEx("Stop", { 0,0 }, !isPlaying ? ImGuiButtonFlags_Disabled : 0))
 		{
+			glfwSetKeyCallback(window, ImGui_ImplGlfw_KeyCallback);
 			ifstream f(std::string(GE_Engine->mainPath) + "dlls\\scriptassembly.dll");
 
 			isPlaying = false;
@@ -785,6 +832,33 @@ void Editor::Render()
 	ImGui::Begin("Game", NULL);
 	{
 
+		viewportSize = ImGui::GetWindowSize();
+		viewportSize.y -= 35;
+
+		GE_Engine->screenSize.x = viewportSize.x;
+		GE_Engine->screenSize.y = viewportSize.y;
+
+		ImGui::SetCursorPosY(21);
+		ImGui::SetCursorPosX(0);
+
+		if (gameBase->currentScene->cameraActor == ActorID::INVALID_HANDLE)
+		{
+			ImGui::SetCursorPosX(viewportSize.x/3);
+			ImGui::Text("Please Select a Main Camera");
+		}
+			
+		else
+		{
+			gameRenderer->render();
+			ImGui::Image((void*)gameRenderer->GetTextureColorBuffer(), viewportSize, { 0,0 }, { viewportSize.x / sceneMaxWidth, viewportSize.y / sceneMaxHeight });
+		}
+		
+
+	
+
+		
+
+		
 	}
 	ImGui::End();
 
@@ -917,6 +991,31 @@ void Editor::Render()
 
 	ImGui::Begin("Scene Properties", NULL);
 	{
+
+		if (ImGui::CollapsingHeader("Game", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			const char *name = "Select Main Camera";
+			if (ImGui::BeginCombo("##selectmaincemera", name)) // The second parameter is the label previewed before opening the combo.
+			{
+				for (auto chunk : GE_Engine->actorManager->actorContainer->m_Chunks)
+				{
+					for (auto object : chunk->objects)
+					{
+						Actor *ac = GE_Engine->actorManager->GetActor(object->actorID);
+						if (CameraComponent *cc = ac->GetComponent<CameraComponent>())
+						{
+							if (ImGui::Selectable(ac->name.c_str()))
+							{
+								gameBase->currentScene->cameraActor = object->actorID;
+							}
+						}
+					}
+				}
+				
+				
+				ImGui::EndCombo();
+			}
+		}
 		if (ImGui::CollapsingHeader("Grid", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			ImGui::DragInt("Line Count", &(sceneRenderer->grid->lineCount), 1, 2, 1000);

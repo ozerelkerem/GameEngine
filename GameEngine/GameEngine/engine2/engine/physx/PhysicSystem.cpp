@@ -86,6 +86,18 @@ void PhysicSystem::PostUpdate()
 {
 }
 
+void PhysicSystem::Start()
+{
+	for (auto object : objects)
+	{
+		if (RigidBodyComponent *rbc = GE_Engine->componentManager->GetComponent<RigidBodyComponent>(object.first))
+		{
+			rbc->updateFlags();
+			rbc->clearForces();
+		}
+	}
+}
+
 Transform * PhysicSystem::getfix(ActorID actorid)
 {
 	return &GE_Engine->actorManager->GetActor(actorid)->transformation;

@@ -23,6 +23,7 @@ public:
 
 	ProjectManager *projectManager;
 
+	ActorID cameraActor;
 	ActorID rootActor;
 	int actorCounter;
 	

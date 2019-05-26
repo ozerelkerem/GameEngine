@@ -47,7 +47,13 @@ void ScriptSystem::initSystem()
 
 	emptymethod =  mono_class_get_method_from_name(mono_class_from_name(engineimage, "GameEngine", "ScriptComponent"),"Start", 0);
 
-
+	
+	MonoClass *cls = mono_class_from_name(engineimage, "GameEngine", "GameManager");
+	MonoClassField *field = mono_class_get_field_from_name(cls,"_projectmanagerptr");
+	
+	
+	mono_field_static_set_value(mono_class_vtable(domain_assembly, cls),field, &GE_Engine->projectManager);
+	
 }
 
 void ScriptSystem::freeSystem()
@@ -75,11 +81,59 @@ void ScriptSystem::freeSystem()
 
 void ScriptSystem::startSytem()
 {
-	std::set<Script *> scriptstemp;
+	scriptstemp.clear();
 	
+	for (auto chunk : GE_Engine->componentManager->GetComponentContainer<ScriptComponent>()->m_Chunks)
+	{
+		for (auto scriptcompit : chunk->objects)
 	//create scripts objects
-	auto end = GE_Engine->componentManager->end<ScriptComponent>();
-	for (auto scriptcompit = GE_Engine->componentManager->begin<ScriptComponent>(); scriptcompit.operator!=(end); scriptcompit.operator++())
+		{
+			MonoObject *actorobject = createSharpActor(GE_Engine->actorManager->GetActor(scriptcompit->owner));
+			int i = 0;
+			for (auto script : scriptcompit->scripts)
+			{
+				if (scriptstemp.find(script) == scriptstemp.end())
+				{
+					registerScriptFunctions(script);
+					scriptstemp.insert(script);
+				}
+
+				MonoObject *obj = createObject(scriptimage,script->name.c_str());
+				MonoClass *mclass = mono_class_from_name(engineimage, "GameEngine", "Component");
+				MonoMethod *method = mono_class_get_method_from_name(mclass, ".ctor", 1);
+				MonoClassField *field = mono_class_get_field_from_name(mclass, "_projectmanagerptr");
+				mono_field_set_value(obj, field, &GE_Engine->projectManager);
+			
+			
+				void *params[1];
+				params[0] = actorobject;
+				mono_runtime_invoke(method, obj, params, NULL);
+				mclass = mono_class_from_name(scriptimage, "GameEngine", script->name.c_str());
+			//	obj = mono_object_castclass_mbyref(obj, mclass);
+				scriptobjects.push_back(std::make_pair(obj, script));
+				scriptcompit->objects[i++] = obj;
+			}
+		}
+
+		
+	}
+	
+	for (auto sobject : scriptobjects)
+	{
+		mono_runtime_invoke(sobject.second->StartMethod, sobject.first, NULL, NULL);
+	}
+		
+	
+}
+
+void ScriptSystem::addObjectRuntime(ScriptComponent *scriptcompit)
+{
+	waitinglist.push_back(scriptcompit);
+}
+
+void ScriptSystem::addWaitings()
+{
+	for (auto scriptcompit : waitinglist)
 	{
 		MonoObject *actorobject = createSharpActor(GE_Engine->actorManager->GetActor(scriptcompit->owner));
 		int i = 0;
@@ -91,29 +145,27 @@ void ScriptSystem::startSytem()
 				scriptstemp.insert(script);
 			}
 
-			MonoObject *obj = createObject(scriptimage,script->name.c_str());
+			MonoObject *obj = createObject(scriptimage, script->name.c_str());
 			MonoClass *mclass = mono_class_from_name(engineimage, "GameEngine", "Component");
 			MonoMethod *method = mono_class_get_method_from_name(mclass, ".ctor", 1);
 			MonoClassField *field = mono_class_get_field_from_name(mclass, "_projectmanagerptr");
 			mono_field_set_value(obj, field, &GE_Engine->projectManager);
-			
-			
+
+
 			void *params[1];
 			params[0] = actorobject;
 			mono_runtime_invoke(method, obj, params, NULL);
 			mclass = mono_class_from_name(scriptimage, "GameEngine", script->name.c_str());
-		//	obj = mono_object_castclass_mbyref(obj, mclass);
+			//	obj = mono_object_castclass_mbyref(obj, mclass);
 			scriptobjects.push_back(std::make_pair(obj, script));
 			scriptcompit->objects[i++] = obj;
+
+			mono_runtime_invoke(scriptobjects.back().second->StartMethod, scriptobjects.back().first, NULL, NULL);
 		}
 	}
-	
-	for (auto sobject : scriptobjects)
-	{
-		mono_runtime_invoke(sobject.second->StartMethod, sobject.first, NULL, NULL);
-	}
+	waitinglist.clear();
 		
-	
+
 }
 
 MonoObject* ScriptSystem::createSharpActor(Actor * actor)

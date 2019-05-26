@@ -199,6 +199,10 @@ namespace ScriptHelper {
 	void loadMethods()
 	{
 		{
+			auto x = &csharp_methodproxy<decltype(&Transform::applyToRigidBody)>::call<&Transform::applyToRigidBody>;
+			mono_add_internal_call("GameEngine.Transform::applyToRigidBody", x);
+		}
+		{
 			auto setter = &csharp_setProperty<decltype(&Transform::localPosition), &Transform::localPosition>;
 			auto getter = &csharp_getProperty<decltype(&Transform::localPosition), &Transform::localPosition>;
 			mono_add_internal_call("GameEngine.Transform::setLocalPosition", setter);
@@ -246,10 +250,16 @@ namespace ScriptHelper {
 			auto getter = &csharp_getProperty<decltype(&AnimatorComponent::state), &AnimatorComponent::state>;
 			mono_add_internal_call("GameEngine.AnimatorComponent::getState", getter);
 		}
+		//Game Managment
 		{
 			
 			auto x = &csharp_methodproxy<decltype(&Actor::RemoveActor)>::call<&Actor::RemoveActor>;
 			mono_add_internal_call("GameEngine.GameManager::destroyActor", x);	
+		}
+		{			
+			auto x = &csharp_functionproxy<decltype(Serializable::AddPrefabCS)>::call<&Serializable::AddPrefabCS>;
+			mono_add_internal_call("GameEngine.GameManager::spawnActor", x);
+
 		}
 
 		//physx
@@ -257,6 +267,76 @@ namespace ScriptHelper {
 			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::addForce)>::call<&RigidBodyComponent::addForce>;
 			mono_add_internal_call("GameEngine.RigidBodyComponent::addForce", x);
 		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::addTorque)>::call<&RigidBodyComponent::addTorque>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::addTorque", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::clearForce)>::call<&RigidBodyComponent::clearForce>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::clearForce", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::clearTorque)>::call<&RigidBodyComponent::clearTorque>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::clearTorque", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::getAngularDamping)>::call<&RigidBodyComponent::getAngularDamping>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::getAngularDamping", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::getAngularVelocity)>::call<&RigidBodyComponent::getAngularVelocity>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::getAngularVelocity", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::getLinearDamping)>::call<&RigidBodyComponent::getLinearDamping>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::getLinearDamping", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::getLinearVelocity)>::call<&RigidBodyComponent::getLinearVelocity>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::getLinearVelocity", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::getMass)>::call<&RigidBodyComponent::getMass>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::getMass", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::setAngularDamping)>::call<&RigidBodyComponent::setAngularDamping>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::setAngularDamping", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::setAngularVelocity)>::call<&RigidBodyComponent::setAngularVelocity>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::setAngularVelocity", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::setLinearDamping)>::call<&RigidBodyComponent::setLinearDamping>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::setLinearDamping", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::setLinearVelocity)>::call<&RigidBodyComponent::setLinearVelocity>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::setLinearVelocity", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::setMass)>::call<&RigidBodyComponent::setMass>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::setMass", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::setMaxLinearVelocity)>::call<&RigidBodyComponent::setMaxLinearVelocity>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::setMaxLinearVelocity", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::setMaxAngularVelocity)>::call<&RigidBodyComponent::setMaxAngularVelocity>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::setMaxAngularVelocity", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::getMaxLinearVelocity)>::call<&RigidBodyComponent::getMaxLinearVelocity>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::getMaxLinearVelocity", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&RigidBodyComponent::getMaxAngularVelocity)>::call<&RigidBodyComponent::getMaxAngularVelocity>;
+			mono_add_internal_call("GameEngine.RigidBodyComponent::getMaxAngularVelocity", x);
+		}
+
+
 
 
 	}

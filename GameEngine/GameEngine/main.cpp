@@ -170,14 +170,18 @@ int main(int, char**)
 	editor = new Editor(window, projectSelectWindow->projectManager);
 	GE_Engine->projectManager = projectSelectWindow->projectManager;
 	//glfwSetKeyCallback(window2, InputManager::key_Callback);
-	glfwSetMouseButtonCallback(window2, InputManager::mousebutton_Callback);
+	
 	static double x, y;
 	glfwGetCursorPos(window2, &x, &y);
-	InputManager::mouseposition_Callback(window2, x, y);
+
+	
 	//glfwSetInputMode(window2, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetDropCallback(window2, drop_callback);
 
 	
+	
+	//glfwSetKeyCallback(window, InputManager::key_Callback);
+	glfwSetCursorPosCallback(window, InputManager::mouseposition_Callback);
 	glfwSetMouseButtonCallback(window, InputManager::mousebutton_Callback);
 
 	//glfwSetMouseButtonCallback(window, InputManager::mousebutton_Callback);
