@@ -10,7 +10,15 @@ ProjectManager::ProjectManager(std::string n, std::string p) : name(n), path(p)
 	system(("mkdir \"" + p + "\\scripts\"").c_str());
 	system(("mkdir \"" + p  + "\\dlls\"").c_str());
 	system(("mkdir \"" + p  + "\\scenes\"").c_str());
+	system(("mkdir \"" + p + "\\build\"").c_str());
 
+	system(("xcopy build \"" + p + "\\build\" /s /e /h /Y").c_str());
+
+	ofstream ofile;
+	ofile.open((p + "\\build\\settings.txt"));
+
+	ofile << "..\\" << n << ".project";
+	ofile.close();
 	
 	
 }

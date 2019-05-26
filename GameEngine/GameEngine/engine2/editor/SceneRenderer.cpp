@@ -376,10 +376,14 @@ void SceneRenderer::render()
 	sceneCamera->projectionMatrix = glm::perspective(30.0f, (float)(sceneSize.x / sceneSize.y), 0.1f, 1000.0f);
 	sceneCamera->UpdateViewMatrix();
 	
+	normalShader->Use();
+	normalShader->setMat4("viewMatrix", sceneCamera->viewMatrix);
+	normalShader->setMat4("projectionMatrix", sceneCamera->projectionMatrix);
 	colorShader->Use();
 	colorShader->setMat4("viewMatrix", sceneCamera->viewMatrix);
 	colorShader->setMat4("projectionMatrix", sceneCamera->projectionMatrix);
 	colorShader->setMat4("modelMatrix", glm::mat4(1));
+
 	grid->Draw();
 	
 	if (selectedactor)
