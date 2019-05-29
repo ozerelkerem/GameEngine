@@ -29,6 +29,7 @@ public:
 	//Texture *normalTexture;
 
 	void active();
+	void active(Shader*);
 
 };
 

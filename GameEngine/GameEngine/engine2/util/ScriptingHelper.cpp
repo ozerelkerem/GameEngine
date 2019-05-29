@@ -93,19 +93,25 @@ namespace ScriptHelper {
 		static void call(T *ins, typename CSharpTypeConvertor<Args>::Type... args) {
 			(ins->*fnc)(CSharpTypeConvertor<Args>::convert(args)...);
 		}
-	};
-
-
-	
-
-
-	
+	};	
 	
 	void moveMainAssembly()
 	{
-		std::string from,to;
-		from = PROJECTDIRECTORY;
-		from += "\\engineassembly.dll";
+		std::string from = "",to;
+
+		ifstream file("settings.txt");
+
+		if (!file.is_open() || from.empty())
+		{
+			printf("Put engine directory into 'settings.txt'.");
+			system("PAUSE");
+			exit(EXIT_FAILURE);
+		}
+
+		getline(file, from);
+
+		file.close();
+
 		to = GE_Engine->mainPath;
 		to += "dlls\\engineassembly.dll";
 		std::filesystem::copy_file(from,to,std::filesystem::copy_options::overwrite_existing);
@@ -209,6 +215,28 @@ namespace ScriptHelper {
 			mono_add_internal_call("GameEngine.Transform::getLocalPosition", getter);
 		}
 		{
+			auto setter = &csharp_setProperty<decltype(&Transform::localeulerRotation), &Transform::localeulerRotation>;
+			auto getter = &csharp_getProperty<decltype(&Transform::localeulerRotation), &Transform::localeulerRotation>;
+			mono_add_internal_call("GameEngine.Transform::setLocalEulerRotation", setter);
+			mono_add_internal_call("GameEngine.Transform::getLocalEulerRotation", getter);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&Transform::getWorldForwardVector)>::call<&Transform::getWorldForwardVector>;
+			mono_add_internal_call("GameEngine.Transform::getForwardVector", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&Transform::getWorldUpVector)>::call<&Transform::getWorldUpVector>;
+			mono_add_internal_call("GameEngine.Transform::getUpVector", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&Transform::getWorldRightVector)>::call<&Transform::getWorldRightVector>;
+			mono_add_internal_call("GameEngine.Transform::getRightVector", x);
+		}
+		{
+			auto x = &csharp_methodproxy<decltype(&Transform::calcQuatFromEuler)>::call<&Transform::calcQuatFromEuler>;
+			mono_add_internal_call("GameEngine.Transform::calcQuatFromEuler", x);
+		}
+		{
 			auto setter = &csharp_setProperty<decltype(&Transform::localScale), &Transform::localScale>;
 			auto getter = &csharp_getProperty<decltype(&Transform::localScale), &Transform::localScale>;
 			mono_add_internal_call("GameEngine.Transform::setLocalScale", setter);
@@ -244,7 +272,7 @@ namespace ScriptHelper {
 		}
 		{
 			auto x = &csharp_methodproxy<decltype(&AnimatorComponent::Stop)>::call<&AnimatorComponent::Stop>;
-			mono_add_internal_call("GameEngine.AnimatorComponent::Stop", x);
+			mono_add_internal_call("GameEngine.AnimatorComponent::stop", x);
 		}
 		{
 			auto getter = &csharp_getProperty<decltype(&AnimatorComponent::state), &AnimatorComponent::state>;

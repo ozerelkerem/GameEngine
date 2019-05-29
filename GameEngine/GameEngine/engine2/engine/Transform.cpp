@@ -185,21 +185,31 @@ glm::quat Transform::getWorldRotation()
 
 glm::vec3 Transform::getWorldForwardVector()
 {
-	const glm::mat4 inverted = glm::inverse(worldMatrix);
-	const glm::vec3 forward = normalize(glm::vec3(inverted[2]));
-	return forward;
+	glm::quat rotation = getWorldRotation();
+	glm::vec3 forward;
+	forward.x = 2 * (rotation.x *rotation.z + rotation.w* rotation.y);
+	forward.y = 2 * (rotation.y *rotation.z - rotation.w* rotation.x);
+	forward.z = 1 - 2* (rotation.x *rotation.x + rotation.y* rotation.y);
+	return glm::normalize(forward);
 }
 glm::vec3 Transform::getWorldUpVector()
 {
+	glm::quat rotation = getWorldRotation();
+	glm::vec3 forward;
+	forward.x = 2 * (rotation.x *rotation.y - rotation.w* rotation.z);
+	forward.y = 1- 2 * (rotation.x *rotation.x + rotation.z* rotation.z);
+	forward.z =  2 * (rotation.y *rotation.z + rotation.w* rotation.x);
 
-	glm::vec3 up = glm::normalize(glm::vec3(worldMatrix[0][1], worldMatrix[1][1], worldMatrix[2][1]));
-
-	return up;
+	return glm::normalize(forward);
 }
 glm::vec3 Transform::getWorldRightVector()
 {
-	glm::vec3 Right = glm::normalize(glm::vec3(worldMatrix[0][0], worldMatrix[1][0], worldMatrix[2][0]));
-	return Right;
+	glm::quat rotation = getWorldRotation();
+	glm::vec3 forward;
+	forward.x =1- 2 * (rotation.y *rotation.y + rotation.z* rotation.z);
+	forward.y =  2 * (rotation.x *rotation.y + rotation.w* rotation.z);
+	forward.z = 2 * (rotation.x *rotation.z - rotation.w* rotation.y);
+	return glm::normalize(forward);
 }
 
 glm::mat4 Transform::getWorldPose()
@@ -209,6 +219,10 @@ glm::mat4 Transform::getWorldPose()
 
 void Transform::applyToRigidBody()
 {
+	calcLocalMatrix();
+	setWorldMatrix(parent->getWorldMatrix() * getLocalMatrix());
+
+
 	if(this->physicactor)
 		this->physicactor->setGlobalPose(PxTransform(glmMat4ToPhysxMat4(getWorldPose())));
 }
@@ -220,6 +234,8 @@ void Transform::calcLocalMatrix()
 	glm::mat4 scale = glm::scale(glm::mat4(1.f), localScale);
 	localMatrix = pos * rot*scale;
 }
+
+
 
 Transform::~Transform()
 {

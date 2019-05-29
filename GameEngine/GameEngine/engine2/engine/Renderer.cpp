@@ -31,6 +31,7 @@ void Renderer::RenderAnActor(Model *model)
 
 void Renderer::RenderAnActor(Actor *actor, Shader *shader)
 {
+
 	ModelComponent *m = actor->GetComponent<ModelComponent>();
 	SkinnedModelComponent *sm  = actor->GetComponent<SkinnedModelComponent>();
 	if (m)
@@ -38,6 +39,10 @@ void Renderer::RenderAnActor(Actor *actor, Shader *shader)
 		shader->setInt("hasBones", 0);
 		for (int i = 0; i < m->getModel()->numOfMeshes; i++)
 		{
+			if (m->numberOfMaterials > i && m->materials[i])
+				m->materials[i]->active(shader);
+			else
+				ConstantMaterials::Materials::defaultMaterial->active(shader);
 			m->getModel()->meshes[i]->bind();
 			m->getModel()->meshes[i]->render();
 			m->getModel()->meshes[i]->unbind();
@@ -48,6 +53,11 @@ void Renderer::RenderAnActor(Actor *actor, Shader *shader)
 		shader->setInt("hasBones", 1);
 		for (int i = 0; i < sm->getModel()->numOfMeshes; i++)
 		{
+			if (sm->numberOfMaterials > i && sm->materials[i])
+				sm->materials[i]->active(shader);
+			else
+				ConstantMaterials::Materials::defaultMaterial->active(shader);
+
 			sm->getModel()->meshes[i]->bind();
 
 			if (sm->rootBone != ActorID::INVALID_HANDLE)

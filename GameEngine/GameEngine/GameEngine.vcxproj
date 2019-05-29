@@ -138,6 +138,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="build\engine2\shaders\normalmapping.fs.glsl" />
+    <None Include="build\engine2\shaders\normalmapping.vs.glsl" />
     <None Include="Debug\glew32.dll" />
   </ItemGroup>
   <ItemGroup>

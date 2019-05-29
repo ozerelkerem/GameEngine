@@ -596,7 +596,7 @@ void Editor::Render()
 	{
 		if (ImGui::ButtonEx("Play", { 0,0 }, isPlaying ? ImGuiButtonFlags_Disabled : 0))
 		{
-			
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 			glfwSetKeyCallback(window, InputManager::key_Callback);
 			Serializable::Save(projectManager);
 			Serializable::SaveScene(projectManager, gameBase->currentScene);

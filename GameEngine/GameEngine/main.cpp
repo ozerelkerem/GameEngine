@@ -144,8 +144,6 @@ int main(int, char**)
 		}
 
 		glfwSwapBuffers(window2);
-
-
 	}
 	if (!projectSelectWindow->projectManager)
 		return 0;
@@ -216,7 +214,8 @@ int main(int, char**)
 		}
 
 		glfwSwapBuffers(window);
-		
+
+		InputManager::clearMouseDeltas();
 	}
 
 	// Cleanup

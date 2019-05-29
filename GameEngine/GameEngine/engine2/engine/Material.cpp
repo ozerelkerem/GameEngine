@@ -26,3 +26,17 @@ void Material::active()
 	normalShader->setInt("material.hasTexture", ambientTexture ? 1 : 0);
 	
 }
+void Material::active(Shader *sha)
+{
+	sha->Use();
+	if (ambientTexture)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, ambientTexture->gettextureID());
+
+		glUniform1i(glGetUniformLocation(normalShader->programID, "material.ambientTexture"), 0);
+	}
+	sha->setVec3("material.ambientColor", ambientColor);
+	sha->setInt("material.hasTexture", ambientTexture ? 1 : 0);
+
+}

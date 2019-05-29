@@ -317,6 +317,8 @@ void Serializable::SaveActor(ProjectManager *pm, ofstream& file,Actor *actor)
 {
 	writefile(file, actor->name);
 	writefile(file, actor->actorID);
+	auto temp = actor->transformation.physicactor;
+
 	actor->transformation.physicactor = nullptr;
 	writefile(file, actor->transformation);
 	writefile(file, actor->parent);
@@ -338,6 +340,7 @@ void Serializable::SaveActor(ProjectManager *pm, ofstream& file,Actor *actor)
 	SaveComponent(pm, file, actor->GetComponent<SphereColliderComponent>());
 	SaveComponent(pm, file, actor->GetComponent<ScriptComponent>());
 
+	actor->transformation.physicactor = temp;
 }
 
 ActorID Serializable::AddPrefab(ProjectManager *pm, std::string name, Actor *targetactor)

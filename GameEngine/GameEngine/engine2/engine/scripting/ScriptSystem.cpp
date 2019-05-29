@@ -4,8 +4,22 @@
 #include<engine/components/ScriptComponent.h>
 #include<util/ScriptingHelper.h>
 #include<engine/Actor.h>
+#include <Windows.h>
+#include <string>
+
 ScriptSystem::ScriptSystem()
 {
+	string dirName_in = "C:\\Program Files (x86)\\Mono\\etc";
+
+	DWORD ftyp = GetFileAttributesA(dirName_in.c_str());
+
+	if (ftyp == (DWORD)-1)
+	{
+		printf("Mono required for game engine. Ypu should intall Mono.");
+		system("PAUSE");
+		exit(EXIT_FAILURE);
+	}
+
 	mono_set_dirs("C:\\Program Files (x86)\\Mono\\lib", "C:\\Program Files (x86)\\Mono\\etc");
 	domain = mono_jit_init("GameEngineDomain");
 	mono_thread_set_main(mono_thread_current());

@@ -16,6 +16,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Debug\glew32.dll" />
+    <None Include="build\engine2\shaders\normalmapping.fs.glsl" />
+    <None Include="build\engine2\shaders\normalmapping.vs.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui.cpp">
