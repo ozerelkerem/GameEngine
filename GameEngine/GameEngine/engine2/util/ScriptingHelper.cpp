@@ -101,9 +101,9 @@ namespace ScriptHelper {
 
 		ifstream file("settings.txt");
 
-		if (!file.is_open() || from.empty())
+		if (!file.is_open())
 		{
-			printf("Put engine directory into 'settings.txt'.");
+			printf("Put engine assembly dll directory into 'settings.txt'.");
 			system("PAUSE");
 			exit(EXIT_FAILURE);
 		}
